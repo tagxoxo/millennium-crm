@@ -49,7 +49,10 @@ export default async function DashboardPage() {
       <KpiCards stats={stats} />
 
       <section>
-        <h2 className="text-lg font-semibold text-white mb-4">Pipeline</h2>
+        <h2 className="text-lg font-semibold text-white mb-1">Pipeline</h2>
+        <p className="text-xs text-gray-500 mb-4 hidden md:block">
+          Drag a client card to another column to change stage.
+        </p>
         <KanbanBoard policies={policies} />
       </section>
 

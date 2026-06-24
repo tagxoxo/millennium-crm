@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useRef } from "react";
 import CarrierBadge from "@/components/ui/CarrierBadge";
 import CommercialTag from "@/components/ui/CommercialTag";
 import SpanishTag from "@/components/ui/SpanishTag";
@@ -10,19 +13,28 @@ import {
   normalizeTermMonths,
   renewalColor,
 } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 interface PolicyCardProps {
   policy: Policy;
+  draggable?: boolean;
+  isDragging?: boolean;
+  onDragStart?: (event: React.DragEvent<HTMLDivElement>) => void;
+  onDragEnd?: () => void;
 }
 
-export default function PolicyCard({ policy }: PolicyCardProps) {
+export default function PolicyCard({
+  policy,
+  draggable = false,
+  isDragging = false,
+  onDragStart,
+  onDragEnd,
+}: PolicyCardProps) {
   const days = daysUntilRenewal(policy.renewal_date);
+  const didDrag = useRef(false);
 
-  return (
-    <Link
-      href={`/policies/${policy.id}`}
-      className="block bg-navy border border-navy-lighter rounded-lg p-3 hover:border-accent/50 transition-colors"
-    >
+  const content = (
+    <>
       <div className="flex items-start justify-between gap-2 mb-2">
         <p className="font-medium text-white text-sm leading-tight">
           {policy.client_name}
@@ -46,6 +58,48 @@ export default function PolicyCard({ policy }: PolicyCardProps) {
             ? `${Math.abs(days)}d overdue`
             : `${days}d until renewal`}
       </p>
-    </Link>
+    </>
+  );
+
+  const cardClass = cn(
+    "block bg-navy border border-navy-lighter rounded-lg p-3 hover:border-accent/50 transition-colors",
+    draggable && "cursor-grab active:cursor-grabbing",
+    isDragging && "opacity-40"
+  );
+
+  if (!draggable) {
+    return (
+      <Link href={`/policies/${policy.id}`} className={cardClass}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <div
+      draggable
+      onDragStart={(event) => {
+        didDrag.current = true;
+        onDragStart?.(event);
+      }}
+      onDragEnd={() => {
+        onDragEnd?.();
+        setTimeout(() => {
+          didDrag.current = false;
+        }, 0);
+      }}
+      className={cardClass}
+    >
+      <Link
+        href={`/policies/${policy.id}`}
+        onClick={(event) => {
+          if (didDrag.current) event.preventDefault();
+        }}
+        className="block"
+        draggable={false}
+      >
+        {content}
+      </Link>
+    </div>
   );
 }
