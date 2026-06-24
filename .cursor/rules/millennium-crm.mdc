@@ -53,6 +53,13 @@ vercel --prod --yes  # deploy from CLI (logged in as tagxoxo)
 bash setup-vercel-env.sh  # sync .env.local → Vercel env vars
 ```
 
+## Git & GitHub (end of every session)
+- Remote: https://github.com/tagxoxo/millennium-crm (private), branch `main`
+- **Always commit and push to GitHub before ending a session** if there are any code changes
+- Never commit `.env.local` or secrets; use `.env.example` for templates only
+- GitHub CLI is logged in as `tagxoxo` — use `gh auth setup-git` if `git push` fails
+- Commit message: short summary of why; push with `git push origin main`
+
 ## Common Issues
 - **"Cannot find module ./995.js"** or white unstyled page → run `npm run dev:clean`
 - **Stale dashboard data after import** → fixed with `revalidate = 0` + no-store fetch
