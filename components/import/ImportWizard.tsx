@@ -2,7 +2,6 @@
 
 import { useCallback, useState } from "react";
 import Link from "next/link";
-import { getSupabaseBrowser } from "@/lib/supabase/client";
 import {
   guessColumnMapping,
   mapRowsToPolicies,
@@ -29,6 +28,7 @@ export default function ImportWizard() {
   const [progress, setProgress] = useState("");
   const [result, setResult] = useState<ImportResult | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
 
   const handleFile = useCallback((file: File) => {
     setFileError(null);
@@ -71,31 +71,43 @@ export default function ImportWizard() {
     }
 
     setImporting(true);
-    const supabase = getSupabaseBrowser();
-    const dbFailed: RowError[] = [];
-    let imported = 0;
+    setImportError(null);
+    setProgress(`Uploading ${policies.length} records...`);
 
-    for (let i = 0; i < policies.length; i++) {
-      setProgress(`Importing ${i + 1} of ${policies.length}...`);
-      const policy = policies[i];
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 120000);
 
-      const { error } = await supabase.from("policies").insert(policy);
+      const res = await fetch("/api/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ policies }),
+        signal: controller.signal,
+      });
 
-      if (error) {
-        dbFailed.push({
-          row: i + 2,
-          client: policy.client_name,
-          reason: error.message,
-        });
-      } else {
-        imported++;
+      clearTimeout(timeout);
+      const json = await res.json();
+
+      if (!res.ok) {
+        throw new Error(json.error ?? "Import failed");
       }
-    }
 
-    setImporting(false);
-    setProgress("");
-    setResult({ imported, failed: dbFailed, validationErrors });
-    setStep("summary");
+      setResult({
+        imported: json.imported ?? 0,
+        failed: json.failed ?? [],
+        validationErrors,
+      });
+      setStep("summary");
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") {
+        setImportError("Import timed out. Try again — large files may take up to 2 minutes.");
+      } else {
+        setImportError(err instanceof Error ? err.message : "Import failed.");
+      }
+    } finally {
+      setImporting(false);
+      setProgress("");
+    }
   }
 
   function reset() {
@@ -105,6 +117,7 @@ export default function ImportWizard() {
     setMapping({});
     setResult(null);
     setFileError(null);
+    setImportError(null);
   }
 
   if (step === "upload") {
@@ -195,6 +208,10 @@ export default function ImportWizard() {
         <p className="text-xs text-gray-500">
           Showing first {previewRows.length} rows as preview
         </p>
+
+        {importError && (
+          <p className="text-red-400 text-sm">{importError}</p>
+        )}
 
         <button
           type="button"

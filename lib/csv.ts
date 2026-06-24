@@ -1,13 +1,17 @@
 export type PolicyField =
   | "client_name"
   | "carrier"
+  | "prior_carrier"
   | "premium"
   | "renewal_date"
   | "stage"
   | "spanish_speaker"
+  | "commercial"
+  | "term_months"
   | "phone"
   | "email"
   | "policy_number"
+  | "client_since"
   | "notes"
   | "skip";
 
@@ -15,13 +19,17 @@ export const POLICY_FIELDS: { value: PolicyField; label: string }[] = [
   { value: "skip", label: "— Skip this column —" },
   { value: "client_name", label: "Client Name" },
   { value: "carrier", label: "Carrier" },
+  { value: "prior_carrier", label: "Prior Carrier" },
   { value: "premium", label: "Premium" },
   { value: "renewal_date", label: "Renewal Date" },
   { value: "stage", label: "Stage" },
   { value: "spanish_speaker", label: "Spanish Speaker" },
+  { value: "commercial", label: "Commercial" },
+  { value: "term_months", label: "Term (6 or 12 months)" },
   { value: "phone", label: "Phone" },
   { value: "email", label: "Email" },
   { value: "policy_number", label: "Policy Number" },
+  { value: "client_since", label: "Client Since Date" },
   { value: "notes", label: "Notes" },
 ];
 
@@ -81,6 +89,9 @@ const HEADER_ALIASES: Record<string, PolicyField> = {
   insured: "client_name",
   "insured name": "client_name",
   carrier: "carrier",
+  prior_carrier: "prior_carrier",
+  "prior carrier": "prior_carrier",
+  "previous carrier": "prior_carrier",
   company: "carrier",
   insurance: "carrier",
   premium: "premium",
@@ -99,6 +110,14 @@ const HEADER_ALIASES: Record<string, PolicyField> = {
   spanish: "spanish_speaker",
   "spanish speaker": "spanish_speaker",
   language: "spanish_speaker",
+  commercial: "commercial",
+  com: "commercial",
+  "line of business": "commercial",
+  lob: "commercial",
+  term_months: "term_months",
+  term: "term_months",
+  "policy term": "term_months",
+  "term months": "term_months",
   phone: "phone",
   "phone number": "phone",
   mobile: "phone",
@@ -110,6 +129,12 @@ const HEADER_ALIASES: Record<string, PolicyField> = {
   "policy number": "policy_number",
   policy: "policy_number",
   "policy #": "policy_number",
+  client_since: "client_since",
+  "client since": "client_since",
+  "client since date": "client_since",
+  "date acquired": "client_since",
+  "acquired date": "client_since",
+  "start date": "client_since",
   notes: "notes",
   note: "notes",
   comments: "notes",
@@ -137,13 +162,17 @@ export function guessColumnMapping(headers: string[]): Record<number, PolicyFiel
 export interface ParsedPolicyRow {
   client_name: string;
   carrier: string;
+  prior_carrier: string | null;
   premium: number;
   renewal_date: string;
   stage: string;
   spanish_speaker: boolean;
+  commercial: boolean;
+  term_months: number;
   phone: string | null;
   email: string | null;
   policy_number: string | null;
+  client_since: string | null;
   notes: string | null;
 }
 
@@ -158,7 +187,27 @@ function normalizeCarrier(value: string): string | null {
   if (v.includes("trexis")) return "trexis";
   if (v.includes("progressive")) return "progressive";
   if (v.includes("gainsco") || v.includes("gains")) return "gainsco";
-  if (v === "trexis" || v === "progressive" || v === "gainsco") return v;
+  if (v.includes("foremost")) return "foremost";
+  if (v.includes("safeco")) return "safeco";
+  if (v.includes("national") && v.includes("general")) return "national_general";
+  if (v.includes("national general")) return "national_general";
+  if (v.includes("bristol")) return "bristol_west";
+  if (v.includes("geico")) return "geico";
+  if (v.includes("surety")) return "liberty_mutual_surety_bond";
+  if (v.includes("bop") || (v.includes("liberty") && v.includes("mutual") && !v.includes("surety")))
+    return "liberty_mutual_bop";
+  if (v.includes("tapco")) return "tapco";
+  if (v.includes("cna")) return "cna";
+  if (v.includes("bruce") || v.includes("messier")) return "bruce_messier";
+  if (v.includes("mesa")) return "mesa";
+  if (v.includes("acceptance")) return "acceptance_independent";
+  const valid = [
+    "trexis", "progressive", "gainsco", "foremost", "safeco",
+    "national_general", "bristol_west", "geico",
+    "liberty_mutual_bop", "liberty_mutual_surety_bond",
+    "tapco", "cna", "bruce_messier", "mesa", "acceptance_independent",
+  ];
+  if (valid.includes(v)) return v;
   return null;
 }
 
@@ -171,6 +220,20 @@ function normalizeStage(value: string): string {
   if (v.includes("quote")) return "quoted";
   if (v.includes("lapse")) return "lapsed";
   return "upcoming";
+}
+
+function parseTermMonths(value: string): 6 | 12 {
+  const v = value.toLowerCase().trim();
+  if (/^6\b|6[\s-]?mo|semi/i.test(v)) return 6;
+  if (/^12\b|12[\s-]?mo|annual|year/i.test(v)) return 12;
+  const num = parseInt(v, 10);
+  if (num === 6) return 6;
+  return 12;
+}
+
+function parseCommercial(value: string): boolean {
+  const v = value.toLowerCase().trim();
+  return ["yes", "y", "true", "1", "commercial", "com", "comm"].includes(v);
 }
 
 function parseSpanish(value: string): boolean {
@@ -219,11 +282,16 @@ export function mapRowsToPolicies(
     const fields: Partial<ParsedPolicyRow> = {
       stage: "upcoming",
       spanish_speaker: false,
+      commercial: false,
+      term_months: 12,
       phone: null,
       email: null,
       policy_number: null,
+      client_since: null,
       notes: null,
     };
+
+    let priorCarrierRaw: string | null = null;
 
     Object.entries(mapping).forEach(([colIndex, field]) => {
       if (field === "skip") return;
@@ -231,6 +299,15 @@ export function mapRowsToPolicies(
       if (!value) return;
       if (field === "spanish_speaker") {
         fields.spanish_speaker = parseSpanish(value);
+      } else if (field === "commercial") {
+        fields.commercial = parseCommercial(value);
+      } else if (field === "term_months") {
+        fields.term_months = parseTermMonths(value);
+      } else if (field === "client_since") {
+        const parsed = parseDate(value);
+        if (parsed) fields.client_since = parsed;
+      } else if (field === "prior_carrier") {
+        priorCarrierRaw = value;
       } else {
         (fields as Record<string, unknown>)[field] = value;
       }
@@ -247,9 +324,22 @@ export function mapRowsToPolicies(
       errors.push({
         row: rowNum,
         client: clientName,
-        reason: `Invalid carrier: "${fields.carrier ?? ""}" — must be Trexis, Progressive, or GAINSCO`,
+        reason: `Invalid carrier: "${fields.carrier ?? ""}" — not recognized. Check spelling or add it in Supabase.`,
       });
       return;
+    }
+
+    let priorCarrier: string | null = null;
+    if (priorCarrierRaw) {
+      priorCarrier = normalizeCarrier(priorCarrierRaw);
+      if (!priorCarrier) {
+        errors.push({
+          row: rowNum,
+          client: clientName,
+          reason: `Invalid prior carrier: "${priorCarrierRaw}"`,
+        });
+        return;
+      }
     }
 
     const premium = parsePremium(String(fields.premium ?? ""));
@@ -275,13 +365,17 @@ export function mapRowsToPolicies(
     policies.push({
       client_name: clientName,
       carrier,
+      prior_carrier: priorCarrier,
       premium,
       renewal_date: renewalDate,
       stage: normalizeStage(String(fields.stage ?? "upcoming")),
       spanish_speaker: fields.spanish_speaker ?? false,
+      commercial: fields.commercial ?? false,
+      term_months: fields.term_months ?? 12,
       phone: fields.phone ? String(fields.phone) : null,
       email: fields.email ? String(fields.email) : null,
       policy_number: fields.policy_number ? String(fields.policy_number) : null,
+      client_since: fields.client_since ? String(fields.client_since) : null,
       notes: fields.notes ? String(fields.notes) : null,
     });
   });

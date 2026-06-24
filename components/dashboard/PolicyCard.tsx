@@ -1,10 +1,13 @@
 import Link from "next/link";
 import CarrierBadge from "@/components/ui/CarrierBadge";
+import CommercialTag from "@/components/ui/CommercialTag";
 import SpanishTag from "@/components/ui/SpanishTag";
+import TermTag from "@/components/ui/TermTag";
 import type { Policy } from "@/lib/types";
 import {
   daysUntilRenewal,
   formatCurrency,
+  normalizeTermMonths,
   renewalColor,
 } from "@/lib/utils";
 
@@ -24,7 +27,11 @@ export default function PolicyCard({ policy }: PolicyCardProps) {
         <p className="font-medium text-white text-sm leading-tight">
           {policy.client_name}
         </p>
-        {policy.spanish_speaker && <SpanishTag />}
+        <div className="flex items-center gap-1 shrink-0">
+          {policy.commercial && <CommercialTag />}
+          <TermTag termMonths={normalizeTermMonths(policy.term_months)} />
+          {policy.spanish_speaker && <SpanishTag />}
+        </div>
       </div>
       <div className="flex items-center justify-between gap-2">
         <CarrierBadge carrier={policy.carrier} />

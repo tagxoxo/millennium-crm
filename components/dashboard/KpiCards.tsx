@@ -8,7 +8,22 @@ interface KpiCardsProps {
 
 export default function KpiCards({ stats }: KpiCardsProps) {
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <KpiCard
+        label="Commercial Book Premium"
+        value={formatCurrency(stats.commercialBookPremium)}
+        subtext={`${stats.commercialPolicyCount.toLocaleString()} commercial · annualized`}
+      />
+      <KpiCard
+        label="Total Book Premium"
+        value={formatCurrency(stats.totalPremium)}
+        subtext="As written (6 & 12 mo mixed)"
+      />
+      <KpiCard
+        label="Total Annual Premium Book"
+        value={formatCurrency(stats.totalAnnualPremium)}
+        subtext="6-month policies doubled"
+      />
       <KpiCard
         label="Active Policies"
         value={stats.totalActive.toLocaleString()}
@@ -23,15 +38,10 @@ export default function KpiCards({ stats }: KpiCardsProps) {
         value={stats.renewalsDue30.toLocaleString()}
       />
       <KpiCard
-        label="Total Book Premium"
-        value={formatCurrency(stats.totalPremium)}
-        subtext="Annual, excl. lapsed"
-      />
-      <KpiCard
         label="Est. Monthly Commissions"
         value={formatCurrency(stats.monthlyCommission)}
-        subtext="12% annual rate estimate"
-        />
+        subtext="12% of annualized book"
+      />
     </div>
   );
 }

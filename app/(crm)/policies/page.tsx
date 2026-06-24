@@ -1,3 +1,4 @@
+import AddPolicyForm from "@/components/policies/AddPolicyForm";
 import PoliciesTable from "@/components/policies/PoliciesTable";
 import { fetchAllPolicies } from "@/lib/policies";
 import type { Policy } from "@/lib/types";
@@ -17,11 +18,14 @@ export default async function PoliciesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-white">Policies</h1>
-        <p className="text-gray-400 text-sm mt-1">
-          Search and filter your full book of business
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Policies</h1>
+          <p className="text-gray-400 text-sm mt-1">
+            Search and filter your full book of business
+          </p>
+        </div>
+        <AddPolicyForm />
       </div>
 
       {error && (

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import AddContactForm from "@/components/policy-detail/AddContactForm";
 import ContactTimeline from "@/components/policy-detail/ContactTimeline";
+import EditPolicyForm from "@/components/policy-detail/EditPolicyForm";
 import PolicyInfo, { BackLink } from "@/components/policy-detail/PolicyInfo";
 import StageDropdown from "@/components/policy-detail/StageDropdown";
 import { getSupabaseServer } from "@/lib/supabase/server";
@@ -51,6 +52,8 @@ export default async function PolicyDetailPage({
       <BackLink />
 
       <PolicyInfo policy={policy} />
+
+      <EditPolicyForm policy={policy} />
 
       <StageDropdown policyId={policy.id} currentStage={policy.stage} />
 

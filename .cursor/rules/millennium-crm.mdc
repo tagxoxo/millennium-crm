@@ -1,0 +1,72 @@
+---
+description: Millennium CRM project context — agency CRM for Clarksville TN auto insurance
+alwaysApply: true
+---
+
+# Millennium CRM — Project Context
+
+## Owner & Purpose
+- Non-developer owner acquired auto insurance agency in Clarksville, TN
+- ~800 active policies; ~50% Spanish-speaking clients
+- Replacing AgencyZoom; carriers include Trexis, Progressive, GAINSCO, Foremost, Safeco, National General, Bristol West, Geico
+
+## Tech Stack
+- Next.js 14 App Router, TypeScript, Tailwind CSS (dark navy `#0f1117`, blue accents)
+- Supabase: `policies`, `contact_log`, `automations` tables
+- Hosted on Vercel: https://millennium-crm.vercel.app
+- GitHub: https://github.com/tagxoxo/millennium-crm (private)
+
+## Env Vars (`.env.local` / Vercel)
+- `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY`
+- `CRM_PASSWORD` — site login password (middleware + `/login`)
+- `NEXT_PUBLIC_GOOGLE_REVIEW_LINK` — for post-retention automation template
+
+## Architecture Notes
+- Server reads: `getSupabaseServer()` in `lib/supabase/server.ts` (secret key, `cache: no-store`)
+- Browser writes for policies: **use `/api/policies/[id]` PATCH** — do NOT save via browser Supabase client (hangs on Vercel)
+- CSV import: **use `/api/import` POST** — batch insert on server, not browser one-by-one
+- Password auth: `middleware.ts` + `lib/auth.ts` + `/api/auth`
+- Route group `(crm)/` has sidebar layout; `/login` has no sidebar
+- `fetchAllPolicies()` in `lib/policies.ts` paginates for large books
+
+## Pages Built
+1. **Dashboard** — KPIs, kanban (5 stages), urgent renewals (30 days)
+2. **Policies** — searchable table, carrier/stage/language filters
+3. **Policy Detail** — info card, Edit Client Info, stage dropdown, contact timeline, log contact
+4. **Import** — AdaptAI CSV upload, column mapping, import summary
+5. **Automations** — toggle cards + create form (templates only; **no auto-send engine yet**)
+
+## Carriers (DB + UI)
+`trexis`, `progressive`, `gainsco`, `foremost`, `safeco`, `national_general`, `bristol_west`, `geico`, `liberty_mutual_bop`, `liberty_mutual_surety_bond`, `tapco`, `cna`, `bruce_messier`, `mesa`, `acceptance_independent`
+- SQL migration: `supabase/add-carriers.sql` if constraint errors on save
+
+## Not Built Yet
+- Email/SMS/WhatsApp sending (needs Resend/Twilio + Vercel Cron)
+- Automations are config-only; toggles ON ≠ messages sent
+- Per-user accounts (single shared `CRM_PASSWORD` only)
+
+## Dev & Deploy Commands
+```bash
+npm run dev          # local dev
+npm run dev:clean    # rm -rf .next && dev (fixes stale cache / missing CSS)
+vercel --prod --yes  # deploy from CLI (logged in as tagxoxo)
+bash setup-vercel-env.sh  # sync .env.local → Vercel env vars
+```
+
+## Common Issues
+- **"Cannot find module ./995.js"** or white unstyled page → run `npm run dev:clean`
+- **Stale dashboard data after import** → fixed with `revalidate = 0` + no-store fetch
+- **ByteString / char 8232 error on Vercel** → invisible chars in env vars; re-type in Vercel dashboard
+- **Save stuck on "Saving..."** → fixed via server API route, not browser Supabase
+- Port 3000 busy → use 3001 or kill old `next dev` processes
+
+## Code Conventions
+- Clean, simple code; explain steps to non-developer owner
+- Go step-by-step; pause after major pages for confirmation
+- Never commit `.env.local`; use `.env.example` as template
+- Commission estimate: 12% annual in `lib/dashboard.ts` (`COMMISSION_RATE`)
+
+## User Preferences
+- Plain English explanations for terminal commands
+- Paste exact errors with click-by-click fixes
+- Do not over-engineer; minimize scope per task

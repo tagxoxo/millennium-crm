@@ -1,12 +1,16 @@
 import Link from "next/link";
 import CarrierBadge from "@/components/ui/CarrierBadge";
+import CommercialTag from "@/components/ui/CommercialTag";
 import SpanishTag from "@/components/ui/SpanishTag";
+import TermTag from "@/components/ui/TermTag";
 import type { Policy } from "@/lib/types";
 import { STAGE_LABELS } from "@/lib/types";
 import {
+  annualizedPremium,
   daysUntilRenewal,
   formatCurrency,
   formatDate,
+  normalizeTermMonths,
   renewalColor,
 } from "@/lib/utils";
 
@@ -16,6 +20,8 @@ interface PolicyInfoProps {
 
 export default function PolicyInfo({ policy }: PolicyInfoProps) {
   const days = daysUntilRenewal(policy.renewal_date);
+  const termMonths = normalizeTermMonths(policy.term_months);
+  const annualPremium = annualizedPremium(Number(policy.premium), termMonths);
 
   return (
     <div className="bg-navy-light border border-navy-lighter rounded-xl p-5 md:p-6">
@@ -25,10 +31,18 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
             <h2 className="text-xl md:text-2xl font-bold text-white">
               {policy.client_name}
             </h2>
+            {policy.commercial && <CommercialTag />}
+            <TermTag termMonths={termMonths} />
             {policy.spanish_speaker && <SpanishTag />}
           </div>
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-2 mt-2 flex-wrap">
             <CarrierBadge carrier={policy.carrier} />
+            {policy.prior_carrier && (
+              <>
+                <span className="text-xs text-gray-500">from</span>
+                <CarrierBadge carrier={policy.prior_carrier} />
+              </>
+            )}
             <span className="text-sm text-gray-400">
               {STAGE_LABELS[policy.stage]}
             </span>
@@ -38,7 +52,14 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
           <p className="text-2xl font-bold text-white">
             {formatCurrency(Number(policy.premium))}
           </p>
-          <p className="text-xs text-gray-400">annual premium</p>
+          <p className="text-xs text-gray-400">
+            {termMonths === 6 ? "6-month premium" : "annual premium"}
+          </p>
+          {termMonths === 6 && (
+            <p className="text-xs text-cyan-400 mt-1">
+              {formatCurrency(annualPremium)} annualized
+            </p>
+          )}
         </div>
       </div>
 
@@ -55,6 +76,22 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
                   : `${days}d away`}
               )
             </span>
+          </dd>
+        </div>
+        <div>
+          <dt className="text-gray-500 mb-1">Prior Carrier</dt>
+          <dd className="text-white">
+            {policy.prior_carrier ? (
+              <CarrierBadge carrier={policy.prior_carrier} />
+            ) : (
+              "—"
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-gray-500 mb-1">Client Since</dt>
+          <dd className="text-white">
+            {policy.client_since ? formatDate(policy.client_since) : "—"}
           </dd>
         </div>
         <div>

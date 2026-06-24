@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LogoutButton from "./LogoutButton";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: "📊" },
@@ -26,6 +27,9 @@ export default function Sidebar() {
           </Link>
         ))}
       </nav>
+      <div className="p-4 border-t border-navy-lighter">
+        <LogoutButton />
+      </div>
     </aside>
   );
 }

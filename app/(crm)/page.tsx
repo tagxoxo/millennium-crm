@@ -4,6 +4,7 @@ import UrgentRenewalsTable from "@/components/dashboard/UrgentRenewalsTable";
 import {
   computeDashboardStats,
   getUrgentRenewals,
+  URGENT_RENEWAL_DAYS,
 } from "@/lib/dashboard";
 import { fetchAllPolicies } from "@/lib/policies";
 import type { Policy } from "@/lib/types";
@@ -56,7 +57,7 @@ export default async function DashboardPage() {
         <h2 className="text-lg font-semibold text-white mb-4">
           Urgent Renewals
           <span className="text-sm font-normal text-gray-400 ml-2">
-            Next 14 days
+            Next {URGENT_RENEWAL_DAYS} days
           </span>
         </h2>
         <UrgentRenewalsTable policies={urgentRenewals} />

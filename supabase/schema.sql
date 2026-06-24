@@ -10,14 +10,28 @@ CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE TABLE policies (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   client_name TEXT NOT NULL,
-  carrier TEXT NOT NULL CHECK (carrier IN ('trexis', 'progressive', 'gainsco')),
+  carrier TEXT NOT NULL CHECK (carrier IN (
+    'trexis', 'progressive', 'gainsco', 'foremost', 'safeco',
+    'national_general', 'bristol_west', 'geico',
+    'liberty_mutual_bop', 'liberty_mutual_surety_bond',
+    'tapco', 'cna', 'bruce_messier', 'mesa', 'acceptance_independent'
+  )),
   premium NUMERIC(10, 2) NOT NULL DEFAULT 0,
   renewal_date DATE NOT NULL,
   stage TEXT NOT NULL DEFAULT 'upcoming' CHECK (stage IN ('upcoming', 'contacted', 'quoted', 'retained', 'lapsed')),
   spanish_speaker BOOLEAN NOT NULL DEFAULT false,
+  commercial BOOLEAN NOT NULL DEFAULT false,
+  term_months INTEGER NOT NULL DEFAULT 12 CHECK (term_months IN (6, 12)),
   phone TEXT,
   email TEXT,
   policy_number TEXT,
+  client_since DATE,
+  prior_carrier TEXT CHECK (prior_carrier IS NULL OR prior_carrier IN (
+    'trexis', 'progressive', 'gainsco', 'foremost', 'safeco',
+    'national_general', 'bristol_west', 'geico',
+    'liberty_mutual_bop', 'liberty_mutual_surety_bond',
+    'tapco', 'cna', 'bruce_messier', 'mesa', 'acceptance_independent'
+  )),
   notes TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -27,6 +41,8 @@ CREATE INDEX idx_policies_stage ON policies(stage);
 CREATE INDEX idx_policies_carrier ON policies(carrier);
 CREATE INDEX idx_policies_renewal_date ON policies(renewal_date);
 CREATE INDEX idx_policies_spanish_speaker ON policies(spanish_speaker);
+CREATE INDEX idx_policies_commercial ON policies(commercial);
+CREATE INDEX idx_policies_term_months ON policies(term_months);
 
 -- ============================================================
 -- CONTACT LOG TABLE

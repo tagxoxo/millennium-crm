@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSupabaseBrowser } from "@/lib/supabase/client";
 import type { Stage } from "@/lib/types";
 import { STAGES, STAGE_LABELS } from "@/lib/types";
 
@@ -25,21 +24,21 @@ export default function StageDropdown({
     setSaving(true);
     setError(null);
 
-    const supabase = getSupabaseBrowser();
-    const { error: updateError } = await supabase
-      .from("policies")
-      .update({ stage: newStage })
-      .eq("id", policyId);
-
-    setSaving(false);
-
-    if (updateError) {
-      setError(updateError.message);
+    try {
+      const res = await fetch(`/api/policies/${policyId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stage: newStage }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Save failed");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Save failed");
       setStage(currentStage);
-      return;
+    } finally {
+      setSaving(false);
     }
-
-    router.refresh();
   }
 
   return (

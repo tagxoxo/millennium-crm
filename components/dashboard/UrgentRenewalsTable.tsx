@@ -1,6 +1,7 @@
 import Link from "next/link";
 import CarrierBadge from "@/components/ui/CarrierBadge";
 import type { Policy } from "@/lib/types";
+import { URGENT_RENEWAL_DAYS } from "@/lib/dashboard";
 import { STAGE_LABELS } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -14,7 +15,7 @@ export default function UrgentRenewalsTable({
   if (policies.length === 0) {
     return (
       <div className="bg-navy-light border border-navy-lighter rounded-xl p-8 text-center">
-        <p className="text-gray-400">No renewals due in the next 14 days.</p>
+        <p className="text-gray-400">No renewals due in the next {URGENT_RENEWAL_DAYS} days.</p>
       </div>
     );
   }

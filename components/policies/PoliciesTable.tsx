@@ -4,10 +4,16 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import CarrierBadge from "@/components/ui/CarrierBadge";
 import SpanishTag from "@/components/ui/SpanishTag";
-import PolicyFilters, { type SpanishFilter } from "./PolicyFilters";
+import PolicyFilters, {
+  type CommercialFilter,
+  type SpanishFilter,
+  type TermFilter,
+} from "./PolicyFilters";
+import CommercialTag from "@/components/ui/CommercialTag";
+import TermTag from "@/components/ui/TermTag";
 import type { Carrier, Policy, Stage } from "@/lib/types";
 import { STAGE_LABELS } from "@/lib/types";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate, normalizeTermMonths } from "@/lib/utils";
 
 interface PoliciesTableProps {
   policies: Policy[];
@@ -19,6 +25,8 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
   const [carrier, setCarrier] = useState<Carrier | "all">("all");
   const [stage, setStage] = useState<Stage | "all">("all");
   const [spanish, setSpanish] = useState<SpanishFilter>("all");
+  const [commercial, setCommercial] = useState<CommercialFilter>("all");
+  const [term, setTerm] = useState<TermFilter>("all");
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -29,9 +37,12 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
       if (stage !== "all" && p.stage !== stage) return false;
       if (spanish === "yes" && !p.spanish_speaker) return false;
       if (spanish === "no" && p.spanish_speaker) return false;
+      if (commercial === "yes" && !p.commercial) return false;
+      if (commercial === "no" && p.commercial) return false;
+      if (term !== "all" && normalizeTermMonths(p.term_months) !== term) return false;
       return true;
     });
-  }, [policies, search, carrier, stage, spanish]);
+  }, [policies, search, carrier, stage, spanish, commercial, term]);
 
   return (
     <div className="space-y-4">
@@ -47,9 +58,13 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
         carrier={carrier}
         stage={stage}
         spanish={spanish}
+        commercial={commercial}
+        term={term}
         onCarrierChange={setCarrier}
         onStageChange={setStage}
         onSpanishChange={setSpanish}
+        onCommercialChange={setCommercial}
+        onTermChange={setTerm}
       />
 
       <p className="text-sm text-gray-400">
@@ -73,7 +88,11 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <p className="font-medium text-white">{policy.client_name}</p>
-                  {policy.spanish_speaker && <SpanishTag />}
+                  <div className="flex items-center gap-1 shrink-0">
+                    {policy.commercial && <CommercialTag />}
+                    <TermTag termMonths={normalizeTermMonths(policy.term_months)} />
+                    {policy.spanish_speaker && <SpanishTag />}
+                  </div>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <CarrierBadge carrier={policy.carrier} />
@@ -100,6 +119,8 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
                   <th className="px-4 py-3 font-medium">Renewal Date</th>
                   <th className="px-4 py-3 font-medium">Stage</th>
                   <th className="px-4 py-3 font-medium">Spanish</th>
+                  <th className="px-4 py-3 font-medium">Commercial</th>
+                  <th className="px-4 py-3 font-medium">Term</th>
                 </tr>
               </thead>
               <tbody>
@@ -130,6 +151,16 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
                       ) : (
                         <span className="text-gray-500">—</span>
                       )}
+                    </td>
+                    <td className="px-4 py-3">
+                      {policy.commercial ? (
+                        <CommercialTag />
+                      ) : (
+                        <span className="text-gray-500">—</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <TermTag termMonths={normalizeTermMonths(policy.term_months)} />
                     </td>
                   </tr>
                 ))}
