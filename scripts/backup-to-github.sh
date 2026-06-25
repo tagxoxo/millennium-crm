@@ -14,9 +14,10 @@ fi
 
 git add -A
 
-# Never stage secrets
+# Never stage secrets or GitHub Actions (need workflow OAuth scope to push)
 git reset HEAD .env.local 2>/dev/null || true
 git reset HEAD .env 2>/dev/null || true
+git reset HEAD .github/workflows 2>/dev/null || true
 
 if git diff --staged --quiet; then
   echo "✓ Code already up to date on GitHub (nothing new to commit)"

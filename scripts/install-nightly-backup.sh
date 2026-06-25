@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install automatic nightly CRM backup (2 AM daily → GitHub).
+# Install automatic nightly CRM backup (8 PM Eastern daily → GitHub).
 # Run once: bash scripts/install-nightly-backup.sh
 set -e
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
@@ -21,7 +21,7 @@ launchctl kickstart -k "gui/$(id -u)/com.millennium-crm.nightly-backup" 2>/dev/n
 
 echo ""
 echo "✓ Nightly backup installed!"
-echo "  Every night at 2:00 AM your Mac will:"
+echo "  Every night at 8:00 PM (Eastern) your Mac will:"
 echo "    1. Export all policies/contacts from Supabase"
 echo "    2. Save everything to GitHub"
 echo ""
