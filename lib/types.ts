@@ -22,7 +22,7 @@ export type Stage =
   | "retained"
   | "lapsed";
 
-export type ContactType = "call" | "sms" | "whatsapp" | "email";
+export type ContactType = "call" | "sms" | "whatsapp" | "email" | "non_pay_alert";
 
 export type TriggerType =
   | "days_before_renewal"

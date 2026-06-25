@@ -51,7 +51,7 @@ CREATE TABLE contact_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   policy_id UUID NOT NULL REFERENCES policies(id) ON DELETE CASCADE,
   contact_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  contact_type TEXT NOT NULL CHECK (contact_type IN ('call', 'sms', 'whatsapp', 'email')),
+  contact_type TEXT NOT NULL CHECK (contact_type IN ('call', 'sms', 'whatsapp', 'email', 'non_pay_alert')),
   outcome TEXT,
   notes TEXT
 );

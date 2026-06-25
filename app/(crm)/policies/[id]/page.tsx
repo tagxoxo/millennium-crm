@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import AddContactForm from "@/components/policy-detail/AddContactForm";
 import ContactTimeline from "@/components/policy-detail/ContactTimeline";
 import EditPolicyForm from "@/components/policy-detail/EditPolicyForm";
+import FlagNonPayButton from "@/components/policy-detail/FlagNonPayButton";
 import PolicyInfo, { BackLink } from "@/components/policy-detail/PolicyInfo";
 import StageDropdown from "@/components/policy-detail/StageDropdown";
 import { getSupabaseServer } from "@/lib/supabase/server";
@@ -60,7 +61,10 @@ export default async function PolicyDetailPage({
       <section>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <h2 className="text-lg font-semibold text-white">Contact History</h2>
-          <AddContactForm policyId={policy.id} />
+          <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+            <FlagNonPayButton policyId={policy.id} />
+            <AddContactForm policyId={policy.id} />
+          </div>
         </div>
         <ContactTimeline contacts={contacts} />
       </section>
