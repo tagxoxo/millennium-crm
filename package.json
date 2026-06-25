@@ -12,7 +12,8 @@
     "migrate:users-2fa": "node scripts/migrate-users-2fa.mjs",
     "db:apply": "node scripts/apply-supabase-sql.mjs",
     "export:data": "node scripts/export-crm-data.mjs",
-    "backup": "bash scripts/backup-to-github.sh"
+    "backup": "bash scripts/backup-to-github.sh",
+    "install:nightly-backup": "bash scripts/install-nightly-backup.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1075.0",
