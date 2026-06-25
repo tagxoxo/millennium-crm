@@ -1,3 +1,8 @@
+"use client";
+
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import type { Lead } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -48,6 +53,10 @@ export default function LeadCard({
   onDragStart,
   onDragEnd,
 }: LeadCardProps) {
+  const router = useRouter();
+  const didDrag = useRef(false);
+  const href = `/leads/${lead.id}`;
+
   const content = (
     <>
       <div className="flex items-start justify-between gap-2 mb-2">
@@ -74,19 +83,44 @@ export default function LeadCard({
 
   const cardClass = cn(
     "bg-navy border border-navy-lighter rounded-lg p-3 hover:border-accent/50 transition-colors",
-    draggable && "cursor-grab active:cursor-grabbing",
+    draggable ? "cursor-grab active:cursor-grabbing" : "cursor-pointer",
     isDragging && "opacity-40"
   );
 
+  function openLead() {
+    if (!didDrag.current) router.push(href);
+  }
+
   if (!draggable) {
-    return <div className={cardClass}>{content}</div>;
+    return (
+      <Link href={href} className={cardClass}>
+        {content}
+      </Link>
+    );
   }
 
   return (
     <div
       draggable
-      onDragStart={onDragStart}
-      onDragEnd={onDragEnd}
+      onDragStart={(event) => {
+        didDrag.current = true;
+        onDragStart?.(event);
+      }}
+      onDragEnd={() => {
+        onDragEnd?.();
+        setTimeout(() => {
+          didDrag.current = false;
+        }, 0);
+      }}
+      onClick={openLead}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openLead();
+        }
+      }}
+      role="link"
+      tabIndex={0}
       className={cardClass}
     >
       {content}

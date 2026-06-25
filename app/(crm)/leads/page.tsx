@@ -37,7 +37,7 @@ export default async function LeadsPage() {
       ) : (
         <>
           <p className="text-xs text-gray-500 hidden md:block">
-            Drag a lead card to another column to change stage.
+            Click a lead to open details, or drag a card to another column to change stage.
           </p>
           <LeadsKanban leads={leads} />
         </>

@@ -2,27 +2,20 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import SpanishTag from "@/components/ui/SpanishTag";
-import StateTag from "@/components/ui/StateTag";
-import type { Client, ClientState } from "@/lib/types";
-import {
-  CLIENT_STATE_LABELS,
-  CLIENT_STATES,
-  DEFAULT_CLIENT_STATE,
-  normalizeClientState,
-} from "@/lib/types";
+import { AgentAvatar, LeadLabelTag } from "@/components/leads/LeadCard";
+import type { Lead, LeadStage } from "@/lib/types";
+import { LEAD_STAGES, LEAD_STAGE_LABELS } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
-interface EditClientFormProps {
-  client: Client;
-  policyCount?: number;
+interface EditLeadFormProps {
+  lead: Lead;
 }
 
 const inputClass =
   "w-full px-4 py-2.5 bg-navy border border-navy-lighter rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent text-sm";
 
-async function saveClient(clientId: string, data: object) {
-  const res = await fetch(`/api/clients/${clientId}`, {
+async function saveLead(leadId: string, data: object) {
+  const res = await fetch(`/api/leads/${leadId}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -31,18 +24,13 @@ async function saveClient(clientId: string, data: object) {
   if (!res.ok) throw new Error(json.error ?? "Save failed");
 }
 
-async function deleteClient(clientId: string) {
-  const res = await fetch(`/api/clients/${clientId}`, {
-    method: "DELETE",
-  });
+async function deleteLead(leadId: string) {
+  const res = await fetch(`/api/leads/${leadId}`, { method: "DELETE" });
   const json = await res.json();
   if (!res.ok) throw new Error(json.error ?? "Delete failed");
 }
 
-export default function EditClientForm({
-  client,
-  policyCount = 0,
-}: EditClientFormProps) {
+export default function EditLeadForm({ lead }: EditLeadFormProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -50,16 +38,13 @@ export default function EditClientForm({
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [fullName, setFullName] = useState(client.full_name);
-  const [email, setEmail] = useState(client.email ?? "");
-  const [phone, setPhone] = useState(client.phone ?? "");
-  const [address, setAddress] = useState(client.address ?? "");
-  const [dateOfBirth, setDateOfBirth] = useState(client.date_of_birth ?? "");
-  const [isSpanishSpeaker, setIsSpanishSpeaker] = useState(client.is_spanish_speaker);
-  const [clientState, setClientState] = useState<ClientState>(
-    normalizeClientState(client.client_state)
-  );
-  const [notes, setNotes] = useState(client.notes ?? "");
+  const [fullName, setFullName] = useState(lead.full_name);
+  const [phone, setPhone] = useState(lead.phone ?? "");
+  const [email, setEmail] = useState(lead.email ?? "");
+  const [stage, setStage] = useState<LeadStage>(lead.stage);
+  const [label, setLabel] = useState(lead.label ?? "");
+  const [agentInitials, setAgentInitials] = useState(lead.agent_initials);
+  const [notes, setNotes] = useState(lead.notes ?? "");
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -67,14 +52,13 @@ export default function EditClientForm({
     setError(null);
 
     try {
-      await saveClient(client.id, {
+      await saveLead(lead.id, {
         full_name: fullName,
-        email,
         phone,
-        address,
-        date_of_birth: dateOfBirth || null,
-        is_spanish_speaker: isSpanishSpeaker,
-        client_state: clientState,
+        email,
+        stage,
+        label: label || null,
+        agent_initials: agentInitials,
         notes,
       });
       setOpen(false);
@@ -91,8 +75,8 @@ export default function EditClientForm({
     setError(null);
 
     try {
-      await deleteClient(client.id);
-      router.push("/clients");
+      await deleteLead(lead.id);
+      router.push("/leads");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Delete failed.");
@@ -109,7 +93,7 @@ export default function EditClientForm({
         onClick={() => setOpen(true)}
         className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors"
       >
-        Edit Client
+        Edit Lead
       </button>
     );
   }
@@ -120,7 +104,7 @@ export default function EditClientForm({
       className="bg-navy-light border border-navy-lighter rounded-xl p-5 space-y-4"
     >
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Edit Client Info</h3>
+        <h3 className="text-sm font-semibold text-white">Edit Lead</h3>
         <button
           type="button"
           onClick={() => {
@@ -145,6 +129,15 @@ export default function EditClientForm({
           />
         </div>
         <div>
+          <label className="block text-xs text-gray-400 mb-1">Phone</label>
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+        <div>
           <label className="block text-xs text-gray-400 mb-1">Email</label>
           <input
             type="email"
@@ -154,64 +147,45 @@ export default function EditClientForm({
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Phone</label>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div className="sm:col-span-2">
-          <label className="block text-xs text-gray-400 mb-1">Address</label>
-          <input
-            type="text"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Date of Birth</label>
-          <input
-            type="date"
-            value={dateOfBirth}
-            onChange={(e) => setDateOfBirth(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">State</label>
+          <label className="block text-xs text-gray-400 mb-1">Stage</label>
           <select
-            value={clientState}
-            onChange={(e) => setClientState(e.target.value as ClientState)}
+            value={stage}
+            onChange={(e) => setStage(e.target.value as LeadStage)}
             className={inputClass}
           >
-            {CLIENT_STATES.map((state) => (
-              <option key={state} value={state}>
-                {CLIENT_STATE_LABELS[state]}
+            {LEAD_STAGES.map((s) => (
+              <option key={s} value={s}>
+                {LEAD_STAGE_LABELS[s]}
               </option>
             ))}
           </select>
         </div>
-        <div className="flex items-center gap-2">
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Agent initials</label>
           <input
-            type="checkbox"
-            id="client_spanish"
-            checked={isSpanishSpeaker}
-            onChange={(e) => setIsSpanishSpeaker(e.target.checked)}
-            className="rounded border-navy-lighter"
+            type="text"
+            value={agentInitials}
+            onChange={(e) => setAgentInitials(e.target.value)}
+            maxLength={4}
+            className={inputClass}
           />
-          <label htmlFor="client_spanish" className="text-sm text-gray-300">
-            Spanish speaker
-          </label>
+        </div>
+        <div className="sm:col-span-2">
+          <label className="block text-xs text-gray-400 mb-1">Label</label>
+          <input
+            type="text"
+            value={label}
+            onChange={(e) => setLabel(e.target.value)}
+            placeholder="Referral, Demo, etc."
+            className={inputClass}
+          />
         </div>
         <div className="sm:col-span-2">
           <label className="block text-xs text-gray-400 mb-1">Notes</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            rows={3}
+            rows={4}
             className={`${inputClass} resize-none`}
           />
         </div>
@@ -235,16 +209,12 @@ export default function EditClientForm({
             disabled={saving || deleting}
             className="px-5 py-2.5 text-red-400 border border-red-500/40 hover:bg-red-500/10 font-medium rounded-lg transition-colors disabled:opacity-50"
           >
-            Delete Client
+            Delete Lead
           </button>
         ) : (
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
             <p className="text-sm text-red-300">
-              Permanently delete {client.full_name}
-              {policyCount > 0
-                ? ` and ${policyCount} polic${policyCount === 1 ? "y" : "ies"}`
-                : ""}
-              ?
+              Permanently delete {lead.full_name}?
             </p>
             <button
               type="button"
@@ -269,66 +239,59 @@ export default function EditClientForm({
   );
 }
 
-interface ClientInfoCardProps {
-  client: Client;
+interface LeadInfoCardProps {
+  lead: Lead;
 }
 
-export function ClientInfoCard({ client }: ClientInfoCardProps) {
+export function LeadInfoCard({ lead }: LeadInfoCardProps) {
   return (
     <div className="bg-navy-light border border-navy-lighter rounded-xl p-5 md:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
-        <div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="text-xl md:text-2xl font-bold text-white">
-              {client.full_name}
-            </h2>
-            {client.is_spanish_speaker && <SpanishTag />}
-            {normalizeClientState(client.client_state) !== DEFAULT_CLIENT_STATE && (
-              <StateTag state={normalizeClientState(client.client_state)} />
-            )}
-          </div>
+        <div className="flex items-center gap-3 flex-wrap">
+          <h2 className="text-xl md:text-2xl font-bold text-white">
+            {lead.full_name}
+          </h2>
+          <AgentAvatar initials={lead.agent_initials} />
+          {lead.label && <LeadLabelTag label={lead.label} />}
         </div>
+        <span className="text-xs px-2.5 py-1 rounded-full bg-accent/20 text-accent border border-accent/40 font-medium">
+          {LEAD_STAGE_LABELS[lead.stage]}
+        </span>
       </div>
 
       <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
         <div>
-          <dt className="text-gray-500 mb-1">Email</dt>
-          <dd className="text-white">
-            {client.email ? (
-              <a href={`mailto:${client.email}`} className="text-accent hover:underline">
-                {client.email}
-              </a>
-            ) : (
-              "—"
-            )}
-          </dd>
-        </div>
-        <div>
           <dt className="text-gray-500 mb-1">Phone</dt>
           <dd className="text-white">
-            {client.phone ? (
-              <a href={`tel:${client.phone}`} className="text-accent hover:underline">
-                {client.phone}
+            {lead.phone ? (
+              <a href={`tel:${lead.phone}`} className="text-accent hover:underline">
+                {lead.phone}
               </a>
             ) : (
               "—"
             )}
           </dd>
         </div>
-        <div className="sm:col-span-2">
-          <dt className="text-gray-500 mb-1">Address</dt>
-          <dd className="text-white">{client.address || "—"}</dd>
-        </div>
         <div>
-          <dt className="text-gray-500 mb-1">Date of Birth</dt>
+          <dt className="text-gray-500 mb-1">Email</dt>
           <dd className="text-white">
-            {client.date_of_birth ? formatDate(client.date_of_birth) : "—"}
+            {lead.email ? (
+              <a href={`mailto:${lead.email}`} className="text-accent hover:underline">
+                {lead.email}
+              </a>
+            ) : (
+              "—"
+            )}
           </dd>
         </div>
-        {client.notes && (
+        <div>
+          <dt className="text-gray-500 mb-1">Added</dt>
+          <dd className="text-white">{formatDate(lead.created_at)}</dd>
+        </div>
+        {lead.notes && (
           <div className="sm:col-span-2">
             <dt className="text-gray-500 mb-1">Notes</dt>
-            <dd className="text-gray-300 whitespace-pre-wrap">{client.notes}</dd>
+            <dd className="text-gray-300 whitespace-pre-wrap">{lead.notes}</dd>
           </div>
         )}
       </dl>

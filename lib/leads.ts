@@ -19,3 +19,19 @@ export async function fetchAllLeads(): Promise<{
     return { leads: [], error: message };
   }
 }
+
+export async function fetchLeadById(id: string): Promise<Lead | null> {
+  try {
+    const supabase = getSupabaseServer();
+    const { data, error } = await supabase
+      .from("leads")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error || !data) return null;
+    return data as Lead;
+  } catch {
+    return null;
+  }
+}

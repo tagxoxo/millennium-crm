@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchClientById, syncPoliciesFromClient } from "@/lib/clients";
+import { deleteClientById, fetchClientById, syncPoliciesFromClient } from "@/lib/clients";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Client } from "@/lib/types";
 import { normalizeClientState } from "@/lib/types";
@@ -55,5 +55,22 @@ export async function PATCH(
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Failed to save client." }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const result = await deleteClientById(params.id);
+
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: 400 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to delete client." }, { status: 500 });
   }
 }

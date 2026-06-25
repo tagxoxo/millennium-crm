@@ -11,7 +11,7 @@ export function isInRetentionPipeline(
   policy: Pick<Policy, "renewal_date" | "stage" | "is_historical">
 ): boolean {
   if (policy.is_historical) return false;
-  if (policy.stage === "lapsed" || policy.stage === "active") return false;
+  if (policy.stage === "lapsed") return false;
   return daysUntilRenewal(policy.renewal_date) <= RETENTION_PIPELINE_DAYS;
 }
 

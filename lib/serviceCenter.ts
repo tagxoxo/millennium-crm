@@ -38,6 +38,7 @@ export interface ServiceCenterStats {
   totalLast30Days: number;
   nonPayAlerts30: number;
   renewalReminders30: number;
+  welcomeEmails30: number;
   resolvedNonPay30: number;
 }
 
@@ -190,6 +191,8 @@ export function computeServiceCenterStats(
     renewalReminders30: recent.filter(
       (a) => a.contact_type === "renewal_reminder_45"
     ).length,
+    welcomeEmails30: recent.filter((a) => a.contact_type === "welcome_email")
+      .length,
     resolvedNonPay30: recent.filter((a) => a.contact_type === "non_pay_resolved")
       .length,
   };

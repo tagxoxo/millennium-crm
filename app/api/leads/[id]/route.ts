@@ -1,7 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
+import { fetchLeadById } from "@/lib/leads";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { LeadStage } from "@/lib/types";
 import { LEAD_STAGES } from "@/lib/types";
+
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const lead = await fetchLeadById(params.id);
+  if (!lead) {
+    return NextResponse.json({ error: "Lead not found." }, { status: 404 });
+  }
+  return NextResponse.json({ lead });
+}
 
 export async function PATCH(
   request: NextRequest,

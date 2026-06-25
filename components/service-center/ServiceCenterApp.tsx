@@ -21,9 +21,9 @@ import { formatContactDateTime } from "@/lib/renewalReminders";
 import { daysUntilRenewal } from "@/lib/utils";
 import { STAGE_LABELS } from "@/lib/types";
 
-type TabId = "all" | "non_pay" | "renewals" | "reviews";
+type TabId = "all" | "non_pay" | "renewals" | "welcome" | "reviews";
 type DateRange = "today" | "7" | "30" | "custom";
-type TypeFilter = "all" | "non_pay" | "renewal" | "review";
+type TypeFilter = "all" | "non_pay" | "renewal" | "welcome" | "review";
 type LanguageFilter = "all" | "english" | "spanish";
 
 interface ServiceCenterAppProps {
@@ -35,6 +35,7 @@ const TABS: { id: TabId; label: string }[] = [
   { id: "all", label: "All Activity" },
   { id: "non_pay", label: "Non-Pay Alerts" },
   { id: "renewals", label: "Renewal Reminders" },
+  { id: "welcome", label: "Welcome Emails" },
   { id: "reviews", label: "Policy Reviews" },
 ];
 
@@ -42,6 +43,7 @@ const EMPTY_STATES: Record<TabId, { icon: string; message: string }> = {
   all: { icon: "📭", message: "No outreach activity yet" },
   non_pay: { icon: "💳", message: "No non-pay alerts sent yet" },
   renewals: { icon: "📅", message: "No renewal reminders sent yet" },
+  welcome: { icon: "👋", message: "No welcome emails sent yet" },
   reviews: { icon: "📋", message: "No policy reviews sent yet" },
 };
 
@@ -104,6 +106,7 @@ function matchesTypeFilter(type: ContactType, filter: TypeFilter): boolean {
     return type === "non_pay_alert" || type === "non_pay_resolved";
   }
   if (filter === "renewal") return type === "renewal_reminder_45";
+  if (filter === "welcome") return type === "welcome_email";
   return (
     type === "manual_policy_review" || type === "policy_review_response"
   );
@@ -135,6 +138,8 @@ function filterActivities(
     list = list.filter((a) => a.contact_type === "non_pay_alert");
   } else if (tab === "renewals") {
     list = list.filter((a) => a.contact_type === "renewal_reminder_45");
+  } else if (tab === "welcome") {
+    list = list.filter((a) => a.contact_type === "welcome_email");
   } else if (tab === "reviews") {
     list = list.filter((a) => a.contact_type === "manual_policy_review");
   }
@@ -299,6 +304,24 @@ export default function ServiceCenterApp({
     URL.revokeObjectURL(url);
   }
 
+  async function sendWelcomeAgain(policyId: string) {
+    setActionId(policyId);
+    try {
+      const res = await fetch("/api/send-welcome-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ policy_id: policyId }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Send failed");
+      router.refresh();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Send failed.");
+    } finally {
+      setActionId(null);
+    }
+  }
+
   async function sendNonPayAgain(policyId: string) {
     setActionId(policyId);
     try {
@@ -381,8 +404,8 @@ export default function ServiceCenterApp({
             Service Center
           </h1>
           <p className="text-gray-400 text-sm mt-1">
-            Track non-pay alerts, renewal reminders, policy reviews, and all
-            client outreach
+            Track non-pay alerts, renewal reminders, welcome emails, policy
+            reviews, and all client outreach
           </p>
         </div>
         <button
@@ -394,7 +417,7 @@ export default function ServiceCenterApp({
         </button>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4">
         <KpiCard
           label="Total Outreach (Last 30 Days)"
           value={stats.totalLast30Days.toLocaleString()}
@@ -407,6 +430,11 @@ export default function ServiceCenterApp({
         <KpiCard
           label="Renewal Reminders Sent"
           value={stats.renewalReminders30.toLocaleString()}
+          subtext="Last 30 days"
+        />
+        <KpiCard
+          label="Welcome Emails Sent"
+          value={stats.welcomeEmails30.toLocaleString()}
           subtext="Last 30 days"
         />
         <KpiCard
@@ -476,6 +504,7 @@ export default function ServiceCenterApp({
             <option value="all">All types</option>
             <option value="non_pay">Non-pay</option>
             <option value="renewal">Renewal</option>
+            <option value="welcome">Welcome</option>
             <option value="review">Review</option>
           </select>
         )}
@@ -516,6 +545,12 @@ export default function ServiceCenterApp({
                       <th className="px-4 py-3 font-medium">Outcome</th>
                     </>
                   )}
+                  {tab === "welcome" && (
+                    <>
+                      <th className="px-4 py-3 font-medium">Days Since</th>
+                      <th className="px-4 py-3 font-medium">Actions</th>
+                    </>
+                  )}
                   {tab === "reviews" && (
                     <>
                       <th className="px-4 py-3 font-medium">Client Response</th>
@@ -525,7 +560,7 @@ export default function ServiceCenterApp({
                   {tab === "all" && (
                     <th className="px-4 py-3 font-medium">Details</th>
                   )}
-                  {(tab === "all" || tab === "renewals") && (
+                  {(tab === "all" || tab === "renewals" || tab === "welcome") && (
                     <th className="px-4 py-3 font-medium w-20"></th>
                   )}
                 </tr>
@@ -673,6 +708,29 @@ export default function ServiceCenterApp({
                         </>
                       )}
 
+                      {tab === "welcome" && (
+                        <>
+                          <td className="px-4 py-3 text-gray-300">
+                            {daysSinceContact(activity.contact_date)}d
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex flex-wrap gap-2">
+                              <button
+                                type="button"
+                                disabled={actionId === activity.policy_id}
+                                onClick={() =>
+                                  sendWelcomeAgain(activity.policy_id)
+                                }
+                                className="text-xs px-2 py-1 border border-navy-lighter rounded text-accent hover:bg-navy disabled:opacity-50"
+                              >
+                                Send Again
+                              </button>
+                              <DeleteButton activity={activity} />
+                            </div>
+                          </td>
+                        </>
+                      )}
+
                       {tab === "reviews" && (
                         <>
                           <td className="px-4 py-3 text-gray-400 max-w-xs">
@@ -714,7 +772,9 @@ export default function ServiceCenterApp({
                       )}
 
                       <td className="px-4 py-3">
-                        {tab !== "non_pay" && tab !== "reviews" && (
+                        {tab !== "non_pay" &&
+                          tab !== "reviews" &&
+                          tab !== "welcome" && (
                           <DeleteButton activity={activity} />
                         )}
                       </td>

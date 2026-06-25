@@ -1,5 +1,7 @@
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import type { Carrier, Client, ClientWithStats, ContactLog, Policy, PolicyDocument } from "@/lib/types";
 import { normalizeClientState } from "@/lib/types";
+import { getR2Bucket, getR2Client } from "@/lib/r2";
 import { getSupabaseServer } from "@/lib/supabase/server";
 
 export function normalizePhone(phone: string | null | undefined): string {
@@ -330,4 +332,74 @@ export async function syncPoliciesFromClient(client: Client): Promise<void> {
       client_state: normalizeClientState(client.client_state),
     })
     .eq("client_id", client.id);
+}
+
+export async function deleteClientById(
+  clientId: string
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = getSupabaseServer();
+
+  const { data: client, error: clientError } = await supabase
+    .from("clients")
+    .select("id")
+    .eq("id", clientId)
+    .single();
+
+  if (clientError || !client) {
+    return { ok: false, error: "Client not found." };
+  }
+
+  const { data: policies, error: policiesError } = await supabase
+    .from("policies")
+    .select("id")
+    .eq("client_id", clientId);
+
+  if (policiesError) {
+    return { ok: false, error: policiesError.message };
+  }
+
+  const policyIds = (policies ?? []).map((p) => p.id);
+
+  if (policyIds.length > 0) {
+    const { data: documents, error: documentsError } = await supabase
+      .from("policy_documents")
+      .select("r2_key")
+      .in("policy_id", policyIds);
+
+    if (documentsError) {
+      return { ok: false, error: documentsError.message };
+    }
+
+    if (documents && documents.length > 0) {
+      const r2 = getR2Client();
+      const bucket = getR2Bucket();
+      await Promise.allSettled(
+        documents.map((doc) =>
+          r2.send(
+            new DeleteObjectCommand({ Bucket: bucket, Key: doc.r2_key })
+          )
+        )
+      );
+    }
+
+    const { error: deletePoliciesError } = await supabase
+      .from("policies")
+      .delete()
+      .in("id", policyIds);
+
+    if (deletePoliciesError) {
+      return { ok: false, error: deletePoliciesError.message };
+    }
+  }
+
+  const { error: deleteClientError } = await supabase
+    .from("clients")
+    .delete()
+    .eq("id", clientId);
+
+  if (deleteClientError) {
+    return { ok: false, error: deleteClientError.message };
+  }
+
+  return { ok: true };
 }

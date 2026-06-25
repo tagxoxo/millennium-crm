@@ -107,7 +107,7 @@ export default async function ClientDetailPage({
       <ClientInfoCard client={displayClient} />
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-3">
-        <EditClientForm client={displayClient} />
+        <EditClientForm client={displayClient} policyCount={policies.length} />
         <WelcomeEmailButton
           clientId={displayClient.id}
           email={displayClient.email}

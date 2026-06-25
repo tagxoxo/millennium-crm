@@ -99,7 +99,7 @@ export default function PolicyCard({
             ? `${Math.abs(days)}d overdue`
             : `${days}d until renewal`}
       </p>
-      {showPipelineEntry && days > 0 && (
+      {showPipelineEntry && daysUntilPipelineEntry(policy.renewal_date) > 0 && (
         <p className="text-[11px] text-emerald-400/90 mt-1">
           Pipeline in {daysUntilPipelineEntry(policy.renewal_date)}d
         </p>
