@@ -46,6 +46,7 @@ export async function POST(
       return NextResponse.json({ error: "Invalid prior carrier." }, { status: 400 });
     }
 
+    const isHistorical = Boolean(body.is_historical);
     const supabase = getSupabaseServer();
     const { data, error } = await supabase
       .from("policies")
@@ -56,7 +57,8 @@ export async function POST(
         prior_carrier: priorCarrier,
         premium: parseFloat(body.premium) || 0,
         renewal_date: renewalDate,
-        stage,
+        stage: isHistorical ? "lapsed" : stage,
+        is_historical: isHistorical,
         spanish_speaker: client.is_spanish_speaker,
         commercial: Boolean(body.commercial),
         term_months: termMonths,

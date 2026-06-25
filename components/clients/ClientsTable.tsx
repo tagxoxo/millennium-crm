@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import CarrierBadge from "@/components/ui/CarrierBadge";
 import type { ClientWithStats } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
@@ -11,6 +11,7 @@ interface ClientsTableProps {
 }
 
 export default function ClientsTable({ clients }: ClientsTableProps) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
 
   const filtered = useMemo(() => {
@@ -53,14 +54,14 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
                   <th className="px-4 py-3 font-medium">Policies</th>
                   <th className="px-4 py-3 font-medium">Total Premium</th>
                   <th className="px-4 py-3 font-medium">Carriers</th>
-                  <th className="px-4 py-3 font-medium"></th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((client) => (
                   <tr
                     key={client.id}
-                    className="border-b border-navy-lighter/50 hover:bg-navy/50"
+                    onClick={() => router.push(`/clients/${client.id}`)}
+                    className="border-b border-navy-lighter/50 hover:bg-navy/50 cursor-pointer transition-colors"
                   >
                     <td className="px-4 py-3 text-white font-medium">
                       {client.full_name}
@@ -95,14 +96,6 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
                           </span>
                         )}
                       </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <Link
-                        href={`/clients/${client.id}`}
-                        className="text-accent hover:underline text-sm"
-                      >
-                        View Client
-                      </Link>
                     </td>
                   </tr>
                 ))}

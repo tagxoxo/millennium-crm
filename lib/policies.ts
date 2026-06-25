@@ -16,6 +16,7 @@ export async function fetchAllPolicies(): Promise<{
       const { data, error } = await supabase
         .from("policies")
         .select("*")
+        .eq("is_historical", false)
         .order("renewal_date", { ascending: true })
         .range(from, from + pageSize - 1);
 

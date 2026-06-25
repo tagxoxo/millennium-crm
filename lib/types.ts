@@ -28,8 +28,12 @@ export type ContactType =
   | "whatsapp"
   | "email"
   | "non_pay_alert"
+  | "non_pay_resolved"
   | "renewal_reminder_45"
-  | "manual_policy_review";
+  | "manual_policy_review"
+  | "policy_review_response";
+
+export type OutreachStatus = "sent" | "failed" | "pending";
 
 export type TriggerType =
   | "days_before_renewal"
@@ -103,6 +107,7 @@ export interface Policy {
   client_since: string | null;
   notes: string | null;
   created_at: string;
+  is_historical?: boolean;
 }
 
 export interface ContactLog {
@@ -112,6 +117,7 @@ export interface ContactLog {
   contact_type: ContactType;
   outcome: string | null;
   notes: string | null;
+  status?: OutreachStatus;
 }
 
 export interface Automation {

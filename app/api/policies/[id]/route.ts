@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { syncClientFromPolicyId } from "@/lib/clients";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Carrier, PolicyType, TermMonths } from "@/lib/types";
 import { CARRIERS, POLICY_TYPES, TERM_MONTHS } from "@/lib/types";
@@ -62,6 +63,8 @@ export async function PATCH(
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
+
+    await syncClientFromPolicyId(params.id);
 
     return NextResponse.json({ ok: true });
   } catch {

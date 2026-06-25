@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { syncClientFromPolicyId } from "@/lib/clients";
 import { getSupabaseServer } from "@/lib/supabase/server";
 
 type ExtractedField =
@@ -71,6 +72,8 @@ export async function POST(
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 400 });
     }
+
+    await syncClientFromPolicyId(params.id);
 
     return NextResponse.json({ ok: true, updated: true });
   } catch {

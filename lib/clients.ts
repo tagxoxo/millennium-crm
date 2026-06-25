@@ -26,7 +26,9 @@ export async function fetchAllClients(): Promise<{
 
     const { data: policies, error: policiesError } = await supabase
       .from("policies")
-      .select("client_id, premium, stage, carrier");
+      .select(
+        "client_id, premium, stage, carrier, client_name, email, phone, client_address, spanish_speaker, notes, is_historical"
+      );
 
     if (policiesError) return { clients: [], error: policiesError.message };
 
@@ -34,9 +36,16 @@ export async function fetchAllClients(): Promise<{
       string,
       { count: number; active: number; premium: number; carriers: Set<Carrier> }
     >();
+    const policiesByClient = new Map<string, Policy[]>();
 
     for (const p of policies ?? []) {
       if (!p.client_id) continue;
+
+      const policyRow = p as Policy;
+      const list = policiesByClient.get(p.client_id) ?? [];
+      list.push(policyRow);
+      policiesByClient.set(p.client_id, list);
+
       const entry = statsMap.get(p.client_id) ?? {
         count: 0,
         active: 0,
@@ -44,16 +53,17 @@ export async function fetchAllClients(): Promise<{
         carriers: new Set<Carrier>(),
       };
       entry.count += 1;
-      if (p.stage !== "lapsed") entry.active += 1;
-      entry.premium += Number(p.premium) || 0;
+      if (!policyRow.is_historical && p.stage !== "lapsed") entry.active += 1;
+      if (!policyRow.is_historical) entry.premium += Number(p.premium) || 0;
       if (p.carrier) entry.carriers.add(p.carrier as Carrier);
       statsMap.set(p.client_id, entry);
     }
 
     const result: ClientWithStats[] = (clients as Client[]).map((c) => {
       const s = statsMap.get(c.id);
+      const merged = mergeClientWithPolicies(c, policiesByClient.get(c.id) ?? []);
       return {
-        ...c,
+        ...merged,
         policy_count: s?.count ?? 0,
         active_policy_count: s?.active ?? 0,
         total_premium: s?.premium ?? 0,
@@ -78,6 +88,132 @@ export async function fetchClientById(id: string): Promise<Client | null> {
 
   if (error || !data) return null;
   return data as Client;
+}
+
+function firstPolicyValue(
+  policies: Policy[],
+  getter: (policy: Policy) => string | null | undefined
+): string | null {
+  for (const policy of policies) {
+    const value = getter(policy)?.trim();
+    if (value) return value;
+  }
+  return null;
+}
+
+/** Fill blank client fields from linked policy data (display only). */
+export function mergeClientWithPolicies(
+  client: Client,
+  policies: Policy[]
+): Client {
+  if (policies.length === 0) return client;
+
+  const spanishFromPolicy = policies.some((p) => p.spanish_speaker);
+
+  return {
+    ...client,
+    full_name:
+      client.full_name?.trim() ||
+      firstPolicyValue(policies, (p) => p.client_name) ||
+      client.full_name,
+    email:
+      client.email?.trim() ||
+      firstPolicyValue(policies, (p) => p.email) ||
+      null,
+    phone:
+      client.phone?.trim() ||
+      firstPolicyValue(policies, (p) => p.phone) ||
+      null,
+    address:
+      client.address?.trim() ||
+      firstPolicyValue(policies, (p) => p.client_address) ||
+      null,
+    is_spanish_speaker: client.is_spanish_speaker || spanishFromPolicy,
+    notes:
+      client.notes?.trim() ||
+      firstPolicyValue(policies, (p) => p.notes) ||
+      null,
+  };
+}
+
+/** Persist missing client fields from linked policies. */
+export async function syncClientFromPoliciesIfNeeded(
+  client: Client,
+  policies: Policy[]
+): Promise<Client> {
+  if (policies.length === 0) return client;
+
+  const merged = mergeClientWithPolicies(client, policies);
+  const updates: Record<string, unknown> = {};
+
+  if (!client.full_name?.trim() && merged.full_name?.trim()) {
+    updates.full_name = merged.full_name.trim();
+  }
+  if (!client.email?.trim() && merged.email?.trim()) {
+    updates.email = merged.email.trim();
+  }
+  if (!client.phone?.trim() && merged.phone?.trim()) {
+    updates.phone = merged.phone.trim();
+  }
+  if (!client.address?.trim() && merged.address?.trim()) {
+    updates.address = merged.address.trim();
+  }
+  if (!client.is_spanish_speaker && merged.is_spanish_speaker) {
+    updates.is_spanish_speaker = true;
+  }
+  if (!client.notes?.trim() && merged.notes?.trim()) {
+    updates.notes = merged.notes.trim();
+  }
+
+  if (Object.keys(updates).length === 0) return client;
+
+  const supabase = getSupabaseServer();
+  const { data, error } = await supabase
+    .from("clients")
+    .update(updates)
+    .eq("id", client.id)
+    .select("*")
+    .single();
+
+  if (error || !data) return merged;
+  return data as Client;
+}
+
+export async function syncClientFromPolicyId(policyId: string): Promise<void> {
+  const supabase = getSupabaseServer();
+  const { data: policy } = await supabase
+    .from("policies")
+    .select("client_id")
+    .eq("id", policyId)
+    .single();
+
+  if (!policy?.client_id) return;
+
+  const client = await fetchClientById(policy.client_id);
+  if (!client) return;
+
+  const policies = await fetchPoliciesForClient(client.id);
+  await syncClientFromPoliciesIfNeeded(client, policies);
+}
+
+/** Backfill all client records from their linked policies. */
+export async function syncAllClientsFromPolicies(): Promise<{
+  updated: number;
+  total: number;
+}> {
+  const supabase = getSupabaseServer();
+  const { data: clients } = await supabase.from("clients").select("*");
+  if (!clients?.length) return { updated: 0, total: 0 };
+
+  let updated = 0;
+  for (const client of clients as Client[]) {
+    const policies = await fetchPoliciesForClient(client.id);
+    const before = JSON.stringify(client);
+    const after = await syncClientFromPoliciesIfNeeded(client, policies);
+    if (JSON.stringify(after) !== before) updated += 1;
+  }
+
+  return { updated, total: clients.length };
 }
 
 export async function fetchPoliciesForClient(clientId: string): Promise<Policy[]> {

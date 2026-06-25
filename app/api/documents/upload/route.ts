@@ -1,5 +1,6 @@
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
+import { assignDocumentToHistoricalPolicyIfNeeded } from "@/lib/policyHistory";
 import {
   extractPolicyInfoFromText,
   hasAnyExtractedInfo,
@@ -130,6 +131,13 @@ export async function POST(request: NextRequest) {
         warning = EXTRACT_WARNING;
       }
     }
+
+    await assignDocumentToHistoricalPolicyIfNeeded({
+      documentId: document.id,
+      policyId,
+      fileName: file.name || safeName,
+      extracted,
+    });
 
     return NextResponse.json({ document, extracted, warning, uploaded: true });
   } catch (err) {

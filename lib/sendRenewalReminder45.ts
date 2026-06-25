@@ -55,6 +55,7 @@ export async function sendRenewalReminder45ForPolicy(policyId: string) {
   const { error: logError } = await supabase.from("contact_log").insert({
     policy_id: policy.id,
     contact_type: "renewal_reminder_45",
+    status: "sent",
     notes: note,
   });
 

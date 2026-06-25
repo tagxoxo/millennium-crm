@@ -55,6 +55,7 @@ export async function sendNonPayAlertForPolicy(policyId: string) {
   const { error: logError } = await supabase.from("contact_log").insert({
     policy_id: policy.id,
     contact_type: "non_pay_alert",
+    status: "sent",
     notes: note,
   });
 

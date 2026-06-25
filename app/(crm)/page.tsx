@@ -7,13 +7,9 @@ import {
   URGENT_RENEWAL_DAYS,
 } from "@/lib/dashboard";
 import { fetchAllPolicies } from "@/lib/policies";
-import { countPoliciesNeedingOutreach } from "@/lib/renewalReminders";
 import { fetchDocumentCountsByPolicy } from "@/lib/documentQueries";
 import { fetchPolicyCountByClient } from "@/lib/clients";
-import {
-  fetchRecentRenewalReminderPolicyIds,
-  fetchRenewalRemindersSentLast30Days,
-} from "@/lib/renewalReminderQueries";
+import { fetchRecentRenewalReminderPolicyIds } from "@/lib/renewalReminderQueries";
 import type { Policy } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -29,20 +25,10 @@ async function getPolicies(): Promise<{
 export default async function DashboardPage() {
   const { policies, error } = await getPolicies();
   const recentReminderPolicyIds = await fetchRecentRenewalReminderPolicyIds();
-  const recentReminderSet = new Set(recentReminderPolicyIds);
-  const renewalRemindersSent30 = await fetchRenewalRemindersSentLast30Days();
   const documentCounts = await fetchDocumentCountsByPolicy();
   const clientPolicyCounts = await fetchPolicyCountByClient();
-  const policiesNeedingOutreach = countPoliciesNeedingOutreach(
-    policies,
-    recentReminderSet
-  );
 
-  const stats = computeDashboardStats(
-    policies,
-    renewalRemindersSent30,
-    policiesNeedingOutreach
-  );
+  const stats = computeDashboardStats(policies);
   const urgentRenewals = getUrgentRenewals(policies);
 
   return (
