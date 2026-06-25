@@ -86,6 +86,27 @@ CREATE POLICY "Allow all on contact_log" ON contact_log FOR ALL USING (true) WIT
 CREATE POLICY "Allow all on automations" ON automations FOR ALL USING (true) WITH CHECK (true);
 
 -- ============================================================
+-- LEADS TABLE (new business pipeline)
+-- ============================================================
+CREATE TABLE leads (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  full_name TEXT NOT NULL,
+  phone TEXT,
+  email TEXT,
+  stage TEXT NOT NULL DEFAULT 'new' CHECK (stage IN ('new', 'contacted', 'quoted', 'sold')),
+  label TEXT,
+  agent_initials TEXT NOT NULL DEFAULT 'JG',
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE INDEX idx_leads_stage ON leads(stage);
+CREATE INDEX idx_leads_created_at ON leads(created_at DESC);
+
+ALTER TABLE leads ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow all on leads" ON leads FOR ALL USING (true) WITH CHECK (true);
+
+-- ============================================================
 -- DEFAULT AUTOMATIONS (5 pre-built)
 -- ============================================================
 INSERT INTO automations (name, trigger_type, trigger_days, channel, template_text, active) VALUES

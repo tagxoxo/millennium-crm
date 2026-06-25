@@ -34,6 +34,20 @@ export type Channel = "whatsapp" | "sms" | "email";
 
 export type TermMonths = 6 | 12;
 
+export type LeadStage = "new" | "contacted" | "quoted" | "sold";
+
+export interface Lead {
+  id: string;
+  full_name: string;
+  phone: string | null;
+  email: string | null;
+  stage: LeadStage;
+  label: string | null;
+  agent_initials: string;
+  notes: string | null;
+  created_at: string;
+}
+
 export interface Policy {
   id: string;
   client_name: string;
@@ -131,3 +145,14 @@ export const TERM_LABELS: Record<TermMonths, string> = {
   6: "6 months",
   12: "12 months",
 };
+
+export const LEAD_STAGES: LeadStage[] = ["new", "contacted", "quoted", "sold"];
+
+export const LEAD_STAGE_LABELS: Record<LeadStage, string> = {
+  new: "New",
+  contacted: "Contacted",
+  quoted: "Quoted",
+  sold: "Sold",
+};
+
+export const DEFAULT_AGENT_INITIALS = "JG";
