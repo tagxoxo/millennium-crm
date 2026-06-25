@@ -2,9 +2,10 @@ import Link from "next/link";
 import CarrierBadge from "@/components/ui/CarrierBadge";
 import CommercialTag from "@/components/ui/CommercialTag";
 import SpanishTag from "@/components/ui/SpanishTag";
+import StateTag from "@/components/ui/StateTag";
 import TermTag from "@/components/ui/TermTag";
 import type { Policy } from "@/lib/types";
-import { POLICY_TYPE_LABELS, STAGE_LABELS } from "@/lib/types";
+import { DEFAULT_CLIENT_STATE, normalizeClientState, POLICY_TYPE_LABELS, STAGE_LABELS } from "@/lib/types";
 import {
   annualizedPremium,
   daysUntilRenewal,
@@ -34,6 +35,9 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
             {policy.commercial && <CommercialTag />}
             <TermTag termMonths={termMonths} />
             {policy.spanish_speaker && <SpanishTag />}
+            {normalizeClientState(policy.client_state) !== DEFAULT_CLIENT_STATE && (
+              <StateTag state={normalizeClientState(policy.client_state)} />
+            )}
           </div>
           <div className="flex items-center gap-2 mt-2 flex-wrap">
             <CarrierBadge carrier={policy.carrier} />
@@ -76,7 +80,13 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
 
       <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
         <div>
-          <dt className="text-gray-500 mb-1">Renewal Date</dt>
+          <dt className="text-gray-500 mb-1">Effective Date</dt>
+          <dd className="text-white">
+            {policy.effective_date ? formatDate(policy.effective_date) : "—"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-gray-500 mb-1">Expiration Date</dt>
           <dd className="text-white">
             {formatDate(policy.renewal_date)}
             <span className={`ml-2 font-medium ${renewalColor(days)}`}>

@@ -3,6 +3,7 @@ export type PolicyField =
   | "carrier"
   | "prior_carrier"
   | "premium"
+  | "effective_date"
   | "renewal_date"
   | "stage"
   | "spanish_speaker"
@@ -21,7 +22,8 @@ export const POLICY_FIELDS: { value: PolicyField; label: string }[] = [
   { value: "carrier", label: "Carrier" },
   { value: "prior_carrier", label: "Prior Carrier" },
   { value: "premium", label: "Premium" },
-  { value: "renewal_date", label: "Renewal Date" },
+  { value: "effective_date", label: "Effective Date" },
+  { value: "renewal_date", label: "Expiration Date" },
   { value: "stage", label: "Stage" },
   { value: "spanish_speaker", label: "Spanish Speaker" },
   { value: "commercial", label: "Commercial" },
@@ -97,6 +99,12 @@ const HEADER_ALIASES: Record<string, PolicyField> = {
   premium: "premium",
   "annual premium": "premium",
   "policy premium": "premium",
+  effective_date: "effective_date",
+  effectivedate: "effective_date",
+  "effective date": "effective_date",
+  effective: "effective_date",
+  inception: "effective_date",
+  "inception date": "effective_date",
   renewal_date: "renewal_date",
   renewaldate: "renewal_date",
   "renewal date": "renewal_date",
@@ -164,6 +172,7 @@ export interface ParsedPolicyRow {
   carrier: string;
   prior_carrier: string | null;
   premium: number;
+  effective_date: string | null;
   renewal_date: string;
   stage: string;
   spanish_speaker: boolean;
@@ -357,16 +366,21 @@ export function mapRowsToPolicies(
       errors.push({
         row: rowNum,
         client: clientName,
-        reason: `Invalid renewal date: "${fields.renewal_date ?? ""}"`,
+        reason: `Invalid expiration date: "${fields.renewal_date ?? ""}"`,
       });
       return;
     }
+
+    const effectiveDateRaw = fields.effective_date
+      ? parseDate(String(fields.effective_date))
+      : null;
 
     policies.push({
       client_name: clientName,
       carrier,
       prior_carrier: priorCarrier,
       premium,
+      effective_date: effectiveDateRaw,
       renewal_date: renewalDate,
       stage: normalizeStage(String(fields.stage ?? "upcoming")),
       spanish_speaker: fields.spanish_speaker ?? false,

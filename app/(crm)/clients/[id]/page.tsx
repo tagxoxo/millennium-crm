@@ -55,6 +55,10 @@ export default async function ClientDetailPage({
     .map((p) => ({
       id: p.id,
       label: policyLabels[p.id] + (p.is_historical ? " (Past)" : ""),
+      policy_number: p.policy_number,
+      client_address: p.client_address,
+      email: p.email,
+      phone: p.phone,
     }));
 
   return (

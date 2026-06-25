@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { syncClientFromPolicyId } from "@/lib/clients";
+import { syncClientFromPolicyId, fetchClientById, syncPoliciesFromClient } from "@/lib/clients";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Carrier, PolicyType, TermMonths } from "@/lib/types";
-import { CARRIERS, POLICY_TYPES, TERM_MONTHS } from "@/lib/types";
+import { CARRIERS, POLICY_TYPES, TERM_MONTHS, normalizeClientState } from "@/lib/types";
 
 export async function PATCH(
   request: NextRequest,
@@ -30,12 +30,18 @@ export async function PATCH(
     }
     if (body.premium !== undefined) updates.premium = parseFloat(body.premium) || 0;
     if (body.renewal_date !== undefined) updates.renewal_date = body.renewal_date;
+    if (body.effective_date !== undefined) {
+      updates.effective_date = body.effective_date?.trim() || null;
+    }
     if (body.phone !== undefined) updates.phone = body.phone?.trim() || null;
     if (body.email !== undefined) updates.email = body.email?.trim() || null;
     if (body.policy_number !== undefined) updates.policy_number = body.policy_number?.trim() || null;
     if (body.client_address !== undefined) updates.client_address = body.client_address?.trim() || null;
     if (body.client_since !== undefined) updates.client_since = body.client_since?.trim() || null;
     if (body.spanish_speaker !== undefined) updates.spanish_speaker = Boolean(body.spanish_speaker);
+    if (body.client_state !== undefined) {
+      updates.client_state = normalizeClientState(body.client_state);
+    }
     if (body.commercial !== undefined) updates.commercial = Boolean(body.commercial);
     if (body.term_months !== undefined) {
       const termMonths = Number(body.term_months) === 6 ? 6 : 12;
@@ -62,6 +68,43 @@ export async function PATCH(
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    const { data: policyRow } = await supabase
+      .from("policies")
+      .select("client_id")
+      .eq("id", params.id)
+      .single();
+
+    if (policyRow?.client_id) {
+      const clientUpdates: Record<string, unknown> = {};
+      if (body.client_name !== undefined) {
+        clientUpdates.full_name = String(body.client_name).trim();
+      }
+      if (body.email !== undefined) clientUpdates.email = body.email?.trim() || null;
+      if (body.phone !== undefined) clientUpdates.phone = body.phone?.trim() || null;
+      if (body.client_address !== undefined) {
+        clientUpdates.address = body.client_address?.trim() || null;
+      }
+      if (body.spanish_speaker !== undefined) {
+        clientUpdates.is_spanish_speaker = Boolean(body.spanish_speaker);
+      }
+      if (body.client_state !== undefined) {
+        clientUpdates.client_state = normalizeClientState(body.client_state);
+      }
+      if (body.notes !== undefined) clientUpdates.notes = body.notes?.trim() || null;
+
+      if (Object.keys(clientUpdates).length > 0) {
+        await supabase
+          .from("clients")
+          .update(clientUpdates)
+          .eq("id", policyRow.client_id);
+
+        const updatedClient = await fetchClientById(policyRow.client_id);
+        if (updatedClient) {
+          await syncPoliciesFromClient(updatedClient);
+        }
+      }
     }
 
     await syncClientFromPolicyId(params.id);

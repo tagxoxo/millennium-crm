@@ -4,18 +4,21 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CarrierBadge from "@/components/ui/CarrierBadge";
+import StateTag from "@/components/ui/StateTag";
 import type { ClientDocument } from "@/lib/clients";
 import type { PolicyWithDocuments } from "@/lib/policyHistory";
 import type { Carrier, Client, PolicyType, Stage, TermMonths } from "@/lib/types";
 import {
   CARRIERS,
   CARRIER_LABELS,
+  DEFAULT_CLIENT_STATE,
   POLICY_TYPE_LABELS,
   POLICY_TYPES,
   STAGE_LABELS,
   STAGES,
   TERM_LABELS,
   TERM_MONTHS,
+  normalizeClientState,
 } from "@/lib/types";
 import {
   daysUntilRenewal,
@@ -96,6 +99,9 @@ function PolicyCard({ policy }: { policy: PolicyWithDocuments }) {
                 Past Policy
               </span>
             )}
+            {normalizeClientState(policy.client_state) !== DEFAULT_CLIENT_STATE && (
+              <StateTag state={normalizeClientState(policy.client_state)} />
+            )}
           </div>
           <div className="flex items-center gap-2 mt-1">
             <CarrierBadge carrier={policy.carrier} />
@@ -119,6 +125,16 @@ function PolicyCard({ policy }: { policy: PolicyWithDocuments }) {
           <dt className="text-gray-500">Policy #</dt>
           <dd className="text-gray-300">{policy.policy_number || "—"}</dd>
         </div>
+        <div className="flex justify-between">
+          <dt className="text-gray-500">Effective</dt>
+          <dd className="text-gray-300">
+            {policy.effective_date ? formatDate(policy.effective_date) : "—"}
+          </dd>
+        </div>
+        <div className="flex justify-between">
+          <dt className="text-gray-500">Expiration</dt>
+          <dd className="text-gray-300">{formatDate(policy.renewal_date)}</dd>
+        </div>
         {!isPast && (
           <>
             <div className="flex justify-between">
@@ -126,7 +142,7 @@ function PolicyCard({ policy }: { policy: PolicyWithDocuments }) {
               <dd className="text-gray-300">{STAGE_LABELS[policy.stage]}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-gray-500">Renewal</dt>
+              <dt className="text-gray-500">Days to expiration</dt>
               <dd className={`font-medium ${renewalColor(days)}`}>
                 {days === 0
                   ? "Today"
@@ -215,6 +231,7 @@ export default function AddClientPolicyForm({ client }: AddClientPolicyFormProps
   const [carrier, setCarrier] = useState<Carrier>("trexis");
   const [policyType, setPolicyType] = useState<PolicyType>("personal_auto");
   const [premium, setPremium] = useState("");
+  const [effectiveDate, setEffectiveDate] = useState("");
   const [renewalDate, setRenewalDate] = useState("");
   const [stage, setStage] = useState<Stage>("upcoming");
   const [termMonths, setTermMonths] = useState<TermMonths>(12);
@@ -236,6 +253,7 @@ export default function AddClientPolicyForm({ client }: AddClientPolicyFormProps
           carrier,
           policy_type: policyType,
           premium: isHistorical ? "0" : premium,
+          effective_date: effectiveDate || null,
           renewal_date: renewalDate,
           stage: isHistorical ? "lapsed" : stage,
           term_months: termMonths,
@@ -353,8 +371,17 @@ export default function AddClientPolicyForm({ client }: AddClientPolicyFormProps
             </div>
           )}
           <div>
+            <label className="block text-xs text-gray-400 mb-1">Effective Date</label>
+            <input
+              type="date"
+              value={effectiveDate}
+              onChange={(e) => setEffectiveDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
             <label className="block text-xs text-gray-400 mb-1">
-              {isHistorical ? "Approx. end date" : "Renewal Date"}
+              {isHistorical ? "Expiration Date" : "Expiration Date *"}
             </label>
             <input
               type="date"

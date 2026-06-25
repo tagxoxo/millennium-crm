@@ -17,9 +17,11 @@ CREATE TABLE policies (
     'tapco', 'cna', 'bruce_messier', 'mesa', 'acceptance_independent'
   )),
   premium NUMERIC(10, 2) NOT NULL DEFAULT 0,
+  effective_date DATE,
   renewal_date DATE NOT NULL,
   stage TEXT NOT NULL DEFAULT 'upcoming' CHECK (stage IN ('upcoming', 'contacted', 'quoted', 'retained', 'lapsed')),
   spanish_speaker BOOLEAN NOT NULL DEFAULT false,
+  client_state TEXT NOT NULL DEFAULT 'TN' CHECK (client_state IN ('TN', 'TX', 'MA', 'RI')),
   commercial BOOLEAN NOT NULL DEFAULT false,
   term_months INTEGER NOT NULL DEFAULT 12 CHECK (term_months IN (6, 12)),
   phone TEXT,
@@ -40,6 +42,7 @@ CREATE TABLE policies (
 CREATE INDEX idx_policies_stage ON policies(stage);
 CREATE INDEX idx_policies_carrier ON policies(carrier);
 CREATE INDEX idx_policies_renewal_date ON policies(renewal_date);
+CREATE INDEX idx_policies_effective_date ON policies(effective_date);
 CREATE INDEX idx_policies_spanish_speaker ON policies(spanish_speaker);
 CREATE INDEX idx_policies_commercial ON policies(commercial);
 CREATE INDEX idx_policies_term_months ON policies(term_months);

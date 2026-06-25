@@ -1,34 +1,48 @@
+import DashboardBookHealth from "@/components/dashboard/DashboardBookHealth";
+import DashboardFocusBanner from "@/components/dashboard/DashboardFocusBanner";
+import DashboardHubCards from "@/components/dashboard/DashboardHubCards";
 import KpiCards from "@/components/dashboard/KpiCards";
-import KanbanBoard from "@/components/dashboard/KanbanBoard";
 import UrgentRenewalsTable from "@/components/dashboard/UrgentRenewalsTable";
+import {
+  buildFocusAlerts,
+  computeDashboardHubData,
+} from "@/lib/dashboardHub";
 import {
   computeDashboardStats,
   getUrgentRenewals,
   URGENT_RENEWAL_DAYS,
 } from "@/lib/dashboard";
+import { fetchAllLeads } from "@/lib/leads";
 import { fetchAllPolicies } from "@/lib/policies";
-import { fetchDocumentCountsByPolicy } from "@/lib/documentQueries";
-import { fetchPolicyCountByClient } from "@/lib/clients";
 import { fetchRecentRenewalReminderPolicyIds } from "@/lib/renewalReminderQueries";
-import type { Policy } from "@/lib/types";
+import { fetchOutreachActivity } from "@/lib/serviceCenter";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-async function getPolicies(): Promise<{
-  policies: Policy[];
-  error: string | null;
-}> {
-  return fetchAllPolicies();
-}
-
 export default async function DashboardPage() {
-  const { policies, error } = await getPolicies();
-  const recentReminderPolicyIds = await fetchRecentRenewalReminderPolicyIds();
-  const documentCounts = await fetchDocumentCountsByPolicy();
-  const clientPolicyCounts = await fetchPolicyCountByClient();
+  const [
+    { policies, error: policiesError },
+    { activities, error: activitiesError },
+    { leads, error: leadsError },
+    recentReminderPolicyIds,
+  ] = await Promise.all([
+    fetchAllPolicies(),
+    fetchOutreachActivity(),
+    fetchAllLeads(),
+    fetchRecentRenewalReminderPolicyIds(),
+  ]);
+
+  const error = policiesError ?? activitiesError ?? leadsError;
 
   const stats = computeDashboardStats(policies);
+  const hub = computeDashboardHubData(
+    policies,
+    activities,
+    leads,
+    recentReminderPolicyIds
+  );
+  const focusAlerts = buildFocusAlerts(hub);
   const urgentRenewals = getUrgentRenewals(policies);
 
   return (
@@ -38,36 +52,24 @@ export default async function DashboardPage() {
         <p className="text-gray-400 text-sm mt-1">
           {policies.length === 0 && !error
             ? "No policies yet — import your AdaptAI export to get started."
-            : `${policies.length} total policies in your book`}
+            : `Your command center — ${policies.length} policies across retention, service & sales`}
         </p>
       </div>
 
       {error && (
         <div className="bg-red-500/10 border border-red-500/40 rounded-xl p-4">
-          <p className="text-red-400 font-medium">Could not load policies</p>
+          <p className="text-red-400 font-medium">Could not load dashboard data</p>
           <p className="text-red-300/80 text-sm mt-1">{error}</p>
-          <p className="text-gray-400 text-xs mt-2">
-            Try stopping the server (Ctrl+C) and running{" "}
-            <code className="text-accent">npm run dev</code> again.
-          </p>
         </div>
       )}
 
       <KpiCards stats={stats} />
 
-      <section>
-        <h2 className="text-lg font-semibold text-white mb-1">Pipeline</h2>
-        <p className="text-xs text-gray-500 mb-4 hidden md:block">
-          Drag a client card to another column to change stage. Green envelope =
-          45-day reminder sent; yellow = needs reminder.
-        </p>
-        <KanbanBoard
-          policies={policies}
-          recentReminderPolicyIds={recentReminderPolicyIds}
-          documentCounts={documentCounts}
-          clientPolicyCounts={clientPolicyCounts}
-        />
-      </section>
+      <DashboardHubCards hub={hub} />
+
+      <DashboardFocusBanner alerts={focusAlerts} />
+
+      <DashboardBookHealth health={hub.bookHealth} />
 
       <section>
         <h2 className="text-lg font-semibold text-white mb-4">

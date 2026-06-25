@@ -2,8 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Carrier, Policy, PolicyType, Stage, TermMonths } from "@/lib/types";
-import { CARRIERS, CARRIER_LABELS, POLICY_TYPE_LABELS, POLICY_TYPES, STAGE_LABELS, STAGES, TERM_LABELS, TERM_MONTHS } from "@/lib/types";
+import type { Carrier, Policy, PolicyType, TermMonths } from "@/lib/types";
+import {
+  CARRIERS,
+  CARRIER_LABELS,
+  POLICY_TYPE_LABELS,
+  POLICY_TYPES,
+  TERM_LABELS,
+  TERM_MONTHS,
+} from "@/lib/types";
 
 interface EditPolicyFormProps {
   policy: Policy;
@@ -56,18 +63,14 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [clientName, setClientName] = useState(policy.client_name);
   const [carrier, setCarrier] = useState<Carrier>(policy.carrier);
   const [priorCarrier, setPriorCarrier] = useState<Carrier | "">(
     policy.prior_carrier ?? ""
   );
   const [premium, setPremium] = useState(String(policy.premium));
+  const [effectiveDate, setEffectiveDate] = useState(policy.effective_date ?? "");
   const [renewalDate, setRenewalDate] = useState(policy.renewal_date);
-  const [phone, setPhone] = useState(policy.phone ?? "");
-  const [email, setEmail] = useState(policy.email ?? "");
   const [policyNumber, setPolicyNumber] = useState(policy.policy_number ?? "");
-  const [clientSince, setClientSince] = useState(policy.client_since ?? "");
-  const [spanishSpeaker, setSpanishSpeaker] = useState(policy.spanish_speaker);
   const [commercial, setCommercial] = useState(policy.commercial ?? false);
   const [termMonths, setTermMonths] = useState<TermMonths>(policy.term_months ?? 12);
   const [policyType, setPolicyType] = useState<PolicyType>(
@@ -82,16 +85,12 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
 
     try {
       await savePolicy(policy.id, {
-        client_name: clientName,
         carrier,
         prior_carrier: priorCarrier || null,
         premium,
+        effective_date: effectiveDate || null,
         renewal_date: renewalDate,
-        phone,
-        email,
         policy_number: policyNumber,
-        client_since: clientSince || null,
-        spanish_speaker: spanishSpeaker,
         commercial,
         term_months: termMonths,
         policy_type: policyType,
@@ -116,7 +115,11 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
 
     try {
       await deletePolicy(policy.id);
-      router.push("/policies");
+      if (policy.client_id) {
+        router.push(`/clients/${policy.client_id}`);
+      } else {
+        router.push("/policies");
+      }
       router.refresh();
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") {
@@ -135,9 +138,9 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full md:w-auto px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors"
+        className="w-full sm:w-auto px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors"
       >
-        Edit Client Info
+        Edit Policy
       </button>
     );
   }
@@ -147,8 +150,13 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
       onSubmit={handleSave}
       className="bg-navy-light border border-navy-lighter rounded-xl p-5 space-y-4"
     >
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-white">Edit Client Info</h3>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h3 className="text-sm font-semibold text-white">Edit Policy</h3>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Carrier, dates, premium, and policy details
+          </p>
+        </div>
         <button
           type="button"
           onClick={() => {
@@ -156,24 +164,13 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
             setConfirmingDelete(false);
             setError(null);
           }}
-          className="text-sm text-gray-400 hover:text-white"
+          className="text-sm text-gray-400 hover:text-white shrink-0"
         >
           Cancel
         </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="sm:col-span-2">
-          <label className="block text-xs text-gray-400 mb-1">Client Name</label>
-          <input
-            type="text"
-            required
-            value={clientName}
-            onChange={(e) => setClientName(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-
         <div>
           <label className="block text-xs text-gray-400 mb-1">Carrier</label>
           <select
@@ -206,7 +203,7 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
         </div>
 
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Annual Premium</label>
+          <label className="block text-xs text-gray-400 mb-1">Premium</label>
           <input
             type="number"
             min="0"
@@ -218,7 +215,28 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
         </div>
 
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Renewal Date</label>
+          <label className="block text-xs text-gray-400 mb-1">Policy Number</label>
+          <input
+            type="text"
+            value={policyNumber}
+            onChange={(e) => setPolicyNumber(e.target.value)}
+            placeholder="Optional"
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Effective Date</label>
+          <input
+            type="date"
+            value={effectiveDate}
+            onChange={(e) => setEffectiveDate(e.target.value)}
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Expiration Date</label>
           <input
             type="date"
             required
@@ -258,81 +276,26 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
           </select>
         </div>
 
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Policy Number</label>
-          <input
-            type="text"
-            value={policyNumber}
-            onChange={(e) => setPolicyNumber(e.target.value)}
-            placeholder="Optional"
-            className={inputClass}
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Client Since</label>
-          <input
-            type="date"
-            value={clientSince}
-            onChange={(e) => setClientSince(e.target.value)}
-            className={inputClass}
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Phone</label>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="931-555-0100"
-            className={inputClass}
-          />
-        </div>
-
-        <div>
-          <label className="block text-xs text-gray-400 mb-1">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="client@email.com"
-            className={inputClass}
-          />
-        </div>
-
         <div className="flex items-center gap-2 sm:col-span-2">
           <input
             type="checkbox"
-            id="spanish_speaker"
-            checked={spanishSpeaker}
-            onChange={(e) => setSpanishSpeaker(e.target.checked)}
-            className="rounded border-navy-lighter"
-          />
-          <label htmlFor="spanish_speaker" className="text-sm text-gray-300">
-            Spanish speaker
-          </label>
-        </div>
-
-        <div className="flex items-center gap-2 sm:col-span-2">
-          <input
-            type="checkbox"
-            id="commercial"
+            id="edit_policy_commercial"
             checked={commercial}
             onChange={(e) => setCommercial(e.target.checked)}
             className="rounded border-navy-lighter"
           />
-          <label htmlFor="commercial" className="text-sm text-gray-300">
+          <label htmlFor="edit_policy_commercial" className="text-sm text-gray-300">
             Commercial policy
           </label>
         </div>
 
         <div className="sm:col-span-2">
-          <label className="block text-xs text-gray-400 mb-1">Notes</label>
+          <label className="block text-xs text-gray-400 mb-1">Policy Notes</label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             rows={3}
+            placeholder="Notes specific to this policy"
             className={`${inputClass} resize-none`}
           />
         </div>
@@ -346,7 +309,7 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
           disabled={saving || deleting}
           className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors disabled:opacity-50"
         >
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? "Saving..." : "Save Policy"}
         </button>
 
         {!confirmingDelete ? (
@@ -356,13 +319,11 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
             disabled={saving || deleting}
             className="px-5 py-2.5 text-red-400 border border-red-500/40 hover:bg-red-500/10 font-medium rounded-lg transition-colors disabled:opacity-50"
           >
-            Delete Client
+            Delete Policy
           </button>
         ) : (
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
-            <p className="text-sm text-red-300">
-              Permanently delete {policy.client_name}?
-            </p>
+            <p className="text-sm text-red-300">Permanently delete this policy?</p>
             <button
               type="button"
               onClick={() => setConfirmingDelete(false)}

@@ -31,10 +31,15 @@ function isPdfFile(file: File, safeName: string): boolean {
 }
 
 const EMPTY_EXTRACTED = {
+  client_name: null,
   policy_number: null,
   client_address: null,
   client_email: null,
   client_phone: null,
+  renewal_date: null,
+  effective_date: null,
+  premium: null,
+  term_months: null,
 };
 
 export async function POST(request: NextRequest) {
@@ -132,14 +137,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    await assignDocumentToHistoricalPolicyIfNeeded({
+    const targetPolicyId = await assignDocumentToHistoricalPolicyIfNeeded({
       documentId: document.id,
       policyId,
       fileName: file.name || safeName,
       extracted,
     });
 
-    return NextResponse.json({ document, extracted, warning, uploaded: true });
+    return NextResponse.json({
+      document,
+      extracted,
+      warning,
+      uploaded: true,
+      target_policy_id: targetPolicyId,
+    });
   } catch (err) {
     const message =
       err instanceof Error ? err.message : "Failed to upload document.";

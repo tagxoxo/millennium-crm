@@ -3,16 +3,20 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import DuplicateClientWarning from "@/components/clients/DuplicateClientWarning";
-import type { Carrier, Client, PolicyType, Stage, TermMonths } from "@/lib/types";
+import type { Carrier, Client, PolicyType, Stage, TermMonths, ClientState } from "@/lib/types";
 import {
   CARRIERS,
   CARRIER_LABELS,
+  CLIENT_STATE_LABELS,
+  CLIENT_STATES,
+  DEFAULT_CLIENT_STATE,
   POLICY_TYPE_LABELS,
   POLICY_TYPES,
   STAGE_LABELS,
   STAGES,
   TERM_LABELS,
   TERM_MONTHS,
+  normalizeClientState,
 } from "@/lib/types";
 
 const inputClass =
@@ -55,6 +59,7 @@ export default function AddPolicyForm() {
   const [carrier, setCarrier] = useState<Carrier>("trexis");
   const [priorCarrier, setPriorCarrier] = useState<Carrier | "">("");
   const [premium, setPremium] = useState("");
+  const [effectiveDate, setEffectiveDate] = useState("");
   const [renewalDate, setRenewalDate] = useState("");
   const [stage, setStage] = useState<Stage>("upcoming");
   const [phone, setPhone] = useState("");
@@ -62,6 +67,7 @@ export default function AddPolicyForm() {
   const [policyNumber, setPolicyNumber] = useState("");
   const [clientSince, setClientSince] = useState("");
   const [spanishSpeaker, setSpanishSpeaker] = useState(false);
+  const [clientState, setClientState] = useState<ClientState>(DEFAULT_CLIENT_STATE);
   const [commercial, setCommercial] = useState(false);
   const [termMonths, setTermMonths] = useState<TermMonths>(12);
   const [policyType, setPolicyType] = useState<PolicyType>("personal_auto");
@@ -72,6 +78,7 @@ export default function AddPolicyForm() {
     setCarrier("trexis");
     setPriorCarrier("");
     setPremium("");
+    setEffectiveDate("");
     setRenewalDate("");
     setStage("upcoming");
     setPhone("");
@@ -79,6 +86,7 @@ export default function AddPolicyForm() {
     setPolicyNumber("");
     setClientSince("");
     setSpanishSpeaker(false);
+    setClientState(DEFAULT_CLIENT_STATE);
     setCommercial(false);
     setTermMonths(12);
     setPolicyType("personal_auto");
@@ -100,6 +108,7 @@ export default function AddPolicyForm() {
       carrier,
       prior_carrier: priorCarrier || null,
       premium,
+      effective_date: effectiveDate || null,
       renewal_date: renewalDate,
       stage,
       phone,
@@ -107,6 +116,7 @@ export default function AddPolicyForm() {
       policy_number: policyNumber,
       client_since: clientSince || null,
       spanish_speaker: spanishSpeaker,
+      client_state: clientState,
       commercial,
       term_months: termMonths,
       policy_type: policyType,
@@ -275,7 +285,17 @@ export default function AddPolicyForm() {
           </div>
 
           <div>
-            <label className="block text-xs text-gray-400 mb-1">Renewal Date *</label>
+            <label className="block text-xs text-gray-400 mb-1">Effective Date</label>
+            <input
+              type="date"
+              value={effectiveDate}
+              onChange={(e) => setEffectiveDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Expiration Date *</label>
             <input
               type="date"
               required
@@ -356,6 +376,21 @@ export default function AddPolicyForm() {
               placeholder="client@email.com"
               className={inputClass}
             />
+          </div>
+
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">State</label>
+            <select
+              value={clientState}
+              onChange={(e) => setClientState(e.target.value as ClientState)}
+              className={inputClass}
+            >
+              {CLIENT_STATES.map((state) => (
+                <option key={state} value={state}>
+                  {CLIENT_STATE_LABELS[state]}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="flex items-center gap-2 sm:col-span-2">

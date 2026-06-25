@@ -10,12 +10,12 @@ const config: Config = {
       colors: {
         navy: {
           DEFAULT: "#0f1117",
-          light: "#1a1d27",
-          lighter: "#252836",
+          light: "#1c2130",
+          lighter: "#2a3145",
         },
         accent: {
-          DEFAULT: "#3b82f6",
-          hover: "#2563eb",
+          DEFAULT: "#60a5fa",
+          hover: "#3b82f6",
         },
         carrier: {
           trexis: "#3b82f6",

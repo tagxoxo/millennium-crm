@@ -10,9 +10,9 @@ export default function KpiCards({ stats }: KpiCardsProps) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
       <KpiCard
-        label="Commercial Book Premium"
-        value={formatCurrency(stats.commercialBookPremium)}
-        subtext={`${stats.commercialPolicyCount.toLocaleString()} commercial · annualized`}
+        label="Total Annual Premium Book"
+        value={formatCurrency(stats.totalAnnualPremium)}
+        subtext="6-month policies doubled"
       />
       <KpiCard
         label="Total Book Premium"
@@ -20,9 +20,9 @@ export default function KpiCards({ stats }: KpiCardsProps) {
         subtext="As written (6 & 12 mo mixed)"
       />
       <KpiCard
-        label="Total Annual Premium Book"
-        value={formatCurrency(stats.totalAnnualPremium)}
-        subtext="6-month policies doubled"
+        label="Commercial Book Premium"
+        value={formatCurrency(stats.commercialBookPremium)}
+        subtext={`${stats.commercialPolicyCount.toLocaleString()} commercial · annualized`}
       />
       <KpiCard
         label="Active Policies"

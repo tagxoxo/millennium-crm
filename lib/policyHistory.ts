@@ -83,6 +83,7 @@ async function createHistoricalPolicy(
       stage: "lapsed",
       is_historical: true,
       spanish_speaker: client.is_spanish_speaker,
+      client_state: client.client_state,
       phone: client.phone,
       email: client.email,
       client_address: client.address,

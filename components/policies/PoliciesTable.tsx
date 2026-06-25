@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import CarrierBadge from "@/components/ui/CarrierBadge";
 import SpanishTag from "@/components/ui/SpanishTag";
+import StateTag from "@/components/ui/StateTag";
 import PolicyFilters, {
   type CommercialFilter,
   type SpanishFilter,
@@ -12,7 +13,7 @@ import PolicyFilters, {
 import CommercialTag from "@/components/ui/CommercialTag";
 import TermTag from "@/components/ui/TermTag";
 import type { Carrier, Policy, Stage } from "@/lib/types";
-import { STAGE_LABELS } from "@/lib/types";
+import { DEFAULT_CLIENT_STATE, normalizeClientState, STAGE_LABELS } from "@/lib/types";
 import { formatCurrency, formatDate, normalizeTermMonths } from "@/lib/utils";
 
 interface PoliciesTableProps {
@@ -92,6 +93,9 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
                     {policy.commercial && <CommercialTag />}
                     <TermTag termMonths={normalizeTermMonths(policy.term_months)} />
                     {policy.spanish_speaker && <SpanishTag />}
+                    {normalizeClientState(policy.client_state) !== DEFAULT_CLIENT_STATE && (
+                      <StateTag state={normalizeClientState(policy.client_state)} />
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mb-2">
@@ -100,9 +104,16 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
                     {STAGE_LABELS[policy.stage]}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm text-gray-300">
+                <div className="flex justify-between text-sm text-gray-300 gap-4">
                   <span>{formatCurrency(Number(policy.premium))}</span>
-                  <span>{formatDate(policy.renewal_date)}</span>
+                  <span className="text-right">
+                    {policy.effective_date && (
+                      <span className="text-gray-500 mr-2">
+                        {formatDate(policy.effective_date)} –
+                      </span>
+                    )}
+                    {formatDate(policy.renewal_date)}
+                  </span>
                 </div>
               </button>
             ))}
@@ -116,7 +127,8 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
                   <th className="px-4 py-3 font-medium">Client</th>
                   <th className="px-4 py-3 font-medium">Carrier</th>
                   <th className="px-4 py-3 font-medium">Premium</th>
-                  <th className="px-4 py-3 font-medium">Renewal Date</th>
+                  <th className="px-4 py-3 font-medium">Effective</th>
+                  <th className="px-4 py-3 font-medium">Expiration</th>
                   <th className="px-4 py-3 font-medium">Stage</th>
                   <th className="px-4 py-3 font-medium">Spanish</th>
                   <th className="px-4 py-3 font-medium">Commercial</th>
@@ -138,6 +150,9 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
                     </td>
                     <td className="px-4 py-3 text-gray-300">
                       {formatCurrency(Number(policy.premium))}
+                    </td>
+                    <td className="px-4 py-3 text-gray-300">
+                      {policy.effective_date ? formatDate(policy.effective_date) : "—"}
                     </td>
                     <td className="px-4 py-3 text-gray-300">
                       {formatDate(policy.renewal_date)}

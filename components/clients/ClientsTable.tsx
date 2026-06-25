@@ -3,7 +3,9 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import CarrierBadge from "@/components/ui/CarrierBadge";
+import StateTag from "@/components/ui/StateTag";
 import type { ClientWithStats } from "@/lib/types";
+import { DEFAULT_CLIENT_STATE, normalizeClientState } from "@/lib/types";
 import { formatCurrency } from "@/lib/utils";
 
 interface ClientsTableProps {
@@ -67,6 +69,11 @@ export default function ClientsTable({ clients }: ClientsTableProps) {
                       {client.full_name}
                       {client.is_spanish_speaker && (
                         <span className="ml-2 text-xs text-cyan-400">ES</span>
+                      )}
+                      {normalizeClientState(client.client_state) !== DEFAULT_CLIENT_STATE && (
+                        <span className="ml-2 inline-flex align-middle">
+                          <StateTag state={normalizeClientState(client.client_state)} />
+                        </span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-gray-300">

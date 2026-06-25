@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchClientById, syncPoliciesFromClient } from "@/lib/clients";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Client } from "@/lib/types";
+import { normalizeClientState } from "@/lib/types";
 
 export async function GET(
   _request: NextRequest,
@@ -32,6 +33,9 @@ export async function PATCH(
     }
     if (body.is_spanish_speaker !== undefined) {
       updates.is_spanish_speaker = Boolean(body.is_spanish_speaker);
+    }
+    if (body.client_state !== undefined) {
+      updates.client_state = normalizeClientState(body.client_state);
     }
     if (body.notes !== undefined) updates.notes = body.notes?.trim() || null;
 

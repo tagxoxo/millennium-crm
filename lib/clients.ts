@@ -1,4 +1,5 @@
 import type { Carrier, Client, ClientWithStats, ContactLog, Policy, PolicyDocument } from "@/lib/types";
+import { normalizeClientState } from "@/lib/types";
 import { getSupabaseServer } from "@/lib/supabase/server";
 
 export function normalizePhone(phone: string | null | undefined): string {
@@ -129,6 +130,7 @@ export function mergeClientWithPolicies(
       firstPolicyValue(policies, (p) => p.client_address) ||
       null,
     is_spanish_speaker: client.is_spanish_speaker || spanishFromPolicy,
+    client_state: normalizeClientState(client.client_state),
     notes:
       client.notes?.trim() ||
       firstPolicyValue(policies, (p) => p.notes) ||
@@ -325,6 +327,7 @@ export async function syncPoliciesFromClient(client: Client): Promise<void> {
       phone: client.phone,
       client_address: client.address,
       spanish_speaker: client.is_spanish_speaker,
+      client_state: normalizeClientState(client.client_state),
     })
     .eq("client_id", client.id);
 }

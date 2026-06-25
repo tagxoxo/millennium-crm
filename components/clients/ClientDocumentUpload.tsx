@@ -3,13 +3,29 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { readJsonResponse } from "@/lib/apiClient";
+import type { ExtractedPolicyInfo } from "@/lib/extractPolicyInfo";
+import { hasAnyExtractedInfo } from "@/lib/extractPolicyInfo";
+import { canAutoApplyExtracted } from "@/lib/extractPolicyApply";
 
 const ACCEPT = ".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png";
 const MAX_BYTES = 20 * 1024 * 1024;
 
+type ConflictField = "policy_number" | "client_address" | "client_email" | "client_phone";
+
+const FIELD_LABELS: Record<ConflictField, string> = {
+  policy_number: "policy number",
+  client_address: "address",
+  client_email: "email",
+  client_phone: "phone",
+};
+
 export interface ClientUploadPolicyOption {
   id: string;
   label: string;
+  policy_number: string | null;
+  client_address: string | null;
+  email: string | null;
+  phone: string | null;
 }
 
 interface ClientDocumentUploadProps {
@@ -24,10 +40,47 @@ export default function ClientDocumentUpload({ policies }: ClientDocumentUploadP
   const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [selectedPolicyId, setSelectedPolicyId] = useState(policies[0]?.id ?? "");
+  const [extractModalOpen, setExtractModalOpen] = useState(false);
+  const [extractWarning, setExtractWarning] = useState<string | null>(null);
+  const [extractFields, setExtractFields] = useState<
+    Pick<ExtractedPolicyInfo, ConflictField>
+  >({
+    policy_number: null,
+    client_address: null,
+    client_email: null,
+    client_phone: null,
+  });
+  const [overwrites, setOverwrites] = useState<Set<ConflictField>>(new Set());
+  const [savingExtract, setSavingExtract] = useState(false);
+  const [targetPolicyId, setTargetPolicyId] = useState<string | null>(null);
 
   function showToast(message: string, type: "success" | "error" = "success") {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
+  }
+
+  function getPolicyById(id: string | null): ClientUploadPolicyOption | undefined {
+    if (!id) return undefined;
+    return policies.find((p) => p.id === id);
+  }
+
+  function getExistingValue(field: ConflictField): string | null {
+    const policy = getPolicyById(targetPolicyId);
+    if (!policy) return null;
+    const map: Record<ConflictField, keyof ClientUploadPolicyOption> = {
+      policy_number: "policy_number",
+      client_address: "client_address",
+      client_email: "email",
+      client_phone: "phone",
+    };
+    const value = policy[map[field]];
+    return typeof value === "string" && value.trim() ? value.trim() : null;
+  }
+
+  function hasConflict(field: ConflictField): boolean {
+    const existing = getExistingValue(field);
+    const incoming = extractFields[field]?.trim();
+    return Boolean(existing && incoming && existing !== incoming);
   }
 
   function openUploadFlow() {
@@ -41,6 +94,23 @@ export default function ClientDocumentUpload({ policies }: ClientDocumentUploadP
     }
     setSelectedPolicyId(policies[0].id);
     setPickerOpen(true);
+  }
+
+  async function applyExtractedToPolicy(
+    policyId: string,
+    fields: Pick<ExtractedPolicyInfo, ConflictField>,
+    overwriteFields: ConflictField[] = []
+  ) {
+    const res = await fetch(`/api/policies/${policyId}/apply-extracted-info`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fields,
+        overwrites: overwriteFields,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error ?? "Save failed");
   }
 
   async function handleUpload(file: File, policyId: string) {
@@ -63,20 +133,93 @@ export default function ClientDocumentUpload({ policies }: ClientDocumentUploadP
         body: formData,
         credentials: "same-origin",
       });
-      const json = await readJsonResponse<{ error?: string; uploaded?: boolean }>(res);
+      const json = await readJsonResponse<{
+        error?: string;
+        uploaded?: boolean;
+        extracted?: ExtractedPolicyInfo | null;
+        warning?: string;
+        target_policy_id?: string;
+      }>(res);
 
       if (!res.ok) {
         throw new Error(json.error ?? "Upload failed");
       }
 
+      const appliedPolicyId = json.target_policy_id ?? policyId;
+      setTargetPolicyId(appliedPolicyId);
       showToast("Document uploaded");
-      router.refresh();
+
+      if (json.extracted && hasAnyExtractedInfo(json.extracted)) {
+        const fields: Pick<ExtractedPolicyInfo, ConflictField> = {
+          policy_number: json.extracted.policy_number ?? "",
+          client_address: json.extracted.client_address ?? "",
+          client_email: json.extracted.client_email ?? "",
+          client_phone: json.extracted.client_phone ?? "",
+        };
+        const policy = getPolicyById(appliedPolicyId);
+        const policyValues = {
+          policy_number: policy?.policy_number ?? null,
+          client_address: policy?.client_address ?? null,
+          email: policy?.email ?? null,
+          phone: policy?.phone ?? null,
+        };
+
+        if (canAutoApplyExtracted(fields, policyValues)) {
+          await applyExtractedToPolicy(appliedPolicyId, fields);
+          showToast("Client info updated from document");
+          router.refresh();
+        } else {
+          setExtractFields(fields);
+          setOverwrites(new Set());
+          setExtractWarning(json.warning ?? null);
+          setExtractModalOpen(true);
+        }
+      } else {
+        if (json.warning) setExtractWarning(json.warning);
+        router.refresh();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
+      showToast(err instanceof Error ? err.message : "Upload failed", "error");
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     }
+  }
+
+  async function handleSaveExtracted() {
+    if (!targetPolicyId) return;
+
+    setSavingExtract(true);
+    setError(null);
+
+    try {
+      const res = await fetch(
+        `/api/policies/${targetPolicyId}/apply-extracted-info`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fields: extractFields,
+            overwrites: Array.from(overwrites),
+          }),
+        }
+      );
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Save failed");
+
+      setExtractModalOpen(false);
+      showToast("Policy info updated from document");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Save failed");
+    } finally {
+      setSavingExtract(false);
+    }
+  }
+
+  function updateField(field: ConflictField, value: string) {
+    setExtractFields((current) => ({ ...current, [field]: value || null }));
   }
 
   return (
@@ -134,8 +277,8 @@ export default function ClientDocumentUpload({ policies }: ClientDocumentUploadP
             </div>
 
             <p className="text-xs text-gray-500">
-              PDF, JPG, or PNG — max 20MB. Old carrier files (e.g. Progressive) are
-              automatically moved under Past Policies.
+              PDF, JPG, or PNG — max 20MB. PDFs auto-scan for policy info. Old carrier
+              files are automatically moved under Past Policies.
             </p>
 
             <div>
@@ -163,6 +306,86 @@ export default function ClientDocumentUpload({ policies }: ClientDocumentUploadP
             </button>
 
             {error && <p className="text-sm text-red-400">{error}</p>}
+          </div>
+        </div>
+      )}
+
+      {extractModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+          <div className="w-full max-w-lg rounded-xl border border-navy-lighter bg-navy-light p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold text-white mb-1">Extracted Info</h3>
+            <p className="text-sm text-gray-400 mb-4">
+              Review fields found in the PDF. Edit anything that looks wrong before saving.
+            </p>
+
+            {extractWarning && (
+              <div className="mb-4 rounded-lg border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+                {extractWarning}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              {(Object.keys(FIELD_LABELS) as ConflictField[]).map((field) => (
+                <div key={field}>
+                  <label className="block text-xs font-medium text-gray-400 mb-1 capitalize">
+                    {FIELD_LABELS[field]}
+                  </label>
+                  <input
+                    type="text"
+                    value={extractFields[field] ?? ""}
+                    onChange={(event) => updateField(field, event.target.value)}
+                    className="w-full px-3 py-2 bg-navy border border-navy-lighter rounded-lg text-white text-sm focus:outline-none focus:border-accent"
+                  />
+                  {hasConflict(field) && !overwrites.has(field) && (
+                    <div className="mt-2 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+                      This policy already has a {FIELD_LABELS[field]}. Do you want to replace it?
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setOverwrites((current) => new Set(current).add(field))
+                          }
+                          className="px-2 py-1 rounded bg-amber-600 text-white text-xs"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            updateField(field, getExistingValue(field) ?? "")
+                          }
+                          className="px-2 py-1 rounded bg-navy border border-navy-lighter text-gray-300 text-xs"
+                        >
+                          Keep Existing
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2 mt-6">
+              <button
+                type="button"
+                onClick={() => {
+                  setExtractModalOpen(false);
+                  router.refresh();
+                }}
+                disabled={savingExtract}
+                className="px-4 py-2 text-sm text-gray-300 hover:text-white"
+              >
+                Skip
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveExtracted}
+                disabled={savingExtract}
+                className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg text-sm disabled:opacity-50"
+              >
+                {savingExtract ? "Saving…" : "Save to Policy"}
+              </button>
+            </div>
           </div>
         </div>
       )}

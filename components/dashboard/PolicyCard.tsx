@@ -7,8 +7,10 @@ import { useRef } from "react";
 import CarrierBadge from "@/components/ui/CarrierBadge";
 import CommercialTag from "@/components/ui/CommercialTag";
 import SpanishTag from "@/components/ui/SpanishTag";
+import StateTag from "@/components/ui/StateTag";
 import TermTag from "@/components/ui/TermTag";
 import type { Policy } from "@/lib/types";
+import { DEFAULT_CLIENT_STATE, normalizeClientState } from "@/lib/types";
 import {
   daysUntilRenewal,
   formatCurrency,
@@ -77,6 +79,9 @@ export default function PolicyCard({
           {policy.commercial && <CommercialTag />}
           <TermTag termMonths={normalizeTermMonths(policy.term_months)} />
           {policy.spanish_speaker && <SpanishTag />}
+          {normalizeClientState(policy.client_state) !== DEFAULT_CLIENT_STATE && (
+            <StateTag state={normalizeClientState(policy.client_state)} />
+          )}
         </div>
       </div>
       <div className="flex items-center justify-between gap-2">

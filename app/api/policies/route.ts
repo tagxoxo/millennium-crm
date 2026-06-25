@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { findDuplicateClients, syncPoliciesFromClient } from "@/lib/clients";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Carrier, Client, PolicyType, Stage, TermMonths } from "@/lib/types";
-import { CARRIERS, POLICY_TYPES, STAGES, TERM_MONTHS } from "@/lib/types";
+import { CARRIERS, POLICY_TYPES, STAGES, TERM_MONTHS, normalizeClientState } from "@/lib/types";
 
 async function createClientFromBody(body: Record<string, unknown>): Promise<Client | null> {
   const supabase = getSupabaseServer();
@@ -18,6 +18,7 @@ async function createClientFromBody(body: Record<string, unknown>): Promise<Clie
       phone,
       address: (body.client_address as string)?.trim() || (body.address as string)?.trim() || null,
       is_spanish_speaker: Boolean(body.spanish_speaker),
+      client_state: normalizeClientState(body.client_state),
       notes: (body.notes as string)?.trim() || null,
     })
     .select("*")
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!renewalDate) {
-      return NextResponse.json({ error: "Renewal date is required." }, { status: 400 });
+      return NextResponse.json({ error: "Expiration date is required." }, { status: 400 });
     }
 
     if (stage && !STAGES.includes(stage)) {
@@ -106,8 +107,12 @@ export async function POST(request: NextRequest) {
         prior_carrier: priorCarrier,
         premium: parseFloat(body.premium) || 0,
         renewal_date: renewalDate,
+        effective_date: body.effective_date?.trim() || null,
         stage,
         spanish_speaker: Boolean(body.spanish_speaker),
+        client_state: normalizeClientState(
+          body.client_state ?? client?.client_state
+        ),
         commercial: Boolean(body.commercial),
         term_months: termMonths,
         policy_type: policyType,

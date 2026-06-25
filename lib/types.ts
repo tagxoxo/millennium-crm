@@ -56,6 +56,31 @@ export type PolicyType =
 
 export type LeadStage = "new" | "contacted" | "quoted" | "sold";
 
+export type ClientState = "TN" | "TX" | "MA" | "RI";
+
+export const CLIENT_STATES: ClientState[] = ["TN", "TX", "MA", "RI"];
+
+export const DEFAULT_CLIENT_STATE: ClientState = "TN";
+
+export const CLIENT_STATE_LABELS: Record<ClientState, string> = {
+  TN: "Tennessee",
+  TX: "Texas",
+  MA: "Massachusetts",
+  RI: "Rhode Island",
+};
+
+export function normalizeClientState(value: unknown): ClientState {
+  const raw = String(value ?? "")
+    .trim()
+    .toUpperCase();
+  if (raw === "TEXAS") return "TX";
+  if (raw === "TENNESSEE") return "TN";
+  if (raw === "MASSACHUSETTS") return "MA";
+  if (raw === "RHODE ISLAND" || raw === "RI") return "RI";
+  if (CLIENT_STATES.includes(raw as ClientState)) return raw as ClientState;
+  return DEFAULT_CLIENT_STATE;
+}
+
 export interface Client {
   id: string;
   full_name: string;
@@ -64,6 +89,7 @@ export interface Client {
   address: string | null;
   date_of_birth: string | null;
   is_spanish_speaker: boolean;
+  client_state: ClientState;
   notes: string | null;
   created_at: string;
 }
@@ -94,9 +120,11 @@ export interface Policy {
   carrier: Carrier;
   prior_carrier: Carrier | null;
   premium: number;
+  effective_date: string | null;
   renewal_date: string;
   stage: Stage;
   spanish_speaker: boolean;
+  client_state: ClientState;
   commercial: boolean;
   term_months: TermMonths;
   policy_type: PolicyType;

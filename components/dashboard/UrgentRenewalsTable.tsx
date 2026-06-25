@@ -53,7 +53,7 @@ export default function UrgentRenewalsTable({
               <th className="px-4 py-3 font-medium">Client</th>
               <th className="px-4 py-3 font-medium">Carrier</th>
               <th className="px-4 py-3 font-medium">Premium</th>
-              <th className="px-4 py-3 font-medium">Renewal Date</th>
+              <th className="px-4 py-3 font-medium">Expiration Date</th>
               <th className="px-4 py-3 font-medium">Stage</th>
             </tr>
           </thead>

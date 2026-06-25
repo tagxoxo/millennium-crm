@@ -24,7 +24,7 @@ export async function POST(
     }
 
     if (!renewalDate) {
-      return NextResponse.json({ error: "Renewal date is required." }, { status: 400 });
+      return NextResponse.json({ error: "Expiration date is required." }, { status: 400 });
     }
 
     if (stage && !STAGES.includes(stage)) {
@@ -57,9 +57,11 @@ export async function POST(
         prior_carrier: priorCarrier,
         premium: parseFloat(body.premium) || 0,
         renewal_date: renewalDate,
+        effective_date: body.effective_date?.trim() || null,
         stage: isHistorical ? "lapsed" : stage,
         is_historical: isHistorical,
         spanish_speaker: client.is_spanish_speaker,
+        client_state: client.client_state,
         commercial: Boolean(body.commercial),
         term_months: termMonths,
         policy_type: policyType || "personal_auto",

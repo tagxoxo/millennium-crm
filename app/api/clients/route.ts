@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findDuplicateClients } from "@/lib/clients";
 import { getSupabaseServer } from "@/lib/supabase/server";
+import { normalizeClientState } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
   const email = request.nextUrl.searchParams.get("email");
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
         address: body.address?.trim() || null,
         date_of_birth: body.date_of_birth?.trim() || null,
         is_spanish_speaker: Boolean(body.is_spanish_speaker),
+        client_state: normalizeClientState(body.client_state),
         notes: body.notes?.trim() || null,
       })
       .select("id")

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import AddContactForm from "@/components/policy-detail/AddContactForm";
 import ContactTimeline from "@/components/policy-detail/ContactTimeline";
 import CommunicationsTimeline from "@/components/policy-detail/CommunicationsTimeline";
+import EditClientInfoForm from "@/components/policy-detail/EditClientInfoForm";
 import EditPolicyForm from "@/components/policy-detail/EditPolicyForm";
 import FlagNonPayButton from "@/components/policy-detail/FlagNonPayButton";
 import PolicyDocumentsSection from "@/components/policy-detail/PolicyDocumentsSection";
@@ -69,7 +70,10 @@ export default async function PolicyDetailPage({
 
       <PolicyInfo policy={policy} />
 
-      <EditPolicyForm policy={policy} />
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+        <EditClientInfoForm policy={policy} />
+        <EditPolicyForm policy={policy} />
+      </div>
 
       <StageDropdown policyId={policy.id} currentStage={policy.stage} />
 

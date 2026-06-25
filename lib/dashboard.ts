@@ -1,4 +1,5 @@
-import type { Policy } from "./types";
+import type { ClientState, Policy } from "./types";
+import { CLIENT_STATE_LABELS, CLIENT_STATES, normalizeClientState } from "./types";
 import { annualizedPremium, parseLocalDate } from "./utils";
 
 // Estimated annual commission rate — adjust here if your carriers pay differently
@@ -54,6 +55,87 @@ export function computeDashboardStats(policies: Policy[]): DashboardStats {
     totalAnnualPremium,
     monthlyCommission,
   };
+}
+
+export interface StatePremiumSlice {
+  state: ClientState;
+  label: string;
+  premium: number;
+  policyCount: number;
+  percent: number;
+  personalPremium: number;
+  commercialPremium: number;
+  personalCount: number;
+  commercialCount: number;
+}
+
+export function isCommercialPolicy(policy: Policy): boolean {
+  if (policy.commercial) return true;
+  return (
+    policy.policy_type === "commercial_auto" ||
+    policy.policy_type === "commercial_general_liability"
+  );
+}
+
+/** Sum written premium for active (non-lapsed) policies grouped by client state. */
+export function computePremiumByState(policies: Policy[]): StatePremiumSlice[] {
+  const active = policies.filter((p) => p.stage !== "lapsed");
+  const buckets = new Map<
+    ClientState,
+    {
+      premium: number;
+      policyCount: number;
+      personalPremium: number;
+      commercialPremium: number;
+      personalCount: number;
+      commercialCount: number;
+    }
+  >();
+
+  for (const state of CLIENT_STATES) {
+    buckets.set(state, {
+      premium: 0,
+      policyCount: 0,
+      personalPremium: 0,
+      commercialPremium: 0,
+      personalCount: 0,
+      commercialCount: 0,
+    });
+  }
+
+  for (const policy of active) {
+    const state = normalizeClientState(policy.client_state);
+    const bucket = buckets.get(state)!;
+    const amount = Number(policy.premium) || 0;
+    const commercial = isCommercialPolicy(policy);
+
+    bucket.premium += amount;
+    bucket.policyCount += 1;
+    if (commercial) {
+      bucket.commercialPremium += amount;
+      bucket.commercialCount += 1;
+    } else {
+      bucket.personalPremium += amount;
+      bucket.personalCount += 1;
+    }
+  }
+
+  const totalPremium = active.reduce((sum, p) => sum + (Number(p.premium) || 0), 0);
+
+  return CLIENT_STATES.map((state) => {
+    const bucket = buckets.get(state)!;
+    return {
+      state,
+      label: CLIENT_STATE_LABELS[state],
+      premium: bucket.premium,
+      policyCount: bucket.policyCount,
+      percent: totalPremium > 0 ? (bucket.premium / totalPremium) * 100 : 0,
+      personalPremium: bucket.personalPremium,
+      commercialPremium: bucket.commercialPremium,
+      personalCount: bucket.personalCount,
+      commercialCount: bucket.commercialCount,
+    };
+  });
 }
 
 export function getUrgentRenewals(policies: Policy[]): Policy[] {

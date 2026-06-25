@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import type { ExtractedPolicyInfo } from "@/lib/extractPolicyInfo";
+import { hasAnyExtractedInfo } from "@/lib/extractPolicyInfo";
+import { canAutoApplyExtracted } from "@/lib/extractPolicyApply";
 import { readJsonResponse } from "@/lib/apiClient";
 import type { Policy, PolicyDocument } from "@/lib/types";
 import { formatDate, formatFileSize } from "@/lib/utils";
@@ -12,7 +14,7 @@ interface PolicyDocumentsSectionProps {
   initialDocuments: PolicyDocument[];
 }
 
-type ConflictField = keyof ExtractedPolicyInfo;
+type ConflictField = "policy_number" | "client_address" | "client_email" | "client_phone";
 
 const FIELD_LABELS: Record<ConflictField, string> = {
   policy_number: "policy number",
@@ -46,7 +48,9 @@ export default function PolicyDocumentsSection({
   const [toast, setToast] = useState<string | null>(null);
   const [extractModalOpen, setExtractModalOpen] = useState(false);
   const [extractWarning, setExtractWarning] = useState<string | null>(null);
-  const [extractFields, setExtractFields] = useState<ExtractedPolicyInfo>({
+  const [extractFields, setExtractFields] = useState<
+    Pick<ExtractedPolicyInfo, ConflictField>
+  >({
     policy_number: null,
     client_address: null,
     client_email: null,
@@ -71,6 +75,22 @@ export default function PolicyDocumentsSection({
     const existing = getExistingValue(field);
     const incoming = extractFields[field]?.trim();
     return Boolean(existing && incoming && existing !== incoming);
+  }
+
+  async function applyExtractedToPolicy(
+    fields: Pick<ExtractedPolicyInfo, ConflictField>,
+    overwriteFields: ConflictField[] = []
+  ) {
+    const res = await fetch(`/api/policies/${policy.id}/apply-extracted-info`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fields,
+        overwrites: overwriteFields,
+      }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error ?? "Save failed");
   }
 
   async function handleUpload(file: File) {
@@ -107,21 +127,36 @@ export default function PolicyDocumentsSection({
       setDocuments((current) => [json.document!, ...current]);
       showToast("Document uploaded");
 
-      if (json.extracted) {
-        setExtractFields({
+      if (json.extracted && hasAnyExtractedInfo(json.extracted)) {
+        const fields: Pick<ExtractedPolicyInfo, ConflictField> = {
           policy_number: json.extracted.policy_number ?? "",
           client_address: json.extracted.client_address ?? "",
           client_email: json.extracted.client_email ?? "",
           client_phone: json.extracted.client_phone ?? "",
-        });
-        setOverwrites(new Set());
-        setExtractWarning(json.warning ?? null);
-        setExtractModalOpen(true);
+        };
+        const policyValues = {
+          policy_number: policy.policy_number,
+          client_address: policy.client_address,
+          email: policy.email,
+          phone: policy.phone,
+        };
+
+        if (canAutoApplyExtracted(fields, policyValues)) {
+          await applyExtractedToPolicy(fields);
+          showToast("Policy info updated from document");
+          router.refresh();
+        } else {
+          setExtractFields(fields);
+          setOverwrites(new Set());
+          setExtractWarning(json.warning ?? null);
+          setExtractModalOpen(true);
+        }
       } else if (json.warning) {
         setExtractWarning(json.warning);
+        router.refresh();
+      } else {
+        router.refresh();
       }
-
-      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed");
     } finally {

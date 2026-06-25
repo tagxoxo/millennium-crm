@@ -3,7 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import SpanishTag from "@/components/ui/SpanishTag";
-import type { Client } from "@/lib/types";
+import StateTag from "@/components/ui/StateTag";
+import type { Client, ClientState } from "@/lib/types";
+import {
+  CLIENT_STATE_LABELS,
+  CLIENT_STATES,
+  DEFAULT_CLIENT_STATE,
+  normalizeClientState,
+} from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
 interface EditClientFormProps {
@@ -35,6 +42,9 @@ export default function EditClientForm({ client }: EditClientFormProps) {
   const [address, setAddress] = useState(client.address ?? "");
   const [dateOfBirth, setDateOfBirth] = useState(client.date_of_birth ?? "");
   const [isSpanishSpeaker, setIsSpanishSpeaker] = useState(client.is_spanish_speaker);
+  const [clientState, setClientState] = useState<ClientState>(
+    normalizeClientState(client.client_state)
+  );
   const [notes, setNotes] = useState(client.notes ?? "");
 
   async function handleSave(e: React.FormEvent) {
@@ -50,6 +60,7 @@ export default function EditClientForm({ client }: EditClientFormProps) {
         address,
         date_of_birth: dateOfBirth || null,
         is_spanish_speaker: isSpanishSpeaker,
+        client_state: clientState,
         notes,
       });
       setOpen(false);
@@ -139,6 +150,20 @@ export default function EditClientForm({ client }: EditClientFormProps) {
             className={inputClass}
           />
         </div>
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">State</label>
+          <select
+            value={clientState}
+            onChange={(e) => setClientState(e.target.value as ClientState)}
+            className={inputClass}
+          >
+            {CLIENT_STATES.map((state) => (
+              <option key={state} value={state}>
+                {CLIENT_STATE_LABELS[state]}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -189,6 +214,9 @@ export function ClientInfoCard({ client }: ClientInfoCardProps) {
               {client.full_name}
             </h2>
             {client.is_spanish_speaker && <SpanishTag />}
+            {normalizeClientState(client.client_state) !== DEFAULT_CLIENT_STATE && (
+              <StateTag state={normalizeClientState(client.client_state)} />
+            )}
           </div>
         </div>
       </div>

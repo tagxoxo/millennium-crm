@@ -3,12 +3,14 @@ import LogoutButton from "./LogoutButton";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: "📊" },
-  { href: "/clients", label: "Clients", icon: "👥" },
+  { href: "/retention", label: "Retention Center", icon: "🔄" },
   { href: "/service-center", label: "Service Center", icon: "🎧" },
-  { href: "/leads", label: "Leads", icon: "🎯" },
+  { href: "/sales-center", label: "Sales Center", icon: "🎯" },
+  { href: "/clients", label: "Clients", icon: "👥" },
   { href: "/policies", label: "Policies", icon: "📋" },
-  { href: "/import", label: "Import", icon: "📥" },
   { href: "/automations", label: "Automations", icon: "⚡" },
+  { href: "/import", label: "Import", icon: "📥" },
+  { href: "/insights", label: "Book Insights", icon: "📈" },
   { href: "/settings/2fa", label: "Security", icon: "🔐" },
 ];
 
