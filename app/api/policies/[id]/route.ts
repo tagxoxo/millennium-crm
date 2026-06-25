@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase/server";
-import type { Carrier, TermMonths } from "@/lib/types";
-import { CARRIERS, TERM_MONTHS } from "@/lib/types";
+import type { Carrier, PolicyType, TermMonths } from "@/lib/types";
+import { CARRIERS, POLICY_TYPES, TERM_MONTHS } from "@/lib/types";
 
 export async function PATCH(
   request: NextRequest,
@@ -45,6 +45,14 @@ export async function PATCH(
     }
     if (body.notes !== undefined) updates.notes = body.notes?.trim() || null;
     if (body.stage !== undefined) updates.stage = body.stage;
+    if (body.policy_type !== undefined) {
+      const policyType = body.policy_type as PolicyType;
+      if (!POLICY_TYPES.includes(policyType)) {
+        return NextResponse.json({ error: "Invalid policy type." }, { status: 400 });
+      }
+      updates.policy_type = policyType;
+    }
+    if (body.client_id !== undefined) updates.client_id = body.client_id || null;
 
     const { error } = await supabase
       .from("policies")

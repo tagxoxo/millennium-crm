@@ -9,6 +9,7 @@ import {
 import { fetchAllPolicies } from "@/lib/policies";
 import { countPoliciesNeedingOutreach } from "@/lib/renewalReminders";
 import { fetchDocumentCountsByPolicy } from "@/lib/documentQueries";
+import { fetchPolicyCountByClient } from "@/lib/clients";
 import {
   fetchRecentRenewalReminderPolicyIds,
   fetchRenewalRemindersSentLast30Days,
@@ -31,6 +32,7 @@ export default async function DashboardPage() {
   const recentReminderSet = new Set(recentReminderPolicyIds);
   const renewalRemindersSent30 = await fetchRenewalRemindersSentLast30Days();
   const documentCounts = await fetchDocumentCountsByPolicy();
+  const clientPolicyCounts = await fetchPolicyCountByClient();
   const policiesNeedingOutreach = countPoliciesNeedingOutreach(
     policies,
     recentReminderSet
@@ -77,6 +79,7 @@ export default async function DashboardPage() {
           policies={policies}
           recentReminderPolicyIds={recentReminderPolicyIds}
           documentCounts={documentCounts}
+          clientPolicyCounts={clientPolicyCounts}
         />
       </section>
 

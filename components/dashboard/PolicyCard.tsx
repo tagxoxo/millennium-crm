@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils";
 interface PolicyCardProps {
   policy: Policy;
   documentCount?: number;
+  clientPolicyCount?: number;
   renewalEmailStatus?: RenewalEmailStatus;
   draggable?: boolean;
   isDragging?: boolean;
@@ -30,6 +31,7 @@ interface PolicyCardProps {
 export default function PolicyCard({
   policy,
   documentCount = 0,
+  clientPolicyCount = 0,
   renewalEmailStatus = "none",
   draggable = false,
   isDragging = false,
@@ -42,9 +44,26 @@ export default function PolicyCard({
   const content = (
     <>
       <div className="flex items-start justify-between gap-2 mb-2">
-        <p className="font-medium text-white text-sm leading-tight">
-          {policy.client_name}
-        </p>
+        <div className="min-w-0">
+          {policy.client_id ? (
+            <Link
+              href={`/clients/${policy.client_id}`}
+              className="font-medium text-white text-sm leading-tight hover:text-accent transition-colors block truncate"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {policy.client_name}
+            </Link>
+          ) : (
+            <p className="font-medium text-white text-sm leading-tight">
+              {policy.client_name}
+            </p>
+          )}
+          {clientPolicyCount > 1 && (
+            <span className="text-xs text-gray-500 mt-0.5 block">
+              {clientPolicyCount} policies
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-1 shrink-0">
           {documentCount > 0 && (
             <span

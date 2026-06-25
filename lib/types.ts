@@ -41,7 +41,35 @@ export type Channel = "whatsapp" | "sms" | "email";
 
 export type TermMonths = 6 | 12;
 
+export type PolicyType =
+  | "personal_auto"
+  | "commercial_auto"
+  | "homeowners"
+  | "renters"
+  | "commercial_general_liability"
+  | "life"
+  | "other";
+
 export type LeadStage = "new" | "contacted" | "quoted" | "sold";
+
+export interface Client {
+  id: string;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  date_of_birth: string | null;
+  is_spanish_speaker: boolean;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface ClientWithStats extends Client {
+  policy_count: number;
+  active_policy_count: number;
+  total_premium: number;
+  carriers: Carrier[];
+}
 
 export interface Lead {
   id: string;
@@ -57,6 +85,7 @@ export interface Lead {
 
 export interface Policy {
   id: string;
+  client_id: string | null;
   client_name: string;
   carrier: Carrier;
   prior_carrier: Carrier | null;
@@ -66,6 +95,7 @@ export interface Policy {
   spanish_speaker: boolean;
   commercial: boolean;
   term_months: TermMonths;
+  policy_type: PolicyType;
   phone: string | null;
   email: string | null;
   policy_number: string | null;
@@ -162,6 +192,26 @@ export const TERM_MONTHS: TermMonths[] = [6, 12];
 export const TERM_LABELS: Record<TermMonths, string> = {
   6: "6 months",
   12: "12 months",
+};
+
+export const POLICY_TYPES: PolicyType[] = [
+  "personal_auto",
+  "commercial_auto",
+  "homeowners",
+  "renters",
+  "commercial_general_liability",
+  "life",
+  "other",
+];
+
+export const POLICY_TYPE_LABELS: Record<PolicyType, string> = {
+  personal_auto: "Personal Auto",
+  commercial_auto: "Commercial Auto",
+  homeowners: "Homeowners",
+  renters: "Renters",
+  commercial_general_liability: "Commercial General Liability",
+  life: "Life",
+  other: "Other",
 };
 
 export const LEAD_STAGES: LeadStage[] = ["new", "contacted", "quoted", "sold"];

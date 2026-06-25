@@ -4,7 +4,7 @@ import CommercialTag from "@/components/ui/CommercialTag";
 import SpanishTag from "@/components/ui/SpanishTag";
 import TermTag from "@/components/ui/TermTag";
 import type { Policy } from "@/lib/types";
-import { STAGE_LABELS } from "@/lib/types";
+import { POLICY_TYPE_LABELS, STAGE_LABELS } from "@/lib/types";
 import {
   annualizedPremium,
   daysUntilRenewal,
@@ -44,9 +44,20 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
               </>
             )}
             <span className="text-sm text-gray-400">
+              {POLICY_TYPE_LABELS[policy.policy_type ?? "personal_auto"]}
+            </span>
+            <span className="text-sm text-gray-400">
               {STAGE_LABELS[policy.stage]}
             </span>
           </div>
+          {policy.client_id && (
+            <Link
+              href={`/clients/${policy.client_id}`}
+              className="text-sm text-accent hover:underline mt-2 inline-block"
+            >
+              View client profile →
+            </Link>
+          )}
         </div>
         <div className="text-right">
           <p className="text-2xl font-bold text-white">

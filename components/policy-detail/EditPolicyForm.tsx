@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { Carrier, Policy, Stage, TermMonths } from "@/lib/types";
-import { CARRIERS, CARRIER_LABELS, STAGE_LABELS, STAGES, TERM_LABELS, TERM_MONTHS } from "@/lib/types";
+import type { Carrier, Policy, PolicyType, Stage, TermMonths } from "@/lib/types";
+import { CARRIERS, CARRIER_LABELS, POLICY_TYPE_LABELS, POLICY_TYPES, STAGE_LABELS, STAGES, TERM_LABELS, TERM_MONTHS } from "@/lib/types";
 
 interface EditPolicyFormProps {
   policy: Policy;
@@ -70,6 +70,9 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
   const [spanishSpeaker, setSpanishSpeaker] = useState(policy.spanish_speaker);
   const [commercial, setCommercial] = useState(policy.commercial ?? false);
   const [termMonths, setTermMonths] = useState<TermMonths>(policy.term_months ?? 12);
+  const [policyType, setPolicyType] = useState<PolicyType>(
+    policy.policy_type ?? "personal_auto"
+  );
   const [notes, setNotes] = useState(policy.notes ?? "");
 
   async function handleSave(e: React.FormEvent) {
@@ -91,6 +94,7 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
         spanish_speaker: spanishSpeaker,
         commercial,
         term_months: termMonths,
+        policy_type: policyType,
         notes,
       });
       setOpen(false);
@@ -222,6 +226,21 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
             onChange={(e) => setRenewalDate(e.target.value)}
             className={inputClass}
           />
+        </div>
+
+        <div>
+          <label className="block text-xs text-gray-400 mb-1">Policy Type</label>
+          <select
+            value={policyType}
+            onChange={(e) => setPolicyType(e.target.value as PolicyType)}
+            className={inputClass}
+          >
+            {POLICY_TYPES.map((t) => (
+              <option key={t} value={t}>
+                {POLICY_TYPE_LABELS[t]}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div>

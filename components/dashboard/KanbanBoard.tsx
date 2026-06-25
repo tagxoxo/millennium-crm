@@ -12,6 +12,7 @@ interface KanbanBoardProps {
   policies: Policy[];
   recentReminderPolicyIds: string[];
   documentCounts?: Record<string, number>;
+  clientPolicyCounts?: Record<string, number>;
 }
 
 const POLICY_DRAG_TYPE = "application/x-millennium-policy-id";
@@ -20,6 +21,7 @@ export default function KanbanBoard({
   policies: initialPolicies,
   recentReminderPolicyIds,
   documentCounts = {},
+  clientPolicyCounts = {},
 }: KanbanBoardProps) {
   const router = useRouter();
   const [policies, setPolicies] = useState(initialPolicies);
@@ -135,6 +137,11 @@ export default function KanbanBoard({
                     key={policy.id}
                     policy={policy}
                     documentCount={documentCounts[policy.id] ?? 0}
+                    clientPolicyCount={
+                      policy.client_id
+                        ? clientPolicyCounts[policy.client_id] ?? 0
+                        : 0
+                    }
                     renewalEmailStatus={getRenewalEmailStatus(
                       policy,
                       reminderSet
