@@ -18,4 +18,12 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npm run build
+
+      - name: Build (placeholder env — real secrets live on Vercel only)
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder-publishable-key
+          SUPABASE_SECRET_KEY: placeholder-secret-key
+          CRM_PASSWORD: placeholder-ci-password
+          NEXT_PUBLIC_GOOGLE_REVIEW_LINK: https://example.com/review

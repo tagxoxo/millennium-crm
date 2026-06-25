@@ -5,6 +5,8 @@ import {
 } from "@/lib/authSession";
 import { getCrmUser } from "@/lib/users";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   if (!(await requirePasswordSession(request))) {
     return unauthorizedResponse();
