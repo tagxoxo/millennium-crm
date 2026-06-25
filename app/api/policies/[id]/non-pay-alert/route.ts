@@ -22,6 +22,17 @@ export async function POST(
       return NextResponse.json({ error: "Policy not found." }, { status: 404 });
     }
 
+    const email = policy.email?.trim() ?? "";
+    if (!email) {
+      return NextResponse.json(
+        {
+          error:
+            "This client has no email on file. Add one in Edit Client Info, then try again.",
+        },
+        { status: 400 }
+      );
+    }
+
     const carrierLabel =
       CARRIER_LABELS[policy.carrier as Carrier] ?? policy.carrier;
 
@@ -30,7 +41,7 @@ export async function POST(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         client_name: policy.client_name,
-        email: policy.email ?? "",
+        email,
         carrier: carrierLabel,
       }),
     });

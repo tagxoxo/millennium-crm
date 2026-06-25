@@ -118,7 +118,9 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
                 {policy.email}
               </a>
             ) : (
-              "—"
+              <span className="text-amber-400 text-sm">
+                Not on file — add in Edit Client Info for non-pay alerts
+              </span>
             )}
           </dd>
         </div>

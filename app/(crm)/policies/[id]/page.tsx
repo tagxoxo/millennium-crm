@@ -62,7 +62,7 @@ export default async function PolicyDetailPage({
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <h2 className="text-lg font-semibold text-white">Contact History</h2>
           <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <FlagNonPayButton policyId={policy.id} />
+            <FlagNonPayButton policyId={policy.id} email={policy.email} />
             <AddContactForm policyId={policy.id} />
           </div>
         </div>
