@@ -45,6 +45,14 @@ alwaysApply: true
 - Automations are config-only; toggles ON ≠ messages sent
 - Per-user accounts (single shared `CRM_PASSWORD` only)
 
+## Supabase Migrations (always apply automatically — never tell owner to paste SQL manually)
+- **Preferred:** Supabase MCP plugin in Cursor (`apply_migration` or `execute_sql`) scoped to project `vlkpdkrcestazsdsbfev`
+- **Fallback script:** `npm run db:apply supabase/<file>.sql` (uses `SUPABASE_ACCESS_TOKEN` or `SUPABASE_DB_URL` from `.env.local`)
+- **Verify after apply:** `npm run migrate:users-2fa` or query the table
+- SQL files live in `supabase/` — still commit them, but the agent runs them via MCP or `db:apply`
+- `.mcp.json` configures Supabase MCP: `https://mcp.supabase.com/mcp?project_ref=vlkpdkrcestazsdsbfev`
+- If Supabase MCP shows errored: owner re-authenticates in **Cursor Settings → Tools & MCP → Supabase**
+
 ## Dev & Deploy Commands
 ```bash
 npm run dev          # local dev
@@ -53,12 +61,30 @@ vercel --prod --yes  # deploy from CLI (logged in as tagxoxo)
 bash setup-vercel-env.sh  # sync .env.local → Vercel env vars
 ```
 
-## Git & GitHub (end of every session)
+## Git & GitHub (always save everything)
 - Remote: https://github.com/tagxoxo/millennium-crm (private), branch `main`
-- **Always commit and push to GitHub before ending a session** if there are any code changes
+- **After every code change:** run `npm run backup` (exports data snapshot + commits + pushes to GitHub)
+- **Agent rule:** always run `npm run backup` before ending a session if anything changed
+- **Nightly GitHub Action:** `.github/workflows/nightly-backup.yml` exports Supabase data to `backups/data/crm-snapshot.json` and commits automatically (needs GitHub secrets)
+- **CI:** `.github/workflows/ci.yml` runs `npm run build` on every push to `main`
 - Never commit `.env.local` or secrets; use `.env.example` for templates only
-- GitHub CLI is logged in as `tagxoxo` — use `gh auth setup-git` if `git push` fails
-- Commit message: short summary of why; push with `git push origin main`
+
+## Where everything is saved (disaster recovery map)
+| What | Where it's stored | How it's backed up |
+|------|-------------------|-------------------|
+| App code | GitHub `main` | `npm run backup` + every agent session |
+| Policies, contacts, leads | Supabase cloud | Nightly JSON export to GitHub + Supabase own backups |
+| Policy PDFs/images | Cloudflare R2 `wilshire-documents` | Cloudflare storage (not in Git — paths in Supabase `policy_documents`) |
+| Live website | Vercel | Auto-deploys from GitHub `main` |
+| Env vars / passwords | `.env.local` (Mac) + Vercel dashboard | **Not in Git** — owner must keep `.env.local` safe |
+| SQL migrations | `supabase/*.sql` in GitHub | Committed with code |
+
+```bash
+npm run backup          # export data + commit + push (run anytime)
+npm run export:data     # Supabase → backups/data/crm-snapshot.json only
+bash setup-vercel-env.sh  # sync .env.local → Vercel
+vercel --prod --yes     # deploy live site
+```
 
 ## Common Issues
 - **"Cannot find module ./995.js"** or white unstyled page → run `npm run dev:clean`

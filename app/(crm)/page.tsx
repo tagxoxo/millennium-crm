@@ -7,6 +7,12 @@ import {
   URGENT_RENEWAL_DAYS,
 } from "@/lib/dashboard";
 import { fetchAllPolicies } from "@/lib/policies";
+import { countPoliciesNeedingOutreach } from "@/lib/renewalReminders";
+import { fetchDocumentCountsByPolicy } from "@/lib/documentQueries";
+import {
+  fetchRecentRenewalReminderPolicyIds,
+  fetchRenewalRemindersSentLast30Days,
+} from "@/lib/renewalReminderQueries";
 import type { Policy } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +27,20 @@ async function getPolicies(): Promise<{
 
 export default async function DashboardPage() {
   const { policies, error } = await getPolicies();
-  const stats = computeDashboardStats(policies);
+  const recentReminderPolicyIds = await fetchRecentRenewalReminderPolicyIds();
+  const recentReminderSet = new Set(recentReminderPolicyIds);
+  const renewalRemindersSent30 = await fetchRenewalRemindersSentLast30Days();
+  const documentCounts = await fetchDocumentCountsByPolicy();
+  const policiesNeedingOutreach = countPoliciesNeedingOutreach(
+    policies,
+    recentReminderSet
+  );
+
+  const stats = computeDashboardStats(
+    policies,
+    renewalRemindersSent30,
+    policiesNeedingOutreach
+  );
   const urgentRenewals = getUrgentRenewals(policies);
 
   return (
@@ -51,9 +70,14 @@ export default async function DashboardPage() {
       <section>
         <h2 className="text-lg font-semibold text-white mb-1">Pipeline</h2>
         <p className="text-xs text-gray-500 mb-4 hidden md:block">
-          Drag a client card to another column to change stage.
+          Drag a client card to another column to change stage. Green envelope =
+          45-day reminder sent; yellow = needs reminder.
         </p>
-        <KanbanBoard policies={policies} />
+        <KanbanBoard
+          policies={policies}
+          recentReminderPolicyIds={recentReminderPolicyIds}
+          documentCounts={documentCounts}
+        />
       </section>
 
       <section>

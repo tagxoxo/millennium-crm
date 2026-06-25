@@ -1,12 +1,21 @@
 import { notFound } from "next/navigation";
 import AddContactForm from "@/components/policy-detail/AddContactForm";
 import ContactTimeline from "@/components/policy-detail/ContactTimeline";
+import CommunicationsTimeline from "@/components/policy-detail/CommunicationsTimeline";
 import EditPolicyForm from "@/components/policy-detail/EditPolicyForm";
 import FlagNonPayButton from "@/components/policy-detail/FlagNonPayButton";
+import PolicyDocumentsSection from "@/components/policy-detail/PolicyDocumentsSection";
 import PolicyInfo, { BackLink } from "@/components/policy-detail/PolicyInfo";
+import RenewalReminderButton from "@/components/policy-detail/RenewalReminderButton";
 import StageDropdown from "@/components/policy-detail/StageDropdown";
+import { fetchPolicyDocuments } from "@/lib/documentQueries";
+import { buildEnglishRenewalReminder45,
+  buildSpanishRenewalReminder45,
+} from "@/lib/renewalReminderEmails";
+import { buildNonPayAlertEmail } from "@/lib/sendNonPayAlert";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { ContactLog, Policy } from "@/lib/types";
+import { CARRIER_LABELS } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -47,6 +56,12 @@ export default async function PolicyDetailPage({
   }
 
   const contacts = await getContactLogs(policy.id);
+  const documents = await fetchPolicyDocuments(policy.id);
+  const carrierLabel = CARRIER_LABELS[policy.carrier] ?? policy.carrier;
+  const renewalPreview = policy.spanish_speaker
+    ? buildSpanishRenewalReminder45(policy.client_name, carrierLabel)
+    : buildEnglishRenewalReminder45(policy.client_name, carrierLabel);
+  const nonPayPreview = buildNonPayAlertEmail(policy);
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -60,14 +75,34 @@ export default async function PolicyDetailPage({
 
       <section>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+          <h2 className="text-lg font-semibold text-white">Communications</h2>
+          <RenewalReminderButton
+            policyId={policy.id}
+            email={policy.email}
+            language={policy.spanish_speaker ? "Spanish" : "English"}
+            preview={renewalPreview}
+          />
+        </div>
+        <CommunicationsTimeline contacts={contacts} />
+      </section>
+
+      <section>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
           <h2 className="text-lg font-semibold text-white">Contact History</h2>
           <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-            <FlagNonPayButton policyId={policy.id} email={policy.email} />
+            <FlagNonPayButton
+              policyId={policy.id}
+              email={policy.email}
+              language={policy.spanish_speaker ? "Spanish" : "English"}
+              preview={nonPayPreview}
+            />
             <AddContactForm policyId={policy.id} />
           </div>
         </div>
         <ContactTimeline contacts={contacts} />
       </section>
+
+      <PolicyDocumentsSection policy={policy} initialDocuments={documents} />
     </div>
   );
 }

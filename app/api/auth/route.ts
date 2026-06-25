@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AUTH_COOKIE, createAuthToken } from "@/lib/auth";
+import {
+  AUTH_COOKIE,
+  createAuthToken,
+  getCookieOptions,
+  TWO_FA_REQUIRED_COOKIE,
+} from "@/lib/auth";
+import {
+  buildLoginResponse,
+  checkRequires2fa,
+} from "@/lib/authSession";
 import { cleanEnv } from "@/lib/env";
 
 export async function POST(request: NextRequest) {
@@ -21,21 +30,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Wrong password." }, { status: 401 });
   }
 
-  const token = await createAuthToken(password);
-  const response = NextResponse.json({ ok: true });
-  response.cookies.set(AUTH_COOKIE, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-  });
-
-  return response;
+  const requires2fa = await checkRequires2fa();
+  return buildLoginResponse(requires2fa);
 }
 
 export async function DELETE() {
   const response = NextResponse.json({ ok: true });
   response.cookies.delete(AUTH_COOKIE);
+  response.cookies.delete(TWO_FA_REQUIRED_COOKIE);
+  response.cookies.delete("crm_2fa_verified");
+  response.cookies.delete("crm_2fa_attempts");
   return response;
 }

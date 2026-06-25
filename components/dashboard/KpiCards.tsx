@@ -42,6 +42,16 @@ export default function KpiCards({ stats }: KpiCardsProps) {
         value={formatCurrency(stats.monthlyCommission)}
         subtext="12% of annualized book"
       />
+      <KpiCard
+        label="Renewal Reminders Sent (Last 30 Days)"
+        value={stats.renewalRemindersSent30.toLocaleString()}
+        subtext="45-day reminder emails"
+      />
+      <KpiCard
+        label="Policies Needing Outreach"
+        value={stats.policiesNeedingOutreach.toLocaleString()}
+        subtext="Renewing ≤45d, no reminder in 50d"
+      />
     </div>
   );
 }

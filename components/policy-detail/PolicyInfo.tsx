@@ -124,6 +124,10 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
             )}
           </dd>
         </div>
+        <div className="sm:col-span-2">
+          <dt className="text-gray-500 mb-1">Address</dt>
+          <dd className="text-white">{policy.client_address || "—"}</dd>
+        </div>
         {policy.notes && (
           <div className="sm:col-span-2">
             <dt className="text-gray-500 mb-1">Notes</dt>

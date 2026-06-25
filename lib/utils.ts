@@ -51,3 +51,27 @@ export function annualizedPremium(
 export function cn(...classes: (string | boolean | undefined | null)[]): string {
   return classes.filter(Boolean).join(" ");
 }
+
+export function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+export function sanitizeFileName(name: string): string {
+  return name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 180);
+}
+
+/** Safe folder name from client name for R2 paths (e.g. "Maria Garcia" → "Maria_Garcia") */
+export function sanitizeClientFolder(clientName: string): string {
+  const cleaned = clientName
+    .trim()
+    .replace(/[\u200B-\u200D\uFEFF\u2028\u2029\u00A0]/g, "")
+    .replace(/[^a-zA-Z0-9\s._-]/g, "")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "")
+    .slice(0, 80);
+
+  return cleaned || "Unknown_Client";
+}

@@ -21,6 +21,7 @@ export default function LoginForm() {
       body: JSON.stringify({ password }),
     });
 
+    const json = await res.json();
     setLoading(false);
 
     if (!res.ok) {
@@ -29,7 +30,12 @@ export default function LoginForm() {
     }
 
     const from = searchParams.get("from") || "/";
-    router.push(from);
+
+    if (json.requires2fa) {
+      router.push(`/verify-2fa?from=${encodeURIComponent(from)}`);
+    } else {
+      router.push(from);
+    }
     router.refresh();
   }
 

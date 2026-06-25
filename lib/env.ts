@@ -1,5 +1,10 @@
 /** Remove invisible characters that break HTTP headers when copy-pasted into Vercel */
 export function cleanEnv(value: string): string {
+  return cleanText(value);
+}
+
+/** Trim and strip invisible Unicode (copy-paste from spreadsheets, etc.) */
+export function cleanText(value: string): string {
   return value
     .trim()
     .replace(/[\u200B-\u200D\uFEFF\u2028\u2029\u00A0]/g, "");

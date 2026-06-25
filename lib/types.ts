@@ -22,7 +22,14 @@ export type Stage =
   | "retained"
   | "lapsed";
 
-export type ContactType = "call" | "sms" | "whatsapp" | "email" | "non_pay_alert";
+export type ContactType =
+  | "call"
+  | "sms"
+  | "whatsapp"
+  | "email"
+  | "non_pay_alert"
+  | "renewal_reminder_45"
+  | "manual_policy_review";
 
 export type TriggerType =
   | "days_before_renewal"
@@ -62,6 +69,7 @@ export interface Policy {
   phone: string | null;
   email: string | null;
   policy_number: string | null;
+  client_address: string | null;
   client_since: string | null;
   notes: string | null;
   created_at: string;
@@ -85,6 +93,16 @@ export interface Automation {
   template_text: string;
   active: boolean;
   created_at: string;
+}
+
+export interface PolicyDocument {
+  id: string;
+  policy_id: string;
+  file_name: string;
+  r2_key: string;
+  file_size: number;
+  uploaded_at: string;
+  notes: string | null;
 }
 
 export const STAGES: Stage[] = [

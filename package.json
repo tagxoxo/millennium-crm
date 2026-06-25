@@ -8,16 +8,29 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "migrate:leads": "node scripts/migrate-leads.mjs"
+    "migrate:leads": "node scripts/migrate-leads.mjs",
+    "migrate:users-2fa": "node scripts/migrate-users-2fa.mjs",
+    "db:apply": "node scripts/apply-supabase-sql.mjs",
+    "export:data": "node scripts/export-crm-data.mjs",
+    "backup": "bash scripts/backup-to-github.sh"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1075.0",
+    "@aws-sdk/s3-request-presigner": "^3.1075.0",
     "@supabase/supabase-js": "^2.49.1",
     "next": "14.2.28",
+    "nodemailer": "^9.0.1",
+    "otplib": "^13.4.1",
+    "pdf-parse": "^1.1.1",
+    "pg": "^8.22.0",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/node": "^20.17.24",
+    "@types/nodemailer": "^8.0.1",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "autoprefixer": "^10.4.21",

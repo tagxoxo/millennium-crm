@@ -51,7 +51,10 @@ CREATE TABLE contact_log (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   policy_id UUID NOT NULL REFERENCES policies(id) ON DELETE CASCADE,
   contact_date TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  contact_type TEXT NOT NULL CHECK (contact_type IN ('call', 'sms', 'whatsapp', 'email', 'non_pay_alert')),
+  contact_type TEXT NOT NULL CHECK (contact_type IN (
+    'call', 'sms', 'whatsapp', 'email', 'non_pay_alert',
+    'renewal_reminder_45', 'manual_policy_review'
+  )),
   outcome TEXT,
   notes TEXT
 );
@@ -74,16 +77,30 @@ CREATE TABLE automations (
 );
 
 -- ============================================================
+-- USERS TABLE (CRM admin + 2FA)
+-- ============================================================
+CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT NOT NULL UNIQUE,
+  two_factor_secret TEXT,
+  two_factor_enabled BOOLEAN NOT NULL DEFAULT false,
+  two_factor_verified BOOLEAN NOT NULL DEFAULT false,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ============================================================
 -- ROW LEVEL SECURITY (allows your app to read/write data)
 -- ============================================================
 ALTER TABLE policies ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contact_log ENABLE ROW LEVEL SECURITY;
 ALTER TABLE automations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 -- Allow all operations for authenticated and anon users (adjust later for production)
 CREATE POLICY "Allow all on policies" ON policies FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all on contact_log" ON contact_log FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow all on automations" ON automations FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all on users" ON users FOR ALL USING (true) WITH CHECK (true);
 
 -- ============================================================
 -- LEADS TABLE (new business pipeline)
@@ -127,10 +144,10 @@ INSERT INTO automations (name, trigger_type, trigger_days, channel, template_tex
   true
 ),
 (
-  'Non-Pay Alert (English SMS)',
+  'Non-Pay Alert (Email)',
   'non_pay',
   NULL,
-  'sms',
+  'email',
   'Hi {{client_name}}, this is Millennium Insurance. We noticed a payment issue on your {{carrier}} policy. Please call us at your earliest convenience to avoid a lapse in coverage.',
   true
 ),

@@ -1,6 +1,12 @@
 {
   "plugins": {
     "supabase": {
+      "enabled": false
+    },
+    "cloudflare": {
+      "enabled": true
+    },
+    "vercel": {
       "enabled": true
     }
   }

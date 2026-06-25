@@ -7,6 +7,7 @@ const navItems = [
   { href: "/policies", label: "Policies", icon: "📋" },
   { href: "/import", label: "Import", icon: "📥" },
   { href: "/automations", label: "Automations", icon: "⚡" },
+  { href: "/settings/2fa", label: "Security", icon: "🔐" },
 ];
 
 export default function Sidebar() {

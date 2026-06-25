@@ -32,6 +32,7 @@ export async function PATCH(
     if (body.phone !== undefined) updates.phone = body.phone?.trim() || null;
     if (body.email !== undefined) updates.email = body.email?.trim() || null;
     if (body.policy_number !== undefined) updates.policy_number = body.policy_number?.trim() || null;
+    if (body.client_address !== undefined) updates.client_address = body.client_address?.trim() || null;
     if (body.client_since !== undefined) updates.client_since = body.client_since?.trim() || null;
     if (body.spanish_speaker !== undefined) updates.spanish_speaker = Boolean(body.spanish_speaker);
     if (body.commercial !== undefined) updates.commercial = Boolean(body.commercial);

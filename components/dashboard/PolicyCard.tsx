@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import RenewalEmailIcon from "./RenewalEmailIcon";
+import type { RenewalEmailStatus } from "@/lib/renewalReminders";
 import { useRef } from "react";
 import CarrierBadge from "@/components/ui/CarrierBadge";
 import CommercialTag from "@/components/ui/CommercialTag";
@@ -17,6 +19,8 @@ import { cn } from "@/lib/utils";
 
 interface PolicyCardProps {
   policy: Policy;
+  documentCount?: number;
+  renewalEmailStatus?: RenewalEmailStatus;
   draggable?: boolean;
   isDragging?: boolean;
   onDragStart?: (event: React.DragEvent<HTMLDivElement>) => void;
@@ -25,6 +29,8 @@ interface PolicyCardProps {
 
 export default function PolicyCard({
   policy,
+  documentCount = 0,
+  renewalEmailStatus = "none",
   draggable = false,
   isDragging = false,
   onDragStart,
@@ -40,6 +46,15 @@ export default function PolicyCard({
           {policy.client_name}
         </p>
         <div className="flex items-center gap-1 shrink-0">
+          {documentCount > 0 && (
+            <span
+              className="text-xs text-gray-400"
+              title={`${documentCount} document${documentCount === 1 ? "" : "s"}`}
+            >
+              📎 {documentCount}
+            </span>
+          )}
+          <RenewalEmailIcon status={renewalEmailStatus} />
           {policy.commercial && <CommercialTag />}
           <TermTag termMonths={normalizeTermMonths(policy.term_months)} />
           {policy.spanish_speaker && <SpanishTag />}

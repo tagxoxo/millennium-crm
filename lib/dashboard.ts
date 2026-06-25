@@ -14,9 +14,15 @@ export interface DashboardStats {
   totalPremium: number;
   totalAnnualPremium: number;
   monthlyCommission: number;
+  renewalRemindersSent30: number;
+  policiesNeedingOutreach: number;
 }
 
-export function computeDashboardStats(policies: Policy[]): DashboardStats {
+export function computeDashboardStats(
+  policies: Policy[],
+  renewalRemindersSent30 = 0,
+  policiesNeedingOutreach = 0
+): DashboardStats {
   const total = policies.length;
   const retained = policies.filter((p) => p.stage === "retained").length;
   const active = policies.filter((p) => p.stage !== "lapsed");
@@ -53,6 +59,8 @@ export function computeDashboardStats(policies: Policy[]): DashboardStats {
     totalPremium,
     totalAnnualPremium,
     monthlyCommission,
+    renewalRemindersSent30,
+    policiesNeedingOutreach,
   };
 }
 

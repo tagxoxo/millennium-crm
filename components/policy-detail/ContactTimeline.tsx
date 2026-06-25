@@ -7,6 +7,8 @@ const TYPE_LABELS: Record<ContactLog["contact_type"], string> = {
   whatsapp: "WhatsApp",
   email: "Email",
   non_pay_alert: "Non-Pay Alert",
+  renewal_reminder_45: "45-Day Reminder",
+  manual_policy_review: "Policy Review",
 };
 
 const TYPE_COLORS: Record<ContactLog["contact_type"], string> = {
@@ -15,6 +17,8 @@ const TYPE_COLORS: Record<ContactLog["contact_type"], string> = {
   whatsapp: "bg-emerald-500/20 text-emerald-400 border-emerald-500/40",
   email: "bg-purple-500/20 text-purple-400 border-purple-500/40",
   non_pay_alert: "bg-red-500/20 text-red-400 border-red-500/40",
+  renewal_reminder_45: "bg-green-500/20 text-green-400 border-green-500/40",
+  manual_policy_review: "bg-blue-500/20 text-blue-400 border-blue-500/40",
 };
 
 interface ContactTimelineProps {

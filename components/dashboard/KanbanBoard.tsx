@@ -1,23 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import PolicyCard from "./PolicyCard";
 import type { Policy, Stage } from "@/lib/types";
 import { STAGES, STAGE_LABELS } from "@/lib/types";
+import { getRenewalEmailStatus } from "@/lib/renewalReminders";
 import { cn } from "@/lib/utils";
 
 interface KanbanBoardProps {
   policies: Policy[];
+  recentReminderPolicyIds: string[];
+  documentCounts?: Record<string, number>;
 }
 
 const POLICY_DRAG_TYPE = "application/x-millennium-policy-id";
 
-export default function KanbanBoard({ policies: initialPolicies }: KanbanBoardProps) {
+export default function KanbanBoard({
+  policies: initialPolicies,
+  recentReminderPolicyIds,
+  documentCounts = {},
+}: KanbanBoardProps) {
   const router = useRouter();
   const [policies, setPolicies] = useState(initialPolicies);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverStage, setDragOverStage] = useState<Stage | null>(null);
+
+  const reminderSet = useMemo(
+    () => new Set(recentReminderPolicyIds),
+    [recentReminderPolicyIds]
+  );
 
   useEffect(() => {
     setPolicies(initialPolicies);
@@ -122,6 +134,11 @@ export default function KanbanBoard({ policies: initialPolicies }: KanbanBoardPr
                   <PolicyCard
                     key={policy.id}
                     policy={policy}
+                    documentCount={documentCounts[policy.id] ?? 0}
+                    renewalEmailStatus={getRenewalEmailStatus(
+                      policy,
+                      reminderSet
+                    )}
                     draggable
                     isDragging={draggingId === policy.id}
                     onDragStart={(event) => handleDragStart(policy.id, event)}
