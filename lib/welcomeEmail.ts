@@ -6,25 +6,10 @@ export function getClientFirstName(fullName: string): string {
   return trimmed.split(/\s+/)[0] ?? trimmed;
 }
 
-function footerHtml(): string {
-  const email = getBusinessEmail();
-  const phone = getBusinessPhone();
-
-  return `
-    <p>${phone}<br>${email}</p>
-    <p>
-      Wilshire Insurance Group<br>
-      111 17th Ave S<br>
-      Nashville, TN, 37203
-    </p>
-  `;
-}
-
 function wrapHtml(body: string): string {
   return `
     <div style="font-family: Arial, sans-serif; font-size: 15px; line-height: 1.6; color: #222;">
       ${body}
-      ${footerHtml()}
     </div>
   `;
 }
