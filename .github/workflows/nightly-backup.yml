@@ -1,0 +1,37 @@
+name: Nightly CRM Backup
+
+on:
+  schedule:
+    # 6:00 AM UTC daily (~1–2 AM Central)
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - run: npm ci
+
+      - name: Export Supabase data snapshot
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: node scripts/export-crm-data.mjs
+
+      - name: Commit and push backup
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Nightly CRM data backup $(date +'%Y-%m-%d')"
+          file_pattern: "backups/data/crm-snapshot.json"
+          commit_user_name: Millennium CRM Backup
+          commit_user_email: backup@millennium-crm.local
