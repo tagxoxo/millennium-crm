@@ -222,8 +222,9 @@ function normalizeCarrier(value: string): string | null {
 
 function normalizeStage(value: string): string {
   const v = value.toLowerCase().trim();
-  const stages = ["upcoming", "contacted", "quoted", "retained", "lapsed"];
+  const stages = ["upcoming", "contacted", "quoted", "retained", "active", "lapsed"];
   if (stages.includes(v)) return v;
+  if (v.includes("active") || v.includes("current")) return "active";
   if (v.includes("retain")) return "retained";
   if (v.includes("contact")) return "contacted";
   if (v.includes("quote")) return "quoted";
@@ -289,7 +290,7 @@ export function mapRowsToPolicies(
   rows.forEach((row, rowIndex) => {
     const rowNum = rowIndex + 2; // account for header + 1-based
     const fields: Partial<ParsedPolicyRow> = {
-      stage: "upcoming",
+      stage: "active",
       spanish_speaker: false,
       commercial: false,
       term_months: 12,
@@ -382,7 +383,7 @@ export function mapRowsToPolicies(
       premium,
       effective_date: effectiveDateRaw,
       renewal_date: renewalDate,
-      stage: normalizeStage(String(fields.stage ?? "upcoming")),
+      stage: normalizeStage(String(fields.stage ?? "active")),
       spanish_speaker: fields.spanish_speaker ?? false,
       commercial: fields.commercial ?? false,
       term_months: fields.term_months ?? 12,

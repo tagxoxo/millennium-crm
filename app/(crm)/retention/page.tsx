@@ -4,21 +4,23 @@ import { fetchPolicyCountByClient } from "@/lib/clients";
 import { getUrgentRenewals, URGENT_RENEWAL_DAYS } from "@/lib/dashboard";
 import { fetchDocumentCountsByPolicy } from "@/lib/documentQueries";
 import { fetchAllPolicies } from "@/lib/policies";
+import { RETENTION_PIPELINE_DAYS } from "@/lib/retentionPipeline";
 import { fetchRecentRenewalReminderPolicyIds } from "@/lib/renewalReminderQueries";
-import type { Policy } from "@/lib/types";
+import {
+  getActiveClientPolicies,
+  getRetentionPipelinePolicies,
+  syncRetentionPipelineStages,
+} from "@/lib/syncRetentionPipeline";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-async function getPolicies(): Promise<{
-  policies: Policy[];
-  error: string | null;
-}> {
-  return fetchAllPolicies();
-}
-
 export default async function RetentionCenterPage() {
-  const { policies, error } = await getPolicies();
+  const { policies: rawPolicies, error } = await fetchAllPolicies();
+  const policies = error ? rawPolicies : await syncRetentionPipelineStages(rawPolicies);
+  const pipelinePolicies = getRetentionPipelinePolicies(policies);
+  const activeClients = getActiveClientPolicies(policies);
+
   const recentReminderPolicyIds = await fetchRecentRenewalReminderPolicyIds();
   const documentCounts = await fetchDocumentCountsByPolicy();
   const clientPolicyCounts = await fetchPolicyCountByClient();
@@ -31,7 +33,7 @@ export default async function RetentionCenterPage() {
         <p className="text-gray-400 text-sm mt-1">
           {policies.length === 0 && !error
             ? "No policies yet — import your AdaptAI export to get started."
-            : `${policies.length} policies in your renewal pipeline`}
+            : `${pipelinePolicies.length} in renewal pipeline · ${activeClients.length} active clients`}
         </p>
       </div>
 
@@ -49,11 +51,14 @@ export default async function RetentionCenterPage() {
       <section>
         <h2 className="text-lg font-semibold text-white mb-1">Pipeline</h2>
         <p className="text-xs text-gray-500 mb-4 hidden md:block">
-          Drag a client card to another column to change stage. Green envelope =
-          45-day reminder sent; yellow = needs reminder.
+          Clients enter the pipeline automatically when expiration is within{" "}
+          {RETENTION_PIPELINE_DAYS} days. Active clients are your current book — they
+          move to Upcoming when the window opens. Green envelope = 45-day reminder sent;
+          yellow = needs reminder.
         </p>
         <KanbanBoard
-          policies={policies}
+          policies={pipelinePolicies}
+          activeClients={activeClients}
           recentReminderPolicyIds={recentReminderPolicyIds}
           documentCounts={documentCounts}
           clientPolicyCounts={clientPolicyCounts}

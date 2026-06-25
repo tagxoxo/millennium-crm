@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { syncClientFromPolicyId, fetchClientById, syncPoliciesFromClient } from "@/lib/clients";
+import { computeAutoPipelineStage } from "@/lib/retentionPipeline";
 import { getSupabaseServer } from "@/lib/supabase/server";
-import type { Carrier, PolicyType, TermMonths } from "@/lib/types";
+import type { Carrier, Policy, PolicyType, TermMonths } from "@/lib/types";
 import { CARRIERS, POLICY_TYPES, TERM_MONTHS, normalizeClientState } from "@/lib/types";
 
 export async function PATCH(
@@ -108,6 +109,22 @@ export async function PATCH(
     }
 
     await syncClientFromPolicyId(params.id);
+
+    const { data: updatedPolicy } = await supabase
+      .from("policies")
+      .select("*")
+      .eq("id", params.id)
+      .single();
+
+    if (updatedPolicy) {
+      const autoStage = computeAutoPipelineStage(updatedPolicy as Policy);
+      if (autoStage !== updatedPolicy.stage) {
+        await supabase
+          .from("policies")
+          .update({ stage: autoStage })
+          .eq("id", params.id);
+      }
+    }
 
     return NextResponse.json({ ok: true });
   } catch {

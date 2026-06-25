@@ -11,6 +11,7 @@ import StateTag from "@/components/ui/StateTag";
 import TermTag from "@/components/ui/TermTag";
 import type { Policy } from "@/lib/types";
 import { DEFAULT_CLIENT_STATE, normalizeClientState } from "@/lib/types";
+import { daysUntilPipelineEntry } from "@/lib/retentionPipeline";
 import {
   daysUntilRenewal,
   formatCurrency,
@@ -24,6 +25,7 @@ interface PolicyCardProps {
   documentCount?: number;
   clientPolicyCount?: number;
   renewalEmailStatus?: RenewalEmailStatus;
+  showPipelineEntry?: boolean;
   draggable?: boolean;
   isDragging?: boolean;
   onDragStart?: (event: React.DragEvent<HTMLDivElement>) => void;
@@ -35,6 +37,7 @@ export default function PolicyCard({
   documentCount = 0,
   clientPolicyCount = 0,
   renewalEmailStatus = "none",
+  showPipelineEntry = false,
   draggable = false,
   isDragging = false,
   onDragStart,
@@ -97,6 +100,11 @@ export default function PolicyCard({
             ? `${Math.abs(days)}d overdue`
             : `${days}d until renewal`}
       </p>
+      {showPipelineEntry && days > 0 && (
+        <p className="text-[11px] text-emerald-400/90 mt-1">
+          Pipeline in {daysUntilPipelineEntry(policy.renewal_date)}d
+        </p>
+      )}
     </>
   );
 

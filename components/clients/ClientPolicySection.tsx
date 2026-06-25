@@ -21,6 +21,10 @@ import {
   normalizeClientState,
 } from "@/lib/types";
 import {
+  getPipelineStageLabel,
+  getPipelineStageNote,
+} from "@/lib/retentionPipeline";
+import {
   daysUntilRenewal,
   formatCurrency,
   formatDate,
@@ -138,9 +142,12 @@ function PolicyCard({ policy }: { policy: PolicyWithDocuments }) {
         {!isPast && (
           <>
             <div className="flex justify-between">
-              <dt className="text-gray-500">Stage</dt>
-              <dd className="text-gray-300">{STAGE_LABELS[policy.stage]}</dd>
+              <dt className="text-gray-500">Pipeline stage</dt>
+              <dd className="text-gray-300">{getPipelineStageLabel(policy)}</dd>
             </div>
+            {getPipelineStageNote(policy) && (
+              <p className="text-xs text-gray-500">{getPipelineStageNote(policy)}</p>
+            )}
             <div className="flex justify-between">
               <dt className="text-gray-500">Days to expiration</dt>
               <dd className={`font-medium ${renewalColor(days)}`}>
@@ -233,7 +240,7 @@ export default function AddClientPolicyForm({ client }: AddClientPolicyFormProps
   const [premium, setPremium] = useState("");
   const [effectiveDate, setEffectiveDate] = useState("");
   const [renewalDate, setRenewalDate] = useState("");
-  const [stage, setStage] = useState<Stage>("upcoming");
+  const [stage, setStage] = useState<Stage>("active");
   const [termMonths, setTermMonths] = useState<TermMonths>(12);
   const [policyNumber, setPolicyNumber] = useState("");
   const [commercial, setCommercial] = useState(false);

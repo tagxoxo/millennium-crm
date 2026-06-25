@@ -212,7 +212,7 @@ export function computeRetentionByState(policies: Policy[]): StateRetentionSlice
     const state = normalizeClientState(policy.client_state);
     const bucket = buckets.get(state)!;
     bucket.total += 1;
-    if (policy.stage === "retained") bucket.retained += 1;
+    if (policy.stage === "retained" || policy.stage === "active") bucket.retained += 1;
   }
 
   return CLIENT_STATES.map((state) => {

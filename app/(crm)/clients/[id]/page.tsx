@@ -16,6 +16,7 @@ import {
   fetchPoliciesWithDocumentsForClient,
   reconcileClientPolicyDocuments,
 } from "@/lib/policyHistory";
+import { syncRetentionPipelineStages } from "@/lib/syncRetentionPipeline";
 import { CARRIER_LABELS, POLICY_TYPE_LABELS } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +32,13 @@ export default async function ClientDetailPage({
 
   await reconcileClientPolicyDocuments(client.id);
 
-  const policies = await fetchPoliciesWithDocumentsForClient(client.id);
+  const rawPolicies = await fetchPoliciesWithDocumentsForClient(client.id);
+  const activePolicies = rawPolicies.filter((p) => !p.is_historical);
+  const syncedActive = await syncRetentionPipelineStages(activePolicies);
+  const syncedById = new Map(syncedActive.map((p) => [p.id, p.stage]));
+  const policies = rawPolicies.map((p) =>
+    syncedById.has(p.id) ? { ...p, stage: syncedById.get(p.id)! } : p
+  );
   const syncedClient = await syncClientFromPoliciesIfNeeded(
     client,
     policies.filter((p) => !p.is_historical)

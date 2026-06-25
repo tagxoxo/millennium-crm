@@ -19,7 +19,9 @@ export interface DashboardStats {
 
 export function computeDashboardStats(policies: Policy[]): DashboardStats {
   const total = policies.length;
-  const retained = policies.filter((p) => p.stage === "retained").length;
+  const retained = policies.filter(
+    (p) => p.stage === "retained" || p.stage === "active"
+  ).length;
   const active = policies.filter((p) => p.stage !== "lapsed");
 
   const today = new Date();

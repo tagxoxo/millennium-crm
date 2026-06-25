@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchClientById } from "@/lib/clients";
+import { resolveInitialPipelineStage } from "@/lib/retentionPipeline";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Carrier, PolicyType, Stage, TermMonths } from "@/lib/types";
 import { CARRIERS, POLICY_TYPES, STAGES, TERM_MONTHS } from "@/lib/types";
@@ -17,7 +18,12 @@ export async function POST(
     const body = await request.json();
     const carrier = body.carrier as Carrier;
     const renewalDate = body.renewal_date as string;
-    const stage = (body.stage as Stage) || "upcoming";
+    const isHistorical = Boolean(body.is_historical);
+    const stage = resolveInitialPipelineStage(
+      renewalDate,
+      body.stage as Stage | undefined,
+      isHistorical
+    );
 
     if (!carrier || !CARRIERS.includes(carrier)) {
       return NextResponse.json({ error: "Invalid carrier." }, { status: 400 });
@@ -46,7 +52,6 @@ export async function POST(
       return NextResponse.json({ error: "Invalid prior carrier." }, { status: 400 });
     }
 
-    const isHistorical = Boolean(body.is_historical);
     const supabase = getSupabaseServer();
     const { data, error } = await supabase
       .from("policies")

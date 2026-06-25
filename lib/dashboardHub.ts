@@ -5,6 +5,7 @@ import {
   type OutreachActivity,
 } from "./serviceCenter";
 import { URGENT_RENEWAL_DAYS } from "./dashboard";
+import { isInRetentionPipeline } from "./retentionPipeline";
 import { getRenewalEmailStatus } from "./renewalReminders";
 import { formatCurrency, parseLocalDate } from "./utils";
 
@@ -59,7 +60,9 @@ export function computeRetentionHubSummary(
   policies: Policy[],
   recentReminderPolicyIds: Set<string>
 ): RetentionHubSummary {
-  const renewing = renewingInWindow(policies, URGENT_RENEWAL_DAYS);
+  const renewing = renewingInWindow(policies, URGENT_RENEWAL_DAYS).filter(
+    isInRetentionPipeline
+  );
   const stillUpcoming = renewing.filter((p) => p.stage === "upcoming").length;
   const alreadyContacted = renewing.filter((p) =>
     ["contacted", "quoted", "retained"].includes(p.stage)

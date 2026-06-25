@@ -8,6 +8,7 @@ import {
 import { inferCarrierFromFileName } from "@/lib/policyHistory";
 import { extractTextFromPdf } from "@/lib/pdfText";
 import { getR2Bucket, getR2Client } from "@/lib/r2";
+import { resolveInitialPipelineStage } from "@/lib/retentionPipeline";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Carrier } from "@/lib/types";
 import { CARRIERS, normalizeClientState } from "@/lib/types";
@@ -170,7 +171,7 @@ export async function POST(request: NextRequest) {
           premium,
           renewal_date: renewalDate,
           effective_date: effectiveDate,
-          stage: "upcoming",
+          stage: resolveInitialPipelineStage(renewalDate, undefined, false),
           spanish_speaker: isSpanishSpeaker,
           client_state: clientState,
           commercial: false,

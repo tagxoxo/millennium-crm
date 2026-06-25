@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findDuplicateClients, syncPoliciesFromClient } from "@/lib/clients";
+import { resolveInitialPipelineStage } from "@/lib/retentionPipeline";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Carrier, Client, PolicyType, Stage, TermMonths } from "@/lib/types";
 import { CARRIERS, POLICY_TYPES, STAGES, TERM_MONTHS, normalizeClientState } from "@/lib/types";
@@ -34,7 +35,11 @@ export async function POST(request: NextRequest) {
     const clientName = String(body.client_name ?? "").trim();
     const carrier = body.carrier as Carrier;
     const renewalDate = body.renewal_date as string;
-    const stage = (body.stage as Stage) || "upcoming";
+    const stage = resolveInitialPipelineStage(
+      renewalDate,
+      body.stage as Stage | undefined,
+      false
+    );
 
     if (!clientName) {
       return NextResponse.json({ error: "Client name is required." }, { status: 400 });

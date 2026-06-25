@@ -15,6 +15,7 @@ import { buildEnglishRenewalReminder45,
 } from "@/lib/renewalReminderEmails";
 import { buildNonPayAlertEmail } from "@/lib/sendNonPayAlert";
 import { getSupabaseServer } from "@/lib/supabase/server";
+import { syncPolicyPipelineStage } from "@/lib/syncRetentionPipeline";
 import type { ContactLog, Policy } from "@/lib/types";
 import { CARRIER_LABELS } from "@/lib/types";
 
@@ -50,11 +51,13 @@ export default async function PolicyDetailPage({
 }: {
   params: { id: string };
 }) {
-  const policy = await getPolicy(params.id);
+  const rawPolicy = await getPolicy(params.id);
 
-  if (!policy) {
+  if (!rawPolicy) {
     notFound();
   }
+
+  const policy = await syncPolicyPipelineStage(rawPolicy);
 
   const contacts = await getContactLogs(policy.id);
   const documents = await fetchPolicyDocuments(policy.id);
@@ -75,7 +78,7 @@ export default async function PolicyDetailPage({
         <EditPolicyForm policy={policy} />
       </div>
 
-      <StageDropdown policyId={policy.id} currentStage={policy.stage} />
+      <StageDropdown policyId={policy.id} policy={policy} />
 
       <section>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">

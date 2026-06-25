@@ -19,7 +19,7 @@ CREATE TABLE policies (
   premium NUMERIC(10, 2) NOT NULL DEFAULT 0,
   effective_date DATE,
   renewal_date DATE NOT NULL,
-  stage TEXT NOT NULL DEFAULT 'upcoming' CHECK (stage IN ('upcoming', 'contacted', 'quoted', 'retained', 'lapsed')),
+  stage TEXT NOT NULL DEFAULT 'active' CHECK (stage IN ('upcoming', 'contacted', 'quoted', 'retained', 'active', 'lapsed')),
   spanish_speaker BOOLEAN NOT NULL DEFAULT false,
   client_state TEXT NOT NULL DEFAULT 'TN' CHECK (client_state IN ('TN', 'TX', 'MA', 'RI')),
   commercial BOOLEAN NOT NULL DEFAULT false,

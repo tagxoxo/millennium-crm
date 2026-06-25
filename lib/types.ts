@@ -20,6 +20,7 @@ export type Stage =
   | "contacted"
   | "quoted"
   | "retained"
+  | "active"
   | "lapsed";
 
 export type ContactType =
@@ -174,6 +175,16 @@ export const STAGES: Stage[] = [
   "contacted",
   "quoted",
   "retained",
+  "active",
+  "lapsed",
+];
+
+/** Columns on the Retention Center kanban (pipeline + lapsed). */
+export const RETENTION_KANBAN_STAGES: Stage[] = [
+  "upcoming",
+  "contacted",
+  "quoted",
+  "retained",
   "lapsed",
 ];
 
@@ -182,6 +193,7 @@ export const STAGE_LABELS: Record<Stage, string> = {
   contacted: "Contacted",
   quoted: "Quoted",
   retained: "Retained",
+  active: "Active Client",
   lapsed: "Lapsed",
 };
 

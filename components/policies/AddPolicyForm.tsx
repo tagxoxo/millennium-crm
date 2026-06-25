@@ -61,7 +61,7 @@ export default function AddPolicyForm() {
   const [premium, setPremium] = useState("");
   const [effectiveDate, setEffectiveDate] = useState("");
   const [renewalDate, setRenewalDate] = useState("");
-  const [stage, setStage] = useState<Stage>("upcoming");
+  const [stage, setStage] = useState<Stage>("active");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [policyNumber, setPolicyNumber] = useState("");
@@ -80,7 +80,7 @@ export default function AddPolicyForm() {
     setPremium("");
     setEffectiveDate("");
     setRenewalDate("");
-    setStage("upcoming");
+    setStage("active");
     setPhone("");
     setEmail("");
     setPolicyNumber("");
