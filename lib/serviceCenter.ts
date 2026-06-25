@@ -13,6 +13,7 @@ export const OUTREACH_TYPE_LABELS: Record<ContactType, string> = {
   renewal_reminder_45: "45-Day Renewal Reminder",
   manual_policy_review: "Policy Review",
   policy_review_response: "Policy Review Response",
+  welcome_email: "Welcome Email",
 };
 
 export interface OutreachActivity {

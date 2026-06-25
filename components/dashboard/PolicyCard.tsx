@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import RenewalEmailIcon from "./RenewalEmailIcon";
 import type { RenewalEmailStatus } from "@/lib/renewalReminders";
 import { useRef } from "react";
@@ -32,6 +33,12 @@ interface PolicyCardProps {
   onDragEnd?: () => void;
 }
 
+function cardHref(policy: Policy): string {
+  return policy.client_id
+    ? `/clients/${policy.client_id}`
+    : `/policies/${policy.id}`;
+}
+
 export default function PolicyCard({
   policy,
   documentCount = 0,
@@ -43,26 +50,18 @@ export default function PolicyCard({
   onDragStart,
   onDragEnd,
 }: PolicyCardProps) {
+  const router = useRouter();
   const days = daysUntilRenewal(policy.renewal_date);
   const didDrag = useRef(false);
+  const href = cardHref(policy);
 
   const content = (
     <>
       <div className="flex items-start justify-between gap-2 mb-2">
         <div className="min-w-0">
-          {policy.client_id ? (
-            <Link
-              href={`/clients/${policy.client_id}`}
-              className="font-medium text-white text-sm leading-tight hover:text-accent transition-colors block truncate"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {policy.client_name}
-            </Link>
-          ) : (
-            <p className="font-medium text-white text-sm leading-tight">
-              {policy.client_name}
-            </p>
-          )}
+          <p className="font-medium text-white text-sm leading-tight truncate">
+            {policy.client_name}
+          </p>
           {clientPolicyCount > 1 && (
             <span className="text-xs text-gray-500 mt-0.5 block">
               {clientPolicyCount} policies
@@ -110,13 +109,17 @@ export default function PolicyCard({
 
   const cardClass = cn(
     "block bg-navy border border-navy-lighter rounded-lg p-3 hover:border-accent/50 transition-colors",
-    draggable && "cursor-grab active:cursor-grabbing",
+    draggable ? "cursor-grab active:cursor-grabbing" : "cursor-pointer",
     isDragging && "opacity-40"
   );
 
+  function openProfile() {
+    if (!didDrag.current) router.push(href);
+  }
+
   if (!draggable) {
     return (
-      <Link href={`/policies/${policy.id}`} className={cardClass}>
+      <Link href={href} className={cardClass}>
         {content}
       </Link>
     );
@@ -135,18 +138,18 @@ export default function PolicyCard({
           didDrag.current = false;
         }, 0);
       }}
+      onClick={openProfile}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openProfile();
+        }
+      }}
+      role="link"
+      tabIndex={0}
       className={cardClass}
     >
-      <Link
-        href={`/policies/${policy.id}`}
-        onClick={(event) => {
-          if (didDrag.current) event.preventDefault();
-        }}
-        className="block"
-        draggable={false}
-      >
-        {content}
-      </Link>
+      {content}
     </div>
   );
 }

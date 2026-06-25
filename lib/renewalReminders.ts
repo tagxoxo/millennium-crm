@@ -13,6 +13,7 @@ export const EMAIL_COMMUNICATION_TYPES = [
   "renewal_reminder_45",
   "non_pay_alert",
   "manual_policy_review",
+  "welcome_email",
   "email",
 ] as const;
 

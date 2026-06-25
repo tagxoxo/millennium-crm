@@ -32,7 +32,8 @@ export type ContactType =
   | "non_pay_resolved"
   | "renewal_reminder_45"
   | "manual_policy_review"
-  | "policy_review_response";
+  | "policy_review_response"
+  | "welcome_email";
 
 export type OutreachStatus = "sent" | "failed" | "pending";
 

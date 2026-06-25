@@ -6,6 +6,8 @@ import AddClientPolicyForm, {
 } from "@/components/clients/ClientPolicySection";
 import ClientDocumentUpload from "@/components/clients/ClientDocumentUpload";
 import EditClientForm, { ClientInfoCard } from "@/components/clients/EditClientForm";
+import RenewalReminderButton from "@/components/policy-detail/RenewalReminderButton";
+import WelcomeEmailButton from "@/components/policy-detail/WelcomeEmailButton";
 import {
   fetchClientById,
   fetchContactLogsForClient,
@@ -16,8 +18,11 @@ import {
   fetchPoliciesWithDocumentsForClient,
   reconcileClientPolicyDocuments,
 } from "@/lib/policyHistory";
+import { buildRenewalReminderButtonData } from "@/lib/sendRenewalReminder45";
+import { buildWelcomeEmailPreview } from "@/lib/sendWelcomeEmail";
 import { syncRetentionPipelineStages } from "@/lib/syncRetentionPipeline";
 import { CARRIER_LABELS, POLICY_TYPE_LABELS } from "@/lib/types";
+import { parseLocalDate } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -56,6 +61,28 @@ export default async function ClientDetailPage({
   const currentCount = policies.filter((p) => !p.is_historical).length;
   const pastCount = policies.filter((p) => p.is_historical).length;
 
+  const currentPolicies = policies.filter((p) => !p.is_historical);
+  const renewalOptions = {
+    clientEmail: displayClient.email,
+    clientSpanish: displayClient.is_spanish_speaker,
+  };
+  const renewalByPolicyId = Object.fromEntries(
+    currentPolicies.map((policy) => [
+      policy.id,
+      buildRenewalReminderButtonData(policy, renewalOptions),
+    ])
+  );
+  const primaryRenewalPolicy = [...currentPolicies].sort(
+    (a, b) =>
+      parseLocalDate(a.renewal_date).getTime() -
+      parseLocalDate(b.renewal_date).getTime()
+  )[0];
+
+  const welcomePreview = buildWelcomeEmailPreview(
+    displayClient.full_name,
+    displayClient.is_spanish_speaker
+  );
+
   const uploadPolicyOptions = policies
     .filter((p) => !p.is_historical)
     .concat(policies.filter((p) => p.is_historical))
@@ -78,7 +105,21 @@ export default async function ClientDetailPage({
       </Link>
 
       <ClientInfoCard client={displayClient} />
-      <EditClientForm client={displayClient} />
+
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3">
+        <EditClientForm client={displayClient} />
+        <WelcomeEmailButton
+          clientId={displayClient.id}
+          email={displayClient.email}
+          language={displayClient.is_spanish_speaker ? "Spanish" : "English"}
+          preview={welcomePreview}
+        />
+        {primaryRenewalPolicy && (
+          <RenewalReminderButton
+            {...renewalByPolicyId[primaryRenewalPolicy.id]}
+          />
+        )}
+      </div>
 
       <section>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
@@ -94,7 +135,11 @@ export default async function ClientDetailPage({
             <AddClientPolicyForm client={displayClient} />
           </div>
         </div>
-        <ClientPolicyCards policies={policies} />
+        <ClientPolicyCards
+          policies={policies}
+          renewalByPolicyId={renewalByPolicyId}
+          showCardRenewalReminder={currentPolicies.length > 1}
+        />
       </section>
 
       <section>

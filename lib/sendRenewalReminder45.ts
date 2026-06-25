@@ -18,6 +18,32 @@ export function buildRenewalReminder45Email(
     : buildEnglishRenewalReminder45(policy.client_name, carrier);
 }
 
+export interface RenewalReminderButtonData {
+  policyId: string;
+  email: string | null;
+  language: string;
+  preview: { subject: string; html: string };
+}
+
+export function buildRenewalReminderButtonData(
+  policy: Pick<Policy, "id" | "client_name" | "carrier" | "spanish_speaker" | "email">,
+  options?: { clientEmail?: string | null; clientSpanish?: boolean }
+): RenewalReminderButtonData {
+  const email = options?.clientEmail?.trim() || policy.email?.trim() || null;
+  const spanish = Boolean(options?.clientSpanish ?? policy.spanish_speaker);
+  const preview = buildRenewalReminder45Email({
+    ...policy,
+    spanish_speaker: spanish,
+  });
+
+  return {
+    policyId: policy.id,
+    email,
+    language: spanish ? "Spanish" : "English",
+    preview,
+  };
+}
+
 export async function sendRenewalReminder45ForPolicy(policyId: string) {
   const supabase = getSupabaseServer();
 

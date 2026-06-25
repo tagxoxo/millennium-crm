@@ -77,6 +77,7 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
     policy.policy_type ?? "personal_auto"
   );
   const [notes, setNotes] = useState(policy.notes ?? "");
+  const [isHistorical, setIsHistorical] = useState(Boolean(policy.is_historical));
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -95,6 +96,7 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
         term_months: termMonths,
         policy_type: policyType,
         notes,
+        is_historical: isHistorical,
       });
       setOpen(false);
       router.refresh();
@@ -168,6 +170,37 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
         >
           Cancel
         </button>
+      </div>
+
+      <div
+        className={`rounded-lg border p-4 ${
+          isHistorical
+            ? "border-gray-600/50 bg-gray-600/10"
+            : "border-navy-lighter bg-navy/40"
+        }`}
+      >
+        <div className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            id="edit_policy_is_historical"
+            checked={isHistorical}
+            onChange={(e) => setIsHistorical(e.target.checked)}
+            className="mt-1 rounded border-navy-lighter"
+          />
+          <div>
+            <label
+              htmlFor="edit_policy_is_historical"
+              className="text-sm font-medium text-gray-200"
+            >
+              Past policy (previous term — not active)
+            </label>
+            <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+              Check this when the client renewed on a new policy or switched carriers.
+              Removes this row from Retention Center and moves it to Past Policies on
+              the client page.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

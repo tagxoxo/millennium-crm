@@ -20,6 +20,7 @@ interface PolicyInfoProps {
 }
 
 export default function PolicyInfo({ policy }: PolicyInfoProps) {
+  const isPast = Boolean(policy.is_historical);
   const days = daysUntilRenewal(policy.renewal_date);
   const termMonths = normalizeTermMonths(policy.term_months);
   const annualPremium = annualizedPremium(Number(policy.premium), termMonths);
@@ -35,6 +36,11 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
             {policy.commercial && <CommercialTag />}
             <TermTag termMonths={termMonths} />
             {policy.spanish_speaker && <SpanishTag />}
+            {isPast && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-600/30 text-gray-400 border border-gray-600/50">
+                Past Policy
+              </span>
+            )}
             {normalizeClientState(policy.client_state) !== DEFAULT_CLIENT_STATE && (
               <StateTag state={normalizeClientState(policy.client_state)} />
             )}
@@ -89,14 +95,19 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
           <dt className="text-gray-500 mb-1">Expiration Date</dt>
           <dd className="text-white">
             {formatDate(policy.renewal_date)}
-            <span className={`ml-2 font-medium ${renewalColor(days)}`}>
-              ({days === 0
-                ? "today"
-                : days < 0
-                  ? `${Math.abs(days)}d overdue`
-                  : `${days}d away`}
-              )
-            </span>
+            {!isPast && (
+              <span className={`ml-2 font-medium ${renewalColor(days)}`}>
+                ({days === 0
+                  ? "today"
+                  : days < 0
+                    ? `${Math.abs(days)}d overdue`
+                    : `${days}d away`}
+                )
+              </span>
+            )}
+            {isPast && (
+              <span className="ml-2 text-sm text-gray-500">(archived term)</span>
+            )}
           </dd>
         </div>
         <div>

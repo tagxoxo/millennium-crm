@@ -11,6 +11,7 @@ const TYPE_LABELS: Record<ContactLog["contact_type"], string> = {
   renewal_reminder_45: "45-Day Reminder",
   manual_policy_review: "Policy Review",
   policy_review_response: "Review Response",
+  welcome_email: "Welcome Email",
 };
 
 const TYPE_COLORS: Record<ContactLog["contact_type"], string> = {
@@ -23,6 +24,7 @@ const TYPE_COLORS: Record<ContactLog["contact_type"], string> = {
   renewal_reminder_45: "bg-green-500/20 text-green-400 border-green-500/40",
   manual_policy_review: "bg-blue-500/20 text-blue-400 border-blue-500/40",
   policy_review_response: "bg-cyan-500/20 text-cyan-400 border-cyan-500/40",
+  welcome_email: "bg-blue-500/20 text-blue-400 border-blue-500/40",
 };
 
 interface ContactTimelineProps {

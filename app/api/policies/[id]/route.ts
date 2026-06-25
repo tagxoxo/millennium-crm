@@ -61,6 +61,14 @@ export async function PATCH(
       updates.policy_type = policyType;
     }
     if (body.client_id !== undefined) updates.client_id = body.client_id || null;
+    if (body.is_historical !== undefined) {
+      updates.is_historical = Boolean(body.is_historical);
+      if (body.is_historical) {
+        updates.stage = "lapsed";
+      } else {
+        updates.stage = "active";
+      }
+    }
 
     const { error } = await supabase
       .from("policies")
@@ -117,12 +125,14 @@ export async function PATCH(
       .single();
 
     if (updatedPolicy) {
-      const autoStage = computeAutoPipelineStage(updatedPolicy as Policy);
-      if (autoStage !== updatedPolicy.stage) {
-        await supabase
-          .from("policies")
-          .update({ stage: autoStage })
-          .eq("id", params.id);
+      if (!updatedPolicy.is_historical) {
+        const autoStage = computeAutoPipelineStage(updatedPolicy as Policy);
+        if (autoStage !== updatedPolicy.stage) {
+          await supabase
+            .from("policies")
+            .update({ stage: autoStage })
+            .eq("id", params.id);
+        }
       }
     }
 

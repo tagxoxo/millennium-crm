@@ -10,6 +10,7 @@ const TYPE_LABELS: Record<string, string> = {
   non_pay_alert: "Non-Pay Alert",
   manual_policy_review: "Manual Policy Review",
   email: "Email",
+  welcome_email: "Welcome Email",
 };
 
 const TYPE_COLORS: Record<string, string> = {
@@ -17,6 +18,7 @@ const TYPE_COLORS: Record<string, string> = {
   non_pay_alert: "bg-red-500/20 text-red-400 border-red-500/40",
   manual_policy_review: "bg-blue-500/20 text-blue-400 border-blue-500/40",
   email: "bg-blue-500/20 text-blue-400 border-blue-500/40",
+  welcome_email: "bg-blue-500/20 text-blue-400 border-blue-500/40",
 };
 
 interface CommunicationsTimelineProps {

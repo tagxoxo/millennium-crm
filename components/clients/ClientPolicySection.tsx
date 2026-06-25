@@ -6,6 +6,8 @@ import Link from "next/link";
 import CarrierBadge from "@/components/ui/CarrierBadge";
 import StateTag from "@/components/ui/StateTag";
 import type { ClientDocument } from "@/lib/clients";
+import RenewalReminderButton from "@/components/policy-detail/RenewalReminderButton";
+import type { RenewalReminderButtonData } from "@/lib/sendRenewalReminder45";
 import type { PolicyWithDocuments } from "@/lib/policyHistory";
 import type { Carrier, Client, PolicyType, Stage, TermMonths } from "@/lib/types";
 import {
@@ -82,7 +84,13 @@ function PolicyDocumentsList({ documents }: { documents: ClientDocument[] }) {
   );
 }
 
-function PolicyCard({ policy }: { policy: PolicyWithDocuments }) {
+function PolicyCard({
+  policy,
+  renewalReminder,
+}: {
+  policy: PolicyWithDocuments;
+  renewalReminder?: RenewalReminderButtonData;
+}) {
   const isPast = Boolean(policy.is_historical);
   const days = daysUntilRenewal(policy.renewal_date);
 
@@ -164,6 +172,10 @@ function PolicyCard({ policy }: { policy: PolicyWithDocuments }) {
 
       <PolicyDocumentsList documents={policy.documents} />
 
+      {!isPast && renewalReminder && (
+        <RenewalReminderButton {...renewalReminder} />
+      )}
+
       {!isPast && (
         <Link
           href={`/policies/${policy.id}`}
@@ -178,9 +190,15 @@ function PolicyCard({ policy }: { policy: PolicyWithDocuments }) {
 
 interface ClientPolicyCardsProps {
   policies: PolicyWithDocuments[];
+  renewalByPolicyId?: Record<string, RenewalReminderButtonData>;
+  showCardRenewalReminder?: boolean;
 }
 
-export function ClientPolicyCards({ policies }: ClientPolicyCardsProps) {
+export function ClientPolicyCards({
+  policies,
+  renewalByPolicyId = {},
+  showCardRenewalReminder = false,
+}: ClientPolicyCardsProps) {
   const current = policies.filter((p) => !p.is_historical);
   const past = policies.filter((p) => p.is_historical);
 
@@ -199,7 +217,15 @@ export function ClientPolicyCards({ policies }: ClientPolicyCardsProps) {
           <h3 className="text-sm font-medium text-gray-400 mb-3">Current Policies</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {current.map((policy) => (
-              <PolicyCard key={policy.id} policy={policy} />
+              <PolicyCard
+                key={policy.id}
+                policy={policy}
+                renewalReminder={
+                  showCardRenewalReminder
+                    ? renewalByPolicyId[policy.id]
+                    : undefined
+                }
+              />
             ))}
           </div>
         </div>
