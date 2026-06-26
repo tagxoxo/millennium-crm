@@ -1,14 +1,38 @@
 {
-  "exported_at": "2026-06-25T23:23:21.877Z",
+  "exported_at": "2026-06-26T00:15:53.405Z",
   "counts": {
-    "policies": 46,
-    "contact_log": 12,
-    "policy_documents": 54,
+    "policies": 48,
+    "contact_log": 16,
+    "policy_documents": 55,
     "automations": 5,
     "leads": 1,
     "users": 1
   },
   "policies": [
+    {
+      "id": "cf6b817c-8708-4c10-af67-1cdc1f73d594",
+      "client_name": "Patricia Duff",
+      "carrier": "progressive",
+      "premium": 0,
+      "renewal_date": "2026-06-26",
+      "stage": "lapsed",
+      "spanish_speaker": false,
+      "phone": "339-832-7110",
+      "email": "pduff@alttechgroup.com",
+      "policy_number": null,
+      "notes": "Past policy — created from document: Duff Auto Progressive.pdf",
+      "created_at": "2026-06-26T00:11:15.095114+00:00",
+      "commercial": false,
+      "term_months": 12,
+      "client_since": null,
+      "prior_carrier": null,
+      "client_address": "11P TREE LANE, KINGSTON, MA 02364",
+      "client_id": "b7071644-c88d-4f73-8f64-a76cb0e2d2ed",
+      "policy_type": "personal_auto",
+      "is_historical": true,
+      "effective_date": null,
+      "client_state": "MA"
+    },
     {
       "id": "1730fbf0-e666-4c35-a5a5-5ffea067a80a",
       "client_name": "Aaron Krolik",
@@ -463,6 +487,30 @@
       "policy_type": "homeowners",
       "is_historical": false,
       "effective_date": "2026-06-22",
+      "client_state": "MA"
+    },
+    {
+      "id": "0daab90a-ce43-4047-b8a3-332a84b2765d",
+      "client_name": "Matthew baskin",
+      "carrier": "trexis",
+      "premium": 3,
+      "renewal_date": "2026-12-25",
+      "stage": "active",
+      "spanish_speaker": true,
+      "phone": null,
+      "email": "matthewbaskin5@gmail.com",
+      "policy_number": null,
+      "notes": null,
+      "created_at": "2026-06-26T00:13:14.760358+00:00",
+      "commercial": false,
+      "term_months": 12,
+      "client_since": null,
+      "prior_carrier": null,
+      "client_address": "50 castle drive",
+      "client_id": "8c3ed69e-ef2c-4b77-b092-fad9f9d3966e",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-06-25",
       "client_state": "MA"
     },
     {
@@ -1222,6 +1270,42 @@
       "outcome": null,
       "notes": "Welcome email sent (English)",
       "status": "sent"
+    },
+    {
+      "id": "83b83660-30b5-4eb5-8ecb-fe96362bc4a2",
+      "policy_id": "0daab90a-ce43-4047-b8a3-332a84b2765d",
+      "contact_date": "2026-06-26T00:13:23.916368+00:00",
+      "contact_type": "welcome_email",
+      "outcome": null,
+      "notes": "Welcome email sent (English)",
+      "status": "sent"
+    },
+    {
+      "id": "a03ed9ff-3c57-4b0e-8c0c-ec2883903d58",
+      "policy_id": "0daab90a-ce43-4047-b8a3-332a84b2765d",
+      "contact_date": "2026-06-26T00:13:41.941806+00:00",
+      "contact_type": "renewal_reminder_45",
+      "outcome": null,
+      "notes": "45-day renewal reminder sent (English)",
+      "status": "sent"
+    },
+    {
+      "id": "2f4ba686-26d8-4605-aaa5-03748c0d0c4d",
+      "policy_id": "0daab90a-ce43-4047-b8a3-332a84b2765d",
+      "contact_date": "2026-06-26T00:13:54.771242+00:00",
+      "contact_type": "non_pay_alert",
+      "outcome": null,
+      "notes": "Non-pay alert email sent (English)",
+      "status": "sent"
+    },
+    {
+      "id": "ac49513e-bd4f-4461-860a-6efdf94923c1",
+      "policy_id": "0daab90a-ce43-4047-b8a3-332a84b2765d",
+      "contact_date": "2026-06-26T00:14:11.321686+00:00",
+      "contact_type": "welcome_email",
+      "outcome": null,
+      "notes": "Welcome email sent (Spanish)",
+      "status": "sent"
     }
   ],
   "policy_documents": [
@@ -1709,6 +1793,15 @@
       "r2_key": "William_Doering/1782428552996-Doering__William_SC_AUT_APP_COMP.pdf",
       "file_size": 581331,
       "uploaded_at": "2026-06-25T23:02:33.39522+00:00",
+      "notes": null
+    },
+    {
+      "id": "f1dd284d-edc1-4a18-b8e4-cb2c9d81aaf0",
+      "policy_id": "cf6b817c-8708-4c10-af67-1cdc1f73d594",
+      "file_name": "Duff Auto Progressive.pdf",
+      "r2_key": "Patricia_Duff/1782432673976-Duff_Auto_Progressive.pdf",
+      "file_size": 91480,
+      "uploaded_at": "2026-06-26T00:11:14.339172+00:00",
       "notes": null
     }
   ],
