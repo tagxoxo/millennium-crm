@@ -1,8 +1,8 @@
 {
-  "exported_at": "2026-06-26T01:00:06.571Z",
+  "exported_at": "2026-06-27T01:00:02.148Z",
   "counts": {
     "policies": 48,
-    "contact_log": 16,
+    "contact_log": 18,
     "policy_documents": 55,
     "automations": 5,
     "leads": 1,
@@ -1305,6 +1305,24 @@
       "contact_type": "welcome_email",
       "outcome": null,
       "notes": "Welcome email sent (Spanish)",
+      "status": "sent"
+    },
+    {
+      "id": "26f48679-d396-48e6-af08-8c0f7799d433",
+      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
+      "contact_date": "2026-06-26T20:35:50.588862+00:00",
+      "contact_type": "welcome_email",
+      "outcome": null,
+      "notes": "Welcome email sent (English)",
+      "status": "sent"
+    },
+    {
+      "id": "291689ec-d8ac-4626-8272-dabd628e3d6c",
+      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
+      "contact_date": "2026-06-26T20:35:55.77748+00:00",
+      "contact_type": "renewal_reminder_45",
+      "outcome": null,
+      "notes": "45-day renewal reminder sent (English)",
       "status": "sent"
     }
   ],
