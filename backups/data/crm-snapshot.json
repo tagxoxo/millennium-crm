@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-06-30T01:00:02.746Z",
+  "exported_at": "2026-07-01T01:05:44.406Z",
   "counts": {
     "policies": 48,
     "contact_log": 18,
@@ -55,6 +55,30 @@
       "policy_type": "personal_auto",
       "is_historical": true,
       "effective_date": null,
+      "client_state": "TN"
+    },
+    {
+      "id": "acc08f5d-741a-4d3b-a8f1-f92126a17cbd",
+      "client_name": "Cameron Busby",
+      "carrier": "progressive",
+      "premium": 1009,
+      "renewal_date": "2026-07-16",
+      "stage": "upcoming",
+      "spanish_speaker": false,
+      "phone": "6157125243",
+      "email": "Killaam2013@gmail.com",
+      "policy_number": "868344143",
+      "notes": null,
+      "created_at": "2026-06-23T16:58:53.844326+00:00",
+      "commercial": false,
+      "term_months": 6,
+      "client_since": "2026-01-16",
+      "prior_carrier": null,
+      "client_address": "5150 JACK BYRNES DR #9202, MURFREESBORO, TN 37128",
+      "client_id": "8b3f41a5-bac6-4fa7-ab1a-b8fa51bd5210",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-01-16",
       "client_state": "TN"
     },
     {
@@ -247,30 +271,6 @@
       "policy_type": "personal_auto",
       "is_historical": false,
       "effective_date": null,
-      "client_state": "TN"
-    },
-    {
-      "id": "acc08f5d-741a-4d3b-a8f1-f92126a17cbd",
-      "client_name": "Cameron Busby",
-      "carrier": "progressive",
-      "premium": 1009,
-      "renewal_date": "2026-07-16",
-      "stage": "upcoming",
-      "spanish_speaker": false,
-      "phone": "6157125243",
-      "email": "Killaam2013@gmail.com",
-      "policy_number": "868344143",
-      "notes": null,
-      "created_at": "2026-06-23T16:58:53.844326+00:00",
-      "commercial": false,
-      "term_months": 6,
-      "client_since": "2026-01-16",
-      "prior_carrier": null,
-      "client_address": "5150 JACK BYRNES DR #9202, MURFREESBORO, TN 37128",
-      "client_id": "8b3f41a5-bac6-4fa7-ab1a-b8fa51bd5210",
-      "policy_type": "personal_auto",
-      "is_historical": false,
-      "effective_date": "2026-01-16",
       "client_state": "TN"
     },
     {
