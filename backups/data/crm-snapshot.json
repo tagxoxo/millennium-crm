@@ -1,8 +1,8 @@
 {
-  "exported_at": "2026-07-07T01:00:04.780Z",
+  "exported_at": "2026-07-08T01:00:06.816Z",
   "counts": {
     "policies": 48,
-    "contact_log": 18,
+    "contact_log": 0,
     "policy_documents": 55,
     "automations": 5,
     "leads": 1,
@@ -79,6 +79,30 @@
       "policy_type": "personal_auto",
       "is_historical": false,
       "effective_date": "2026-01-16",
+      "client_state": "TN"
+    },
+    {
+      "id": "f029a09b-154b-463c-a4fd-d4ea764a12d7",
+      "client_name": "James. Johnson",
+      "carrier": "geico",
+      "premium": 604,
+      "renewal_date": "2026-09-04",
+      "stage": "upcoming",
+      "spanish_speaker": false,
+      "phone": null,
+      "email": "jamesmikejohnson1956@gmail.com",
+      "policy_number": "6246-68-74-01",
+      "notes": null,
+      "created_at": "2026-06-24T21:08:51.801569+00:00",
+      "commercial": false,
+      "term_months": 6,
+      "client_since": "2026-03-04",
+      "prior_carrier": null,
+      "client_address": "106 ELKMONT PL, PEGRAM, TN 37143",
+      "client_id": "8e0faa9d-7614-48c1-9421-c4af3ed0ba1c",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-04-05",
       "client_state": "TN"
     },
     {
@@ -730,30 +754,6 @@
       "client_state": "TN"
     },
     {
-      "id": "f029a09b-154b-463c-a4fd-d4ea764a12d7",
-      "client_name": "James. Johnson",
-      "carrier": "geico",
-      "premium": 604,
-      "renewal_date": "2026-09-04",
-      "stage": "active",
-      "spanish_speaker": false,
-      "phone": null,
-      "email": "jamesmikejohnson1956@gmail.com",
-      "policy_number": "6246-68-74-01",
-      "notes": null,
-      "created_at": "2026-06-24T21:08:51.801569+00:00",
-      "commercial": false,
-      "term_months": 6,
-      "client_since": "2026-03-04",
-      "prior_carrier": null,
-      "client_address": "106 ELKMONT PL, PEGRAM, TN 37143",
-      "client_id": "8e0faa9d-7614-48c1-9421-c4af3ed0ba1c",
-      "policy_type": "personal_auto",
-      "is_historical": false,
-      "effective_date": "2026-04-05",
-      "client_state": "TN"
-    },
-    {
       "id": "2fe65e93-3262-4090-bf18-e59135065214",
       "client_name": "Jarius Wallace",
       "carrier": "geico",
@@ -1162,170 +1162,7 @@
       "client_state": "TN"
     }
   ],
-  "contact_log": [
-    {
-      "id": "7694ea7b-b76d-4c0c-b27a-b1eecb2bc3d2",
-      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
-      "contact_date": "2026-06-25T03:07:25.069159+00:00",
-      "contact_type": "non_pay_alert",
-      "outcome": null,
-      "notes": "Non-pay alert email sent via Make.com",
-      "status": "sent"
-    },
-    {
-      "id": "d3fc0f61-c2ae-4ea4-944e-36367b71552b",
-      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
-      "contact_date": "2026-06-25T03:14:57.567942+00:00",
-      "contact_type": "non_pay_alert",
-      "outcome": null,
-      "notes": "Non-pay alert email sent via Make.com",
-      "status": "sent"
-    },
-    {
-      "id": "a4f8da84-5e14-4857-b717-e010b2e878b4",
-      "policy_id": "85828e9d-cdb3-448c-9e49-1fc00860cef5",
-      "contact_date": "2026-06-25T03:18:08.939591+00:00",
-      "contact_type": "non_pay_alert",
-      "outcome": null,
-      "notes": "Non-pay alert email sent via Make.com",
-      "status": "sent"
-    },
-    {
-      "id": "e20346d7-4dc5-4def-bba0-e1e2c11b1977",
-      "policy_id": "85828e9d-cdb3-448c-9e49-1fc00860cef5",
-      "contact_date": "2026-06-25T03:23:11.988308+00:00",
-      "contact_type": "non_pay_alert",
-      "outcome": null,
-      "notes": "Non-pay alert email sent via Make.com",
-      "status": "sent"
-    },
-    {
-      "id": "da91860f-4d2f-4855-b0a2-48f857e1b9c8",
-      "policy_id": "85828e9d-cdb3-448c-9e49-1fc00860cef5",
-      "contact_date": "2026-06-25T03:24:58.126065+00:00",
-      "contact_type": "non_pay_alert",
-      "outcome": null,
-      "notes": "Non-pay alert email sent via Make.com",
-      "status": "sent"
-    },
-    {
-      "id": "13a12fd6-b32e-431f-8586-44fa2cb3b017",
-      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
-      "contact_date": "2026-06-25T03:25:24.41346+00:00",
-      "contact_type": "non_pay_alert",
-      "outcome": null,
-      "notes": "Non-pay alert email sent via Make.com",
-      "status": "sent"
-    },
-    {
-      "id": "ebbe7031-b5d8-47f7-80ff-c031868a57c2",
-      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
-      "contact_date": "2026-06-25T19:36:39.393903+00:00",
-      "contact_type": "non_pay_alert",
-      "outcome": null,
-      "notes": "Non-pay alert email sent (English)",
-      "status": "sent"
-    },
-    {
-      "id": "5f6ae056-3d50-4c1c-87ec-eb5bc0a9451e",
-      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
-      "contact_date": "2026-06-25T19:58:03.885747+00:00",
-      "contact_type": "welcome_email",
-      "outcome": null,
-      "notes": "Welcome email sent (English)",
-      "status": "sent"
-    },
-    {
-      "id": "3964c19f-a3d1-41ed-97ef-60689b3bd44f",
-      "policy_id": "b5b4b5d3-323c-4aab-ab48-7e95ef0e8ce6",
-      "contact_date": "2026-06-25T20:01:26.372889+00:00",
-      "contact_type": "welcome_email",
-      "outcome": null,
-      "notes": "Welcome email sent (Spanish)",
-      "status": "sent"
-    },
-    {
-      "id": "b24d2ff9-7cf7-4c77-a6d9-234f5191be27",
-      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
-      "contact_date": "2026-06-25T20:01:39.275611+00:00",
-      "contact_type": "welcome_email",
-      "outcome": null,
-      "notes": "Welcome email sent (English)",
-      "status": "sent"
-    },
-    {
-      "id": "c86aae69-add2-49fd-a243-399c72619015",
-      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
-      "contact_date": "2026-06-25T20:01:58.064042+00:00",
-      "contact_type": "renewal_reminder_45",
-      "outcome": null,
-      "notes": "45-day renewal reminder sent (English)",
-      "status": "sent"
-    },
-    {
-      "id": "95897384-e997-46d9-a3e0-0cfb46c453c2",
-      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
-      "contact_date": "2026-06-25T20:02:34.113095+00:00",
-      "contact_type": "welcome_email",
-      "outcome": null,
-      "notes": "Welcome email sent (English)",
-      "status": "sent"
-    },
-    {
-      "id": "83b83660-30b5-4eb5-8ecb-fe96362bc4a2",
-      "policy_id": "0daab90a-ce43-4047-b8a3-332a84b2765d",
-      "contact_date": "2026-06-26T00:13:23.916368+00:00",
-      "contact_type": "welcome_email",
-      "outcome": null,
-      "notes": "Welcome email sent (English)",
-      "status": "sent"
-    },
-    {
-      "id": "a03ed9ff-3c57-4b0e-8c0c-ec2883903d58",
-      "policy_id": "0daab90a-ce43-4047-b8a3-332a84b2765d",
-      "contact_date": "2026-06-26T00:13:41.941806+00:00",
-      "contact_type": "renewal_reminder_45",
-      "outcome": null,
-      "notes": "45-day renewal reminder sent (English)",
-      "status": "sent"
-    },
-    {
-      "id": "2f4ba686-26d8-4605-aaa5-03748c0d0c4d",
-      "policy_id": "0daab90a-ce43-4047-b8a3-332a84b2765d",
-      "contact_date": "2026-06-26T00:13:54.771242+00:00",
-      "contact_type": "non_pay_alert",
-      "outcome": null,
-      "notes": "Non-pay alert email sent (English)",
-      "status": "sent"
-    },
-    {
-      "id": "ac49513e-bd4f-4461-860a-6efdf94923c1",
-      "policy_id": "0daab90a-ce43-4047-b8a3-332a84b2765d",
-      "contact_date": "2026-06-26T00:14:11.321686+00:00",
-      "contact_type": "welcome_email",
-      "outcome": null,
-      "notes": "Welcome email sent (Spanish)",
-      "status": "sent"
-    },
-    {
-      "id": "26f48679-d396-48e6-af08-8c0f7799d433",
-      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
-      "contact_date": "2026-06-26T20:35:50.588862+00:00",
-      "contact_type": "welcome_email",
-      "outcome": null,
-      "notes": "Welcome email sent (English)",
-      "status": "sent"
-    },
-    {
-      "id": "291689ec-d8ac-4626-8272-dabd628e3d6c",
-      "policy_id": "e73b8773-18bf-4d09-9701-7779c510a021",
-      "contact_date": "2026-06-26T20:35:55.77748+00:00",
-      "contact_type": "renewal_reminder_45",
-      "outcome": null,
-      "notes": "45-day renewal reminder sent (English)",
-      "status": "sent"
-    }
-  ],
+  "contact_log": [],
   "policy_documents": [
     {
       "id": "d81db5b9-170b-4459-a3ae-174880db8f04",
