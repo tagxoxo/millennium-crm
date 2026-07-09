@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-07-08T01:00:06.816Z",
+  "exported_at": "2026-07-09T01:00:07.645Z",
   "counts": {
     "policies": 48,
     "contact_log": 0,
@@ -538,6 +538,30 @@
       "client_state": "MA"
     },
     {
+      "id": "2fe65e93-3262-4090-bf18-e59135065214",
+      "client_name": "Jarius Wallace",
+      "carrier": "geico",
+      "premium": 1512,
+      "renewal_date": "2026-09-06",
+      "stage": "upcoming",
+      "spanish_speaker": false,
+      "phone": "(901) 826-6456",
+      "email": "jlw18x@gmail.com",
+      "policy_number": "6246-80-71-24",
+      "notes": null,
+      "created_at": "2026-06-24T21:08:51.801569+00:00",
+      "commercial": false,
+      "term_months": 6,
+      "client_since": "2026-03-06",
+      "prior_carrier": null,
+      "client_address": "441 CHARITY LN, MURFREESBORO, TN 37128",
+      "client_id": "6eb1c666-b10c-4248-b0b9-6d6654634208",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-03-06",
+      "client_state": "TN"
+    },
+    {
       "id": "c821ac0e-3dbf-4699-9f56-3292ec8f3135",
       "client_name": "Crystal Batts",
       "carrier": "progressive",
@@ -751,30 +775,6 @@
       "policy_type": "personal_auto",
       "is_historical": false,
       "effective_date": null,
-      "client_state": "TN"
-    },
-    {
-      "id": "2fe65e93-3262-4090-bf18-e59135065214",
-      "client_name": "Jarius Wallace",
-      "carrier": "geico",
-      "premium": 1512,
-      "renewal_date": "2026-09-06",
-      "stage": "active",
-      "spanish_speaker": false,
-      "phone": "(901) 826-6456",
-      "email": "jlw18x@gmail.com",
-      "policy_number": "6246-80-71-24",
-      "notes": null,
-      "created_at": "2026-06-24T21:08:51.801569+00:00",
-      "commercial": false,
-      "term_months": 6,
-      "client_since": "2026-03-06",
-      "prior_carrier": null,
-      "client_address": "441 CHARITY LN, MURFREESBORO, TN 37128",
-      "client_id": "6eb1c666-b10c-4248-b0b9-6d6654634208",
-      "policy_type": "personal_auto",
-      "is_historical": false,
-      "effective_date": "2026-03-06",
       "client_state": "TN"
     },
     {
