@@ -1,7 +1,7 @@
 {
-  "exported_at": "2026-07-21T01:00:06.651Z",
+  "exported_at": "2026-07-22T01:00:07.419Z",
   "counts": {
-    "policies": 48,
+    "policies": 49,
     "contact_log": 0,
     "policy_documents": 55,
     "automations": 5,
@@ -799,6 +799,30 @@
       "policy_type": "personal_auto",
       "is_historical": false,
       "effective_date": null,
+      "client_state": "TN"
+    },
+    {
+      "id": "ffc8337d-6786-43fb-8971-1488a16f7d65",
+      "client_name": "LORIANNE THERESA COURVILLE",
+      "carrier": "geico",
+      "premium": 648,
+      "renewal_date": "2027-01-23",
+      "stage": "active",
+      "spanish_speaker": false,
+      "phone": "‭+1 (615) 364-1275‬",
+      "email": "loricourville35@gmail.com",
+      "policy_number": "6266479382",
+      "notes": null,
+      "created_at": "2026-07-21T16:58:53.96529+00:00",
+      "commercial": false,
+      "term_months": 6,
+      "client_since": null,
+      "prior_carrier": null,
+      "client_address": "1103 GREEN VALLEY DR ASHLAND CITY, TN 37015",
+      "client_id": "005db7d9-3e70-426c-9664-687c07a6d33b",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-07-23",
       "client_state": "TN"
     },
     {
