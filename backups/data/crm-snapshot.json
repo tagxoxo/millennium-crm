@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-07-31T01:00:08.176Z",
+  "exported_at": "2026-08-01T01:02:03.568Z",
   "counts": {
     "policies": 49,
     "contact_log": 0,
@@ -829,7 +829,7 @@
       "id": "ebb298c2-472b-44fc-b14b-addac88f9511",
       "client_name": "BATTS FAMILY TRUCKING",
       "carrier": "geico",
-      "premium": 15238,
+      "premium": 16240,
       "renewal_date": "2027-06-23",
       "stage": "active",
       "spanish_speaker": false,
