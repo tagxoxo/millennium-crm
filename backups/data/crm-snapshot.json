@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-08-04T01:00:06.392Z",
+  "exported_at": "2026-08-05T01:00:07.421Z",
   "counts": {
     "policies": 49,
     "contact_log": 0,
@@ -301,7 +301,7 @@
       "id": "fb163e2b-da0d-451f-8873-88f547580691",
       "client_name": "JNN 27 Trucking",
       "carrier": "geico",
-      "premium": 60704,
+      "premium": 75918,
       "renewal_date": "2027-05-13",
       "stage": "active",
       "spanish_speaker": false,
