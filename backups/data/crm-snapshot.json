@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-08-10T01:00:07.781Z",
+  "exported_at": "2026-08-13T01:00:19.698Z",
   "counts": {
     "policies": 49,
     "contact_log": 0,
@@ -298,30 +298,6 @@
       "client_state": "MA"
     },
     {
-      "id": "fb163e2b-da0d-451f-8873-88f547580691",
-      "client_name": "JNN 27 Trucking",
-      "carrier": "geico",
-      "premium": 75918,
-      "renewal_date": "2027-05-13",
-      "stage": "active",
-      "spanish_speaker": false,
-      "phone": "2029104555",
-      "email": "JNNTRUCKING27@GMAIL.COM",
-      "policy_number": null,
-      "notes": null,
-      "created_at": "2026-06-24T21:08:51.801569+00:00",
-      "commercial": true,
-      "term_months": 12,
-      "client_since": "2026-05-13",
-      "prior_carrier": null,
-      "client_address": "623 DEVONSHIRE, ROYSE CITY, TX, 75189",
-      "client_id": "5f167525-580c-4f19-92f3-ee5f7bc9258b",
-      "policy_type": "commercial_auto",
-      "is_historical": false,
-      "effective_date": null,
-      "client_state": "TX"
-    },
-    {
       "id": "e73b8773-18bf-4d09-9701-7779c510a021",
       "client_name": "test (jacob)",
       "carrier": "progressive",
@@ -344,6 +320,30 @@
       "is_historical": false,
       "effective_date": null,
       "client_state": "TN"
+    },
+    {
+      "id": "fb163e2b-da0d-451f-8873-88f547580691",
+      "client_name": "JNN 27 Trucking",
+      "carrier": "geico",
+      "premium": 118874,
+      "renewal_date": "2027-05-13",
+      "stage": "active",
+      "spanish_speaker": false,
+      "phone": "2029104555",
+      "email": "JNNTRUCKING27@GMAIL.COM",
+      "policy_number": null,
+      "notes": null,
+      "created_at": "2026-06-24T21:08:51.801569+00:00",
+      "commercial": true,
+      "term_months": 12,
+      "client_since": "2026-05-13",
+      "prior_carrier": null,
+      "client_address": "623 DEVONSHIRE, ROYSE CITY, TX, 75189",
+      "client_id": "5f167525-580c-4f19-92f3-ee5f7bc9258b",
+      "policy_type": "commercial_auto",
+      "is_historical": false,
+      "effective_date": null,
+      "client_state": "TX"
     },
     {
       "id": "7523085a-5af7-4ce4-9840-d452d5452df2",
