@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-08-25T01:00:02.446Z",
+  "exported_at": "2026-08-26T01:00:05.393Z",
   "counts": {
     "policies": 49,
     "contact_log": 0,
@@ -706,30 +706,6 @@
       "client_state": "TN"
     },
     {
-      "id": "fc38d156-929d-4cec-b9f0-6b17d2d508cf",
-      "client_name": "Gabriel Gavrilov",
-      "carrier": "foremost",
-      "premium": 2500,
-      "renewal_date": "2026-10-23",
-      "stage": "active",
-      "spanish_speaker": false,
-      "phone": "(781) 774-0957",
-      "email": "ggavrilov@nrm.com",
-      "policy_number": "102590686",
-      "notes": null,
-      "created_at": "2026-06-24T21:08:51.801569+00:00",
-      "commercial": false,
-      "term_months": 12,
-      "client_since": "2025-10-23",
-      "prior_carrier": null,
-      "client_address": "193 Wilshire Drive",
-      "client_id": "79913ba8-75e4-4e78-84a0-26f5af7c4ebf",
-      "policy_type": "personal_auto",
-      "is_historical": false,
-      "effective_date": "2025-10-23",
-      "client_state": "MA"
-    },
-    {
       "id": "72e4ba22-68c9-401c-9850-d451fb3411ab",
       "client_name": "Ian Wash",
       "carrier": "progressive",
@@ -848,6 +824,30 @@
       "is_historical": false,
       "effective_date": null,
       "client_state": "TN"
+    },
+    {
+      "id": "fc38d156-929d-4cec-b9f0-6b17d2d508cf",
+      "client_name": "Gabriel Gavrilov",
+      "carrier": "foremost",
+      "premium": 2500,
+      "renewal_date": "2026-10-23",
+      "stage": "upcoming",
+      "spanish_speaker": false,
+      "phone": "(781) 774-0957",
+      "email": "ggavrilov@nrm.com",
+      "policy_number": "102590686",
+      "notes": null,
+      "created_at": "2026-06-24T21:08:51.801569+00:00",
+      "commercial": false,
+      "term_months": 12,
+      "client_since": "2025-10-23",
+      "prior_carrier": null,
+      "client_address": "193 Wilshire Drive",
+      "client_id": "79913ba8-75e4-4e78-84a0-26f5af7c4ebf",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2025-10-23",
+      "client_state": "MA"
     },
     {
       "id": "72c72b93-78e8-4c66-baac-127757405331",
