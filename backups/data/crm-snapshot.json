@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-08-27T01:00:03.856Z",
+  "exported_at": "2026-08-28T01:00:03.996Z",
   "counts": {
     "policies": 49,
     "contact_log": 0,
@@ -706,6 +706,30 @@
       "client_state": "TN"
     },
     {
+      "id": "dc5f2ac0-5839-4844-bfbe-34befcb052fb",
+      "client_name": "BOBURJON Tulaganov",
+      "carrier": "geico",
+      "premium": 736,
+      "renewal_date": "2026-10-25",
+      "stage": "upcoming",
+      "spanish_speaker": true,
+      "phone": "3034196007",
+      "email": "tulaganovbobur1234@gmail.com",
+      "policy_number": "6253-59-61-72",
+      "notes": null,
+      "created_at": "2026-06-24T21:08:51.801569+00:00",
+      "commercial": false,
+      "term_months": 6,
+      "client_since": "2026-04-25",
+      "prior_carrier": null,
+      "client_address": null,
+      "client_id": "269ebe56-3a79-4053-9d2f-1868f931f42a",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-04-26",
+      "client_state": "TN"
+    },
+    {
       "id": "72e4ba22-68c9-401c-9850-d451fb3411ab",
       "client_name": "Ian Wash",
       "carrier": "progressive",
@@ -968,30 +992,6 @@
       "is_historical": false,
       "effective_date": "2026-06-19",
       "client_state": "MA"
-    },
-    {
-      "id": "dc5f2ac0-5839-4844-bfbe-34befcb052fb",
-      "client_name": "BOBURJON Tulaganov",
-      "carrier": "geico",
-      "premium": 736,
-      "renewal_date": "2026-10-25",
-      "stage": "active",
-      "spanish_speaker": true,
-      "phone": "3034196007",
-      "email": "tulaganovbobur1234@gmail.com",
-      "policy_number": "6253-59-61-72",
-      "notes": null,
-      "created_at": "2026-06-24T21:08:51.801569+00:00",
-      "commercial": false,
-      "term_months": 6,
-      "client_since": "2026-04-25",
-      "prior_carrier": null,
-      "client_address": null,
-      "client_id": "269ebe56-3a79-4053-9d2f-1868f931f42a",
-      "policy_type": "personal_auto",
-      "is_historical": false,
-      "effective_date": "2026-04-26",
-      "client_state": "TN"
     },
     {
       "id": "3de4c274-e409-47c6-8140-1dcbbd80033f",
