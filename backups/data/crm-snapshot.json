@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-08-31T01:00:07.172Z",
+  "exported_at": "2026-09-01T01:00:07.093Z",
   "counts": {
     "policies": 49,
     "contact_log": 0,
@@ -826,30 +826,6 @@
       "client_state": "TN"
     },
     {
-      "id": "ebb298c2-472b-44fc-b14b-addac88f9511",
-      "client_name": "BATTS FAMILY TRUCKING",
-      "carrier": "geico",
-      "premium": 16240,
-      "renewal_date": "2027-06-23",
-      "stage": "active",
-      "spanish_speaker": false,
-      "phone": "615-914-8603",
-      "email": "BATTSFAMILYTRUCKING@yahoo.com",
-      "policy_number": "9300342804",
-      "notes": null,
-      "created_at": "2026-06-24T21:08:51.801569+00:00",
-      "commercial": true,
-      "term_months": 12,
-      "client_since": "2026-06-23",
-      "prior_carrier": null,
-      "client_address": "252 HAYNES PARK DR NASHVILLE, TN 37218",
-      "client_id": "cdf65e73-55dd-4d36-84be-ffe760b05dc7",
-      "policy_type": "commercial_auto",
-      "is_historical": false,
-      "effective_date": null,
-      "client_state": "TN"
-    },
-    {
       "id": "fc38d156-929d-4cec-b9f0-6b17d2d508cf",
       "client_name": "Gabriel Gavrilov",
       "carrier": "foremost",
@@ -872,6 +848,30 @@
       "is_historical": false,
       "effective_date": "2025-10-23",
       "client_state": "MA"
+    },
+    {
+      "id": "ebb298c2-472b-44fc-b14b-addac88f9511",
+      "client_name": "BATTS FAMILY TRUCKING",
+      "carrier": "geico",
+      "premium": 28198,
+      "renewal_date": "2027-06-23",
+      "stage": "active",
+      "spanish_speaker": false,
+      "phone": "615-914-8603",
+      "email": "BATTSFAMILYTRUCKING@yahoo.com",
+      "policy_number": "9300342804",
+      "notes": null,
+      "created_at": "2026-06-24T21:08:51.801569+00:00",
+      "commercial": true,
+      "term_months": 12,
+      "client_since": "2026-06-23",
+      "prior_carrier": null,
+      "client_address": "252 HAYNES PARK DR NASHVILLE, TN 37218",
+      "client_id": "cdf65e73-55dd-4d36-84be-ffe760b05dc7",
+      "policy_type": "commercial_auto",
+      "is_historical": false,
+      "effective_date": null,
+      "client_state": "TN"
     },
     {
       "id": "72c72b93-78e8-4c66-baac-127757405331",
