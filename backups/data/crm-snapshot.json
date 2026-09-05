@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-09-04T01:00:06.546Z",
+  "exported_at": "2026-09-05T01:00:02.919Z",
   "counts": {
     "policies": 57,
     "contact_log": 0,
@@ -490,6 +490,30 @@
       "client_state": "TN"
     },
     {
+      "id": "f3912533-00db-4981-a7fc-df59af4077dd",
+      "client_name": "Eric Towells II",
+      "carrier": "progressive",
+      "premium": 821,
+      "renewal_date": "2026-11-03",
+      "stage": "upcoming",
+      "spanish_speaker": false,
+      "phone": "(901) 630-0298",
+      "email": "eltowles2@gmail.com",
+      "policy_number": null,
+      "notes": null,
+      "created_at": "2026-06-23T16:58:53.209189+00:00",
+      "commercial": false,
+      "term_months": 6,
+      "client_since": "2025-11-03",
+      "prior_carrier": null,
+      "client_address": "3119 MEADOWSIDE LN , Nashville",
+      "client_id": "38f497f8-b9f5-43b9-a252-9c0a642ffdab",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-05-03",
+      "client_state": "TN"
+    },
+    {
       "id": "85828e9d-cdb3-448c-9e49-1fc00860cef5",
       "client_name": "Maya Wanunu",
       "carrier": "progressive",
@@ -800,30 +824,6 @@
       "is_historical": false,
       "effective_date": "2026-03-03",
       "client_state": "RI"
-    },
-    {
-      "id": "f3912533-00db-4981-a7fc-df59af4077dd",
-      "client_name": "Eric Towells II",
-      "carrier": "progressive",
-      "premium": 821,
-      "renewal_date": "2026-11-03",
-      "stage": "active",
-      "spanish_speaker": false,
-      "phone": "(901) 630-0298",
-      "email": "eltowles2@gmail.com",
-      "policy_number": null,
-      "notes": null,
-      "created_at": "2026-06-23T16:58:53.209189+00:00",
-      "commercial": false,
-      "term_months": 6,
-      "client_since": "2025-11-03",
-      "prior_carrier": null,
-      "client_address": "3119 MEADOWSIDE LN , Nashville",
-      "client_id": "38f497f8-b9f5-43b9-a252-9c0a642ffdab",
-      "policy_type": "personal_auto",
-      "is_historical": false,
-      "effective_date": "2026-05-03",
-      "client_state": "TN"
     },
     {
       "id": "dc5f2ac0-5839-4844-bfbe-34befcb052fb",
