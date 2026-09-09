@@ -44,6 +44,101 @@ export interface BookInsightsSummary {
   commercialPremium: number;
 }
 
+export interface ProductionSummary {
+  monthKey: string;
+  monthLabel: string;
+  totalPremium: number;
+  policyCount: number;
+  personalPremium: number;
+  commercialPremium: number;
+  avgPremium: number;
+  carrierCount: number;
+}
+
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+export function formatProductionMonthKey(year: number, monthIndex: number): string {
+  return `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
+}
+
+export function formatProductionMonthLabel(monthKey: string): string {
+  const [year, month] = monthKey.split("-").map(Number);
+  if (!year || !month) return monthKey;
+  return `${MONTH_NAMES[month - 1]} ${year}`;
+}
+
+export function getPolicyProductionDate(policy: Policy): Date {
+  const raw = policy.effective_date || policy.created_at.slice(0, 10);
+  const date = parseLocalDate(raw);
+  date.setHours(0, 0, 0, 0);
+  return date;
+}
+
+export function getPolicyProductionMonthKey(policy: Policy): string {
+  const date = getPolicyProductionDate(policy);
+  return formatProductionMonthKey(date.getFullYear(), date.getMonth());
+}
+
+export function filterProductionByMonth(
+  policies: Policy[],
+  monthKey: string
+): Policy[] {
+  return policies.filter(
+    (policy) => getPolicyProductionMonthKey(policy) === monthKey
+  );
+}
+
+export function listProductionMonths(policies: Policy[]): string[] {
+  const keys = new Set<string>();
+  for (const policy of policies) {
+    keys.add(getPolicyProductionMonthKey(policy));
+  }
+  return Array.from(keys).sort((a, b) => b.localeCompare(a));
+}
+
+export function computeProductionSummary(
+  policies: Policy[],
+  monthKey: string
+): ProductionSummary {
+  const monthPolicies = filterProductionByMonth(policies, monthKey);
+  let personalPremium = 0;
+  let commercialPremium = 0;
+  const carriers = new Set<Carrier>();
+
+  for (const policy of monthPolicies) {
+    const amount = policyPremium(policy);
+    if (isCommercialPolicy(policy)) commercialPremium += amount;
+    else personalPremium += amount;
+    carriers.add(policy.carrier);
+  }
+
+  const totalPremium = personalPremium + commercialPremium;
+
+  return {
+    monthKey,
+    monthLabel: formatProductionMonthLabel(monthKey),
+    totalPremium,
+    policyCount: monthPolicies.length,
+    personalPremium,
+    commercialPremium,
+    avgPremium: monthPolicies.length > 0 ? totalPremium / monthPolicies.length : 0,
+    carrierCount: carriers.size,
+  };
+}
+
 function activePolicies(policies: Policy[]): Policy[] {
   return policies.filter((p) => p.stage !== "lapsed");
 }
@@ -97,8 +192,11 @@ export function computeBookInsightsSummary(policies: Policy[]): BookInsightsSumm
   };
 }
 
-export function computePremiumByCarrier(policies: Policy[]): BreakdownSlice[] {
-  const active = activePolicies(policies);
+export function computePremiumByCarrier(
+  policies: Policy[],
+  options?: { includeLapsed?: boolean }
+): BreakdownSlice[] {
+  const active = options?.includeLapsed ? policies : activePolicies(policies);
   const buckets = new Map<Carrier, { premium: number; policyCount: number }>();
 
   for (const carrier of CARRIERS) {

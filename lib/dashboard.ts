@@ -79,9 +79,14 @@ export function isCommercialPolicy(policy: Policy): boolean {
   );
 }
 
-/** Sum written premium for active (non-lapsed) policies grouped by client state. */
-export function computePremiumByState(policies: Policy[]): StatePremiumSlice[] {
-  const active = policies.filter((p) => p.stage !== "lapsed");
+/** Sum written premium grouped by client state. */
+export function computePremiumByState(
+  policies: Policy[],
+  includeLapsed = false
+): StatePremiumSlice[] {
+  const active = includeLapsed
+    ? policies
+    : policies.filter((p) => p.stage !== "lapsed");
   const buckets = new Map<
     ClientState,
     {

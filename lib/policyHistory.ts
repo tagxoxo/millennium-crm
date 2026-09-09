@@ -10,6 +10,7 @@ const FILENAME_CARRIER_HINTS: { pattern: RegExp; carrier: Carrier }[] = [
   { pattern: /\btrexis\b/i, carrier: "trexis" },
   { pattern: /\bgainsco\b/i, carrier: "gainsco" },
   { pattern: /\bforemost\b/i, carrier: "foremost" },
+  { pattern: /\bsafeway\b/i, carrier: "safeway" },
   { pattern: /\bsafeco\b/i, carrier: "safeco" },
   { pattern: /\bnational[\s_-]*general\b|\bnatgen\b/i, carrier: "national_general" },
   { pattern: /\bbristol[\s_-]*west\b/i, carrier: "bristol_west" },

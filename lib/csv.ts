@@ -197,6 +197,7 @@ function normalizeCarrier(value: string): string | null {
   if (v.includes("progressive")) return "progressive";
   if (v.includes("gainsco") || v.includes("gains")) return "gainsco";
   if (v.includes("foremost")) return "foremost";
+  if (v.includes("safeway")) return "safeway";
   if (v.includes("safeco")) return "safeco";
   if (v.includes("national") && v.includes("general")) return "national_general";
   if (v.includes("national general")) return "national_general";
@@ -211,7 +212,7 @@ function normalizeCarrier(value: string): string | null {
   if (v.includes("mesa")) return "mesa";
   if (v.includes("acceptance")) return "acceptance_independent";
   const valid = [
-    "trexis", "progressive", "gainsco", "foremost", "safeco",
+    "trexis", "progressive", "gainsco", "foremost", "safeco", "safeway",
     "national_general", "bristol_west", "geico",
     "liberty_mutual_bop", "liberty_mutual_surety_bond",
     "tapco", "cna", "bruce_messier", "mesa", "acceptance_independent",

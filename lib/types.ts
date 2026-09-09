@@ -4,6 +4,7 @@ export type Carrier =
   | "gainsco"
   | "foremost"
   | "safeco"
+  | "safeway"
   | "national_general"
   | "bristol_west"
   | "geico"
@@ -204,6 +205,7 @@ export const CARRIERS: Carrier[] = [
   "gainsco",
   "foremost",
   "safeco",
+  "safeway",
   "national_general",
   "bristol_west",
   "geico",
@@ -222,6 +224,7 @@ export const CARRIER_LABELS: Record<Carrier, string> = {
   gainsco: "GAINSCO",
   foremost: "Foremost",
   safeco: "Safeco",
+  safeway: "Safeway",
   national_general: "National General",
   bristol_west: "Bristol West",
   geico: "Geico",

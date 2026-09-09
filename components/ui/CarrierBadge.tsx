@@ -8,6 +8,7 @@ const carrierStyles: Record<Carrier, string> = {
   gainsco: "bg-yellow-500/20 text-yellow-400 border-yellow-500/40",
   foremost: "bg-orange-500/20 text-orange-400 border-orange-500/40",
   safeco: "bg-red-500/20 text-red-400 border-red-500/40",
+  safeway: "bg-fuchsia-500/20 text-fuchsia-400 border-fuchsia-500/40",
   national_general: "bg-teal-500/20 text-teal-400 border-teal-500/40",
   bristol_west: "bg-indigo-500/20 text-indigo-400 border-indigo-500/40",
   geico: "bg-sky-500/20 text-sky-400 border-sky-500/40",
