@@ -40,7 +40,7 @@ export default function KpiCards({ stats }: KpiCardsProps) {
       <KpiCard
         label="Est. Monthly Commissions"
         value={formatCurrency(stats.monthlyCommission)}
-        subtext="12% of annualized book"
+        subtext="Weighted by carrier rates"
       />
     </div>
   );

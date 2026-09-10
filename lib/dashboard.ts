@@ -1,9 +1,8 @@
 import type { ClientState, Policy } from "./types";
 import { CLIENT_STATE_LABELS, CLIENT_STATES, normalizeClientState } from "./types";
+import { estimateBookMonthlyCommission } from "./commission";
 import { annualizedPremium, parseLocalDate } from "./utils";
 
-// Estimated annual commission rate — adjust here if your carriers pay differently
-export const COMMISSION_RATE = 0.12;
 export const URGENT_RENEWAL_DAYS = 30;
 
 export interface DashboardStats {
@@ -45,7 +44,7 @@ export function computeDashboardStats(policies: Policy[]): DashboardStats {
     (sum, p) => sum + annualizedPremium(Number(p.premium), p.term_months),
     0
   );
-  const monthlyCommission = (totalAnnualPremium * COMMISSION_RATE) / 12;
+  const monthlyCommission = estimateBookMonthlyCommission(active);
 
   return {
     totalActive: active.length,
