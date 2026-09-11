@@ -59,9 +59,9 @@ export type PolicyType =
 
 export type LeadStage = "new" | "contacted" | "quoted" | "sold";
 
-export type ClientState = "TN" | "TX" | "MA" | "RI";
+export type ClientState = "TN" | "TX" | "MA" | "RI" | "KY";
 
-export const CLIENT_STATES: ClientState[] = ["TN", "TX", "MA", "RI"];
+export const CLIENT_STATES: ClientState[] = ["TN", "TX", "MA", "RI", "KY"];
 
 export const DEFAULT_CLIENT_STATE: ClientState = "TN";
 
@@ -70,6 +70,7 @@ export const CLIENT_STATE_LABELS: Record<ClientState, string> = {
   TX: "Texas",
   MA: "Massachusetts",
   RI: "Rhode Island",
+  KY: "Kentucky",
 };
 
 export function normalizeClientState(value: unknown): ClientState {
@@ -80,6 +81,7 @@ export function normalizeClientState(value: unknown): ClientState {
   if (raw === "TENNESSEE") return "TN";
   if (raw === "MASSACHUSETTS") return "MA";
   if (raw === "RHODE ISLAND" || raw === "RI") return "RI";
+  if (raw === "KENTUCKY") return "KY";
   if (CLIENT_STATES.includes(raw as ClientState)) return raw as ClientState;
   return DEFAULT_CLIENT_STATE;
 }

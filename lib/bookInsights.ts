@@ -101,6 +101,16 @@ export function filterProductionByMonth(
   );
 }
 
+/** Newest effective date first; within the same day, most recently added first. */
+export function sortProductionPolicies(policies: Policy[]): Policy[] {
+  return [...policies].sort((a, b) => {
+    const effectiveDiff =
+      getPolicyProductionDate(b).getTime() - getPolicyProductionDate(a).getTime();
+    if (effectiveDiff !== 0) return effectiveDiff;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+}
+
 export function listProductionMonths(policies: Policy[]): string[] {
   const keys = new Set<string>();
   for (const policy of policies) {

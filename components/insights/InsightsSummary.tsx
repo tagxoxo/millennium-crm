@@ -45,7 +45,7 @@ export default function InsightsSummary({ summary }: InsightsSummaryProps) {
       <KpiCard
         label="States Represented"
         value={summary.stateCount.toLocaleString()}
-        subtext="TN, TX, MA, RI"
+        subtext="TN, TX, MA, RI, KY"
       />
     </div>
   );

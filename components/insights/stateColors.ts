@@ -5,4 +5,5 @@ export const STATE_COLORS: Record<ClientState, string> = {
   TX: "#f59e0b",
   MA: "#a855f7",
   RI: "#22d3ee",
+  KY: "#10b981",
 };

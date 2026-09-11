@@ -1,5 +1,6 @@
 import Link from "next/link";
 import CarrierBadge from "@/components/ui/CarrierBadge";
+import { sortProductionPolicies } from "@/lib/bookInsights";
 import type { Policy } from "@/lib/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 
@@ -12,9 +13,7 @@ export default function ProductionPolicyTable({
   policies,
   monthLabel,
 }: ProductionPolicyTableProps) {
-  const sorted = [...policies].sort(
-    (a, b) => Number(b.premium) - Number(a.premium)
-  );
+  const sorted = sortProductionPolicies(policies);
 
   return (
     <section className="bg-navy-light border border-navy-lighter rounded-xl overflow-hidden">
