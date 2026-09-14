@@ -4,7 +4,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { navItems } from "./Sidebar";
 
-export default function MobileNav() {
+export default function MobileNav({
+  openTicketCount = 0,
+}: {
+  openTicketCount?: number;
+}) {
   const pathname = usePathname();
 
   return (
@@ -16,11 +20,18 @@ export default function MobileNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center px-3 py-2 text-xs ${
+              className={`relative flex flex-col items-center px-3 py-2 text-xs ${
                 isActive ? "text-accent" : "text-gray-400"
               }`}
             >
-              <span className="text-lg">{item.icon}</span>
+              <span className="text-lg relative">
+                {item.icon}
+                {item.href === "/ticket-center" && openTicketCount > 0 && (
+                  <span className="absolute -top-1 -right-2 min-w-[1rem] h-4 px-1 rounded-full bg-accent text-white text-[10px] font-semibold flex items-center justify-center">
+                    {openTicketCount}
+                  </span>
+                )}
+              </span>
               <span>{item.label}</span>
             </Link>
           );

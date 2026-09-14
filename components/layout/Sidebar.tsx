@@ -15,7 +15,11 @@ const navItems = [
   { href: "/settings/2fa", label: "Security", icon: "🔐" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({
+  openTicketCount = 0,
+}: {
+  openTicketCount?: number;
+}) {
   return (
     <aside className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0 bg-navy-light border-r border-navy-lighter">
       <div className="p-6">
@@ -31,6 +35,17 @@ export default function Sidebar() {
           >
             <span>{item.icon}</span>
             <span>{item.label}</span>
+            {item.href === "/ticket-center" && (
+              <span
+                className={`ml-auto min-w-[1.25rem] h-5 px-1 rounded-full text-[11px] font-semibold flex items-center justify-center ${
+                  openTicketCount > 0
+                    ? "bg-accent text-white"
+                    : "bg-navy-lighter text-gray-400"
+                }`}
+              >
+                {openTicketCount}
+              </span>
+            )}
           </Link>
         ))}
       </nav>
