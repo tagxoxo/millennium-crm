@@ -1,0 +1,60 @@
+export const VA_ACCESS_COOKIE = "va_access_token";
+export const AGENCY_TZ = "America/Chicago";
+
+export const VA_REQUEST_TYPES = [
+  "add_vehicle",
+  "remove_vehicle",
+  "payment_question",
+  "new_quote",
+  "other",
+] as const;
+
+export type VaRequestType = (typeof VA_REQUEST_TYPES)[number];
+
+export type VaLanguage = "english" | "spanish";
+
+export type VaStatus = "pending" | "sent_to_agent" | "completed";
+
+export type VaRequest = {
+  id: string;
+  created_at: string;
+  caller_name: string;
+  policy_number: string | null;
+  phone_number: string | null;
+  request_type: VaRequestType;
+  language: VaLanguage;
+  notes: string | null;
+  status: VaStatus;
+  submitted_by: string | null;
+};
+
+export const VA_REQUEST_TYPE_LABELS: Record<VaRequestType, string> = {
+  add_vehicle: "Add vehicle",
+  remove_vehicle: "Remove vehicle",
+  payment_question: "Payment question",
+  new_quote: "New quote",
+  other: "Other",
+};
+
+export function isVaRequestType(value: string): value is VaRequestType {
+  return (VA_REQUEST_TYPES as readonly string[]).includes(value);
+}
+
+export function todayInAgencyTz(): string {
+  return new Date().toLocaleDateString("en-CA", { timeZone: AGENCY_TZ });
+}
+
+export function isTodayInAgencyTz(iso: string): boolean {
+  return (
+    new Date(iso).toLocaleDateString("en-CA", { timeZone: AGENCY_TZ }) ===
+    todayInAgencyTz()
+  );
+}
+
+export function formatVaTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString("en-US", {
+    timeZone: AGENCY_TZ,
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
