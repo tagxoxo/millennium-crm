@@ -106,6 +106,18 @@ function TicketCard({
         )}
       </dl>
 
+      {ticket.intake && ticket.intake.length > 0 && (
+        <div className="border-t border-navy-lighter pt-3 space-y-1.5">
+          <p className="text-xs text-gray-500 uppercase tracking-wide">Call script answers</p>
+          {ticket.intake.map((item) => (
+            <div key={item.label} className="text-sm">
+              <p className="text-gray-500 text-xs">{item.label}</p>
+              <p className="text-gray-200 whitespace-pre-wrap">{item.answer}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
       {ticket.notes && (
         <p className="text-sm text-gray-300 whitespace-pre-wrap">{ticket.notes}</p>
       )}

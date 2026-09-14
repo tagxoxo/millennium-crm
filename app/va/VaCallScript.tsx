@@ -1,44 +1,22 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import {
+  VA_POLICY_SCRIPT_ITEMS,
+  VA_QUOTE_SCRIPT_ITEMS,
+  type VaScriptItem,
+  type VaScriptTab,
+} from "@/lib/vaScript";
 
-type ScriptTab = "greeting" | "payment" | "policy" | "quote";
-type PaymentCarrier = "trexis" | "progressive";
-
-const TABS: { id: ScriptTab; label: string }[] = [
+const TABS: { id: VaScriptTab; label: string }[] = [
   { id: "greeting", label: "Greeting" },
   { id: "payment", label: "Payment" },
   { id: "policy", label: "Policy Change" },
   { id: "quote", label: "New Quote" },
 ];
 
-const POLICY_ITEMS = [
-  { label: "Carrier", say: "Who is your insurance carrier?" },
-  { label: "Full name", say: "Can I get your full name please?" },
-  { label: "Policy number", say: "And your policy number?" },
-  { label: "Phone number", say: "What's the best phone number for you?" },
-  { label: "Requested change", say: "What change would you like to make to your policy today?" },
-];
-
-const QUOTE_ITEMS = [
-  { label: "Full name", say: "Can I start with your full name?" },
-  { label: "Address", say: "And your current address?" },
-  { label: "Phone number", say: "Best phone number to reach you?" },
-  { label: "Date of birth", say: "What's your date of birth?" },
-  { label: "Driver's license number", say: "And your driver's license number?" },
-  { label: "Marital status", say: "Are you single or married?" },
-  {
-    label: "Additional drivers",
-    say: "Are there any additional drivers in the household? If so, I'll need their names and dates of birth.",
-  },
-  {
-    label: "Excluded drivers",
-    say: "Anyone in the household 15 or older who will NOT be driving? I'll need their names and dates of birth as well.",
-  },
-  { label: "Vehicle VIN", say: "Do you have the VIN number for the vehicle you'd like to insure?" },
-  { label: "Prior insurance", say: "Do you currently have or have you had auto insurance in the past?" },
-  { label: "Homeowner", say: "Are you a homeowner or do you rent?" },
-];
+const scriptInputClass =
+  "w-full mt-1.5 px-2.5 py-1.5 bg-navy border border-navy-lighter rounded-md text-white text-xs placeholder-gray-500 focus:outline-none focus:border-accent";
 
 function Line({ children }: { children: ReactNode }) {
   return <p className="text-white font-semibold leading-relaxed text-sm">{children}</p>;
@@ -75,50 +53,40 @@ function CopyNumber({ number }: { number: string }) {
   );
 }
 
-function Checklist({
+function AnswerList({
   items,
-  checked,
-  onToggle,
+  answers,
+  onAnswer,
 }: {
-  items: { label: string; say: string }[];
-  checked: boolean[];
-  onToggle: (index: number) => void;
+  items: VaScriptItem[];
+  answers: Record<string, string>;
+  onAnswer: (key: string, value: string) => void;
 }) {
   return (
     <ul className="space-y-2">
-      {items.map((item, index) => {
-        const on = checked[index];
+      {items.map((item) => {
+        const value = answers[item.key] ?? "";
+        const on = value.trim().length > 0;
         return (
-          <li key={item.label}>
-            <button
-              type="button"
-              onClick={() => onToggle(index)}
-              className={`w-full text-left rounded-lg border px-3 py-2.5 transition-colors ${
-                on
-                  ? "border-green-500/40 bg-green-500/10"
-                  : "border-navy-lighter bg-navy hover:border-accent"
-              }`}
-            >
-              <span className="flex items-start gap-2.5">
-                <span
-                  className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border text-[10px] ${
-                    on
-                      ? "border-green-400 bg-green-500 text-white"
-                      : "border-gray-500 bg-navy-light"
-                  }`}
-                >
-                  {on ? "✓" : ""}
-                </span>
-                <span>
-                  <span className={`block text-sm font-semibold ${on ? "text-green-300" : "text-white"}`}>
-                    {item.label}
-                  </span>
-                  <span className={`block text-xs mt-0.5 leading-relaxed font-semibold ${on ? "text-green-200/90" : "text-white"}`}>
-                    &ldquo;{item.say}&rdquo;
-                  </span>
-                </span>
-              </span>
-            </button>
+          <li
+            key={item.key}
+            className={`rounded-lg border px-3 py-2.5 ${
+              on ? "border-green-500/40 bg-green-500/10" : "border-navy-lighter bg-navy"
+            }`}
+          >
+            <p className={`text-sm font-semibold ${on ? "text-green-300" : "text-white"}`}>
+              {item.label}
+            </p>
+            <p className={`text-xs mt-0.5 leading-relaxed font-semibold ${on ? "text-green-200/90" : "text-white"}`}>
+              &ldquo;{item.say}&rdquo;
+            </p>
+            <textarea
+              value={value}
+              onChange={(e) => onAnswer(item.key, e.target.value)}
+              rows={2}
+              placeholder="Write their answer"
+              className={`${scriptInputClass} resize-y min-h-[52px]`}
+            />
           </li>
         );
       })}
@@ -143,10 +111,14 @@ function GreetingScript() {
 
 function PaymentScript({
   carrier,
+  notes,
   onSelect,
+  onNotes,
 }: {
-  carrier: PaymentCarrier | null;
-  onSelect: (value: PaymentCarrier) => void;
+  carrier: "trexis" | "progressive" | null;
+  notes: string;
+  onSelect: (value: "trexis" | "progressive") => void;
+  onNotes: (value: string) => void;
 }) {
   return (
     <div className="space-y-4">
@@ -198,18 +170,29 @@ function PaymentScript({
           <Line>&ldquo;Is there anything else I can help you with today?&rdquo;</Line>
         </div>
       )}
+
+      <div>
+        <Cue>Write down anything else they said</Cue>
+        <textarea
+          value={notes}
+          onChange={(e) => onNotes(e.target.value)}
+          rows={3}
+          placeholder="Payment notes for this ticket"
+          className={`${scriptInputClass} resize-y min-h-[72px]`}
+        />
+      </div>
     </div>
   );
 }
 
 function PolicyScript({
-  checked,
-  onToggle,
+  answers,
+  onAnswer,
 }: {
-  checked: boolean[];
-  onToggle: (index: number) => void;
+  answers: Record<string, string>;
+  onAnswer: (key: string, value: string) => void;
 }) {
-  const ready = checked.every(Boolean);
+  const ready = VA_POLICY_SCRIPT_ITEMS.every((item) => (answers[item.key] ?? "").trim());
 
   return (
     <div className="space-y-4">
@@ -218,14 +201,15 @@ function PolicyScript({
         &ldquo;Absolutely, I can submit that change request for you. Let me grab a few details.&rdquo;
       </Line>
 
-      <Cue>Collect the following — check each off as you go:</Cue>
-      <Checklist items={POLICY_ITEMS} checked={checked} onToggle={onToggle} />
+      <Cue>Ask and write down each answer:</Cue>
+      <AnswerList items={VA_POLICY_SCRIPT_ITEMS} answers={answers} onAnswer={onAnswer} />
 
       {ready && (
         <div className="space-y-3">
           <div className="bg-green-500/10 border border-green-500/40 rounded-lg px-3 py-2.5">
             <p className="text-green-300 text-sm font-medium leading-relaxed">
-              Ready to submit — fill out the New Request form on the left, then follow the steps below.
+              Ready to submit — fill out the New Request form on the left. These answers go with the
+              ticket.
             </p>
           </div>
           <Cue>Post-submission steps</Cue>
@@ -249,13 +233,13 @@ function PolicyScript({
 }
 
 function QuoteScript({
-  checked,
-  onToggle,
+  answers,
+  onAnswer,
 }: {
-  checked: boolean[];
-  onToggle: (index: number) => void;
+  answers: Record<string, string>;
+  onAnswer: (key: string, value: string) => void;
 }) {
-  const ready = checked.every(Boolean);
+  const ready = VA_QUOTE_SCRIPT_ITEMS.every((item) => (answers[item.key] ?? "").trim());
 
   return (
     <div className="space-y-4">
@@ -265,15 +249,15 @@ function QuoteScript({
         take a couple minutes.&rdquo;
       </Line>
 
-      <Cue>Collect the following in order — check each off as you go:</Cue>
-      <Checklist items={QUOTE_ITEMS} checked={checked} onToggle={onToggle} />
+      <Cue>Ask and write down each answer in order:</Cue>
+      <AnswerList items={VA_QUOTE_SCRIPT_ITEMS} answers={answers} onAnswer={onAnswer} />
 
       {ready && (
         <div className="space-y-3">
           <div className="bg-green-500/10 border border-green-500/40 rounded-lg px-3 py-2.5">
             <p className="text-green-300 text-sm font-medium leading-relaxed">
-              Ready to submit — fill in the New Request form and select &apos;New Quote&apos; as the
-              request type.
+              Ready to submit — fill in the New Request form and select New Quote. These answers go
+              with the ticket.
             </p>
           </div>
           <Cue>Say:</Cue>
@@ -287,25 +271,34 @@ function QuoteScript({
   );
 }
 
-export default function VaCallScript() {
-  const [tab, setTab] = useState<ScriptTab>("greeting");
-  const [paymentCarrier, setPaymentCarrier] = useState<PaymentCarrier | null>(null);
-  const [policyChecked, setPolicyChecked] = useState(() => POLICY_ITEMS.map(() => false));
-  const [quoteChecked, setQuoteChecked] = useState(() => QUOTE_ITEMS.map(() => false));
-
-  function togglePolicy(index: number) {
-    setPolicyChecked((current) => current.map((value, i) => (i === index ? !value : value)));
-  }
-
-  function toggleQuote(index: number) {
-    setQuoteChecked((current) => current.map((value, i) => (i === index ? !value : value)));
-  }
-
+export default function VaCallScript({
+  tab,
+  onTabChange,
+  paymentCarrier,
+  onPaymentCarrier,
+  paymentNotes,
+  onPaymentNotes,
+  policyAnswers,
+  onPolicyAnswer,
+  quoteAnswers,
+  onQuoteAnswer,
+}: {
+  tab: VaScriptTab;
+  onTabChange: (tab: VaScriptTab) => void;
+  paymentCarrier: "trexis" | "progressive" | null;
+  onPaymentCarrier: (value: "trexis" | "progressive") => void;
+  paymentNotes: string;
+  onPaymentNotes: (value: string) => void;
+  policyAnswers: Record<string, string>;
+  onPolicyAnswer: (key: string, value: string) => void;
+  quoteAnswers: Record<string, string>;
+  onQuoteAnswer: (key: string, value: string) => void;
+}) {
   return (
     <aside className="bg-navy-light border-t lg:border-t-0 lg:border-l border-navy-lighter w-full lg:w-[320px] lg:fixed lg:inset-y-0 lg:right-0 flex flex-col max-h-[75vh] lg:max-h-none">
       <div className="px-4 pt-5 pb-3 shrink-0">
         <h2 className="text-lg font-semibold text-white">Call Script</h2>
-        <p className="text-xs text-gray-500 mt-0.5">Read top to bottom during the call</p>
+        <p className="text-xs text-gray-500 mt-0.5">Ask, write the answer, then submit the ticket</p>
       </div>
 
       <div className="grid grid-cols-4 border-y border-navy-lighter shrink-0">
@@ -315,7 +308,7 @@ export default function VaCallScript() {
             <button
               key={item.id}
               type="button"
-              onClick={() => setTab(item.id)}
+              onClick={() => onTabChange(item.id)}
               className={`px-1 py-2.5 text-[11px] leading-tight font-medium ${
                 active
                   ? "bg-accent text-white"
@@ -331,12 +324,19 @@ export default function VaCallScript() {
       <div className="p-4 flex-1 overflow-y-auto">
         {tab === "greeting" && <GreetingScript />}
         {tab === "payment" && (
-          <PaymentScript carrier={paymentCarrier} onSelect={setPaymentCarrier} />
+          <PaymentScript
+            carrier={paymentCarrier}
+            notes={paymentNotes}
+            onSelect={onPaymentCarrier}
+            onNotes={onPaymentNotes}
+          />
         )}
         {tab === "policy" && (
-          <PolicyScript checked={policyChecked} onToggle={togglePolicy} />
+          <PolicyScript answers={policyAnswers} onAnswer={onPolicyAnswer} />
         )}
-        {tab === "quote" && <QuoteScript checked={quoteChecked} onToggle={toggleQuote} />}
+        {tab === "quote" && (
+          <QuoteScript answers={quoteAnswers} onAnswer={onQuoteAnswer} />
+        )}
       </div>
     </aside>
   );

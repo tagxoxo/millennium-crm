@@ -18,18 +18,26 @@ export function isConfusableVaInsightsPath(pathname: string): boolean {
   return pathname === "/va-insights" || pathname.startsWith("/va-insights/");
 }
 
+export const VA_FORM_REQUEST_TYPES = [
+  "payment",
+  "policy_change",
+  "new_quote",
+] as const;
+
 export const VA_REQUEST_TYPES = [
+  ...VA_FORM_REQUEST_TYPES,
   "add_vehicle",
   "remove_vehicle",
+  "add_a_driver",
   "add_remove_driver",
   "payment_question",
-  "new_quote",
   "other",
 ] as const;
 
 export const VA_CARRIERS = ["trexis", "progressive", "safeway"] as const;
 
 export type VaRequestType = (typeof VA_REQUEST_TYPES)[number];
+export type VaFormRequestType = (typeof VA_FORM_REQUEST_TYPES)[number];
 export type VaCarrier = (typeof VA_CARRIERS)[number];
 
 export type VaLanguage = "english" | "spanish";
@@ -47,17 +55,21 @@ export type VaRequest = {
   carrier: VaCarrier | null;
   language: VaLanguage;
   notes: string | null;
+  intake: { label: string; answer: string }[];
   status: VaStatus;
   completed_at: string | null;
   submitted_by: string | null;
 };
 
 export const VA_REQUEST_TYPE_LABELS: Record<VaRequestType, string> = {
+  payment: "Payment",
+  policy_change: "Policy change",
+  new_quote: "New quote",
   add_vehicle: "Add vehicle",
   remove_vehicle: "Remove vehicle",
+  add_a_driver: "Add a driver",
   add_remove_driver: "Add/remove driver",
   payment_question: "Payment question",
-  new_quote: "New quote",
   other: "Other",
 };
 
@@ -75,6 +87,10 @@ export const VA_STATUS_LABELS: Record<VaStatus, string> = {
 
 export function isVaRequestType(value: string): value is VaRequestType {
   return (VA_REQUEST_TYPES as readonly string[]).includes(value);
+}
+
+export function isVaFormRequestType(value: string): value is VaFormRequestType {
+  return (VA_FORM_REQUEST_TYPES as readonly string[]).includes(value);
 }
 
 export function isVaCarrier(value: string): value is VaCarrier {

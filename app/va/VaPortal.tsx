@@ -6,15 +6,23 @@ import {
   formatVaTime,
   VA_CARRIER_LABELS,
   VA_CARRIERS,
+  VA_FORM_REQUEST_TYPES,
   VA_REQUEST_TYPE_LABELS,
-  VA_REQUEST_TYPES,
   type VaCarrier,
+  type VaFormRequestType,
   type VaLanguage,
   type VaRequest,
-  type VaRequestType,
   type VaStatus,
 } from "@/lib/va";
 import VaCallScript from "./VaCallScript";
+import {
+  answersFromRecord,
+  emptyScriptAnswers,
+  VA_POLICY_SCRIPT_ITEMS,
+  VA_QUOTE_SCRIPT_ITEMS,
+  type VaIntakeAnswer,
+  type VaScriptTab,
+} from "@/lib/vaScript";
 
 const inputClass =
   "w-full px-4 py-2.5 bg-navy border border-navy-lighter rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent text-sm";
@@ -53,10 +61,21 @@ export default function VaPortal({
   const [policyNumber, setPolicyNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [requestType, setRequestType] = useState<VaRequestType | "">("");
+  const [requestType, setRequestType] = useState<VaFormRequestType | "">("");
   const [carrier, setCarrier] = useState<VaCarrier | "">("");
   const [language, setLanguage] = useState<VaLanguage>("english");
   const [notes, setNotes] = useState("");
+  const [scriptTab, setScriptTab] = useState<VaScriptTab>("greeting");
+  const [paymentCarrier, setPaymentCarrier] = useState<"trexis" | "progressive" | null>(
+    null
+  );
+  const [paymentNotes, setPaymentNotes] = useState("");
+  const [policyAnswers, setPolicyAnswers] = useState(() =>
+    emptyScriptAnswers(VA_POLICY_SCRIPT_ITEMS)
+  );
+  const [quoteAnswers, setQuoteAnswers] = useState(() =>
+    emptyScriptAnswers(VA_QUOTE_SCRIPT_ITEMS)
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -70,6 +89,78 @@ export default function VaPortal({
     setCarrier("");
     setLanguage("english");
     setNotes("");
+    setScriptTab("greeting");
+    setPaymentCarrier(null);
+    setPaymentNotes("");
+    setPolicyAnswers(emptyScriptAnswers(VA_POLICY_SCRIPT_ITEMS));
+    setQuoteAnswers(emptyScriptAnswers(VA_QUOTE_SCRIPT_ITEMS));
+  }
+
+  function guessCarrier(value: string): VaCarrier | "" {
+    const text = value.toLowerCase();
+    if (text.includes("trexis")) return "trexis";
+    if (text.includes("progressive")) return "progressive";
+    if (text.includes("safeway")) return "safeway";
+    return "";
+  }
+
+  function handleScriptTab(tab: VaScriptTab) {
+    setScriptTab(tab);
+    if (tab === "payment") setRequestType("payment");
+    if (tab === "policy") setRequestType("policy_change");
+    if (tab === "quote") setRequestType("new_quote");
+  }
+
+  function handleRequestType(value: VaFormRequestType | "") {
+    setRequestType(value);
+    if (value === "payment") setScriptTab("payment");
+    if (value === "policy_change") setScriptTab("policy");
+    if (value === "new_quote") setScriptTab("quote");
+  }
+
+  function handlePaymentCarrier(value: "trexis" | "progressive") {
+    setPaymentCarrier(value);
+    setCarrier(value);
+  }
+
+  function handlePolicyAnswer(key: string, value: string) {
+    setPolicyAnswers((current) => ({ ...current, [key]: value }));
+    if (key === "full_name") setCallerName(value);
+    if (key === "policy_number") setPolicyNumber(value);
+    if (key === "phone_number") setPhoneNumber(value);
+    if (key === "carrier") {
+      const matched = guessCarrier(value);
+      if (matched) setCarrier(matched);
+    }
+  }
+
+  function handleQuoteAnswer(key: string, value: string) {
+    setQuoteAnswers((current) => ({ ...current, [key]: value }));
+    if (key === "full_name") setCallerName(value);
+    if (key === "phone_number") setPhoneNumber(value);
+  }
+
+  function buildIntake(): VaIntakeAnswer[] {
+    if (requestType === "payment") {
+      const rows: VaIntakeAnswer[] = [];
+      if (paymentCarrier) {
+        rows.push({
+          label: "Carrier",
+          answer: VA_CARRIER_LABELS[paymentCarrier],
+        });
+      }
+      if (paymentNotes.trim()) {
+        rows.push({ label: "Payment notes", answer: paymentNotes.trim() });
+      }
+      return rows;
+    }
+    if (requestType === "policy_change") {
+      return answersFromRecord(VA_POLICY_SCRIPT_ITEMS, policyAnswers);
+    }
+    if (requestType === "new_quote") {
+      return answersFromRecord(VA_QUOTE_SCRIPT_ITEMS, quoteAnswers);
+    }
+    return [];
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -91,6 +182,7 @@ export default function VaPortal({
           carrier,
           language,
           notes,
+          intake: buildIntake(),
         }),
       });
       const json = await res.json();
@@ -185,11 +277,13 @@ export default function VaPortal({
                 <select
                   required
                   value={requestType}
-                  onChange={(e) => setRequestType(e.target.value as VaRequestType | "")}
+                  onChange={(e) =>
+                    handleRequestType(e.target.value as VaFormRequestType | "")
+                  }
                   className={inputClass}
                 >
                   <option value="">Select…</option>
-                  {VA_REQUEST_TYPES.map((type) => (
+                  {VA_FORM_REQUEST_TYPES.map((type) => (
                     <option key={type} value={type}>
                       {VA_REQUEST_TYPE_LABELS[type]}
                     </option>
@@ -248,7 +342,7 @@ export default function VaPortal({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
-                placeholder="What does the caller need?"
+                placeholder="Anything extra — answers from the Call Script are saved with the ticket"
                 className={`${inputClass} resize-y min-h-[80px]`}
               />
             </div>
@@ -334,7 +428,18 @@ export default function VaPortal({
         </section>
         </div>
       </div>
-      <VaCallScript />
+      <VaCallScript
+        tab={scriptTab}
+        onTabChange={handleScriptTab}
+        paymentCarrier={paymentCarrier}
+        onPaymentCarrier={handlePaymentCarrier}
+        paymentNotes={paymentNotes}
+        onPaymentNotes={setPaymentNotes}
+        policyAnswers={policyAnswers}
+        onPolicyAnswer={handlePolicyAnswer}
+        quoteAnswers={quoteAnswers}
+        onQuoteAnswer={handleQuoteAnswer}
+      />
     </div>
   );
 }

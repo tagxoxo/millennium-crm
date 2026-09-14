@@ -49,6 +49,13 @@ export async function sendTicketAlertEmail(ticket: VaRequest) {
         ${row("Carrier", carrierLabel)}
         ${row("Language", ticket.language === "spanish" ? "Spanish" : "English")}
         ${row("Notes", ticket.notes)}
+        ${
+          ticket.intake?.length
+            ? ticket.intake
+                .map((item) => row(item.label, item.answer))
+                .join("")
+            : ""
+        }
       </table>
     </div>
   `;

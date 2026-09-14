@@ -4,11 +4,12 @@ import { sendTicketAlertEmail } from "@/lib/sendTicketAlert";
 import { refreshSavedVaMetrics } from "@/lib/vaInsights";
 import {
   isVaCarrier,
-  isVaRequestType,
+  isVaFormRequestType,
   type VaLanguage,
   type VaRequest,
 } from "@/lib/va";
 import { getVaAuthUser, getVaRole } from "@/lib/va-server";
+import { parseIntakeAnswers } from "@/lib/vaScript";
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,12 +32,13 @@ export async function POST(request: NextRequest) {
     const email = String(body.email ?? "").trim().toLowerCase();
     const notes = String(body.notes ?? "").trim();
     const carrier = String(body.carrier ?? "").trim();
+    const intake = parseIntakeAnswers(body.intake);
 
     if (!callerName) {
       return NextResponse.json({ error: "Caller name is required." }, { status: 400 });
     }
 
-    if (!isVaRequestType(requestType)) {
+    if (!isVaFormRequestType(requestType)) {
       return NextResponse.json({ error: "Invalid request type." }, { status: 400 });
     }
 
@@ -60,11 +62,12 @@ export async function POST(request: NextRequest) {
         carrier,
         language,
         notes: notes || null,
+        intake,
         status: "pending",
         submitted_by: user.id,
       })
       .select(
-        "id, created_at, caller_name, policy_number, phone_number, email, request_type, carrier, language, notes, status, completed_at, submitted_by"
+        "id, created_at, caller_name, policy_number, phone_number, email, request_type, carrier, language, notes, intake, status, completed_at, submitted_by"
       )
       .single();
 
