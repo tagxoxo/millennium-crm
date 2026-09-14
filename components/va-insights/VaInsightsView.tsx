@@ -23,7 +23,7 @@ export default function VaInsightsView({
 }) {
   return (
     <div className="space-y-6 md:space-y-8">
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-white">VA Insights</h1>
           <p className="text-gray-400 text-sm mt-1">
@@ -33,7 +33,7 @@ export default function VaInsightsView({
         <VaInsightsFilter range={insights.range} />
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-4">
         <KpiCard
           label="Tickets submitted"
           value={insights.submitted.toLocaleString()}
