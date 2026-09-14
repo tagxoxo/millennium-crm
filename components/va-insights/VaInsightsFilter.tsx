@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { TICKET_CENTER_INSIGHTS_PATH } from "@/lib/va";
 import {
   VA_INSIGHT_RANGE_LABELS,
   VA_INSIGHT_RANGES,
@@ -20,7 +21,11 @@ export default function VaInsightsFilter({ range }: { range: VaInsightRange }) {
         value={range}
         onChange={(e) => {
           const value = e.target.value;
-          router.push(value === "today" ? "/va-insights" : `/va-insights?range=${value}`);
+          router.push(
+            value === "today"
+              ? TICKET_CENTER_INSIGHTS_PATH
+              : `${TICKET_CENTER_INSIGHTS_PATH}?range=${value}`
+          );
         }}
         className="w-full px-4 py-2.5 bg-navy-light border border-navy-lighter rounded-lg text-white text-sm focus:outline-none focus:border-accent"
       >

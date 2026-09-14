@@ -49,7 +49,7 @@ export default function LoginForm() {
           Clarksville, TN
         </p>
         <p className="text-gray-500 text-xs text-center mt-4 mb-6">
-          Enter your password to continue
+          Agency staff login — virtual assistants use the VA portal
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

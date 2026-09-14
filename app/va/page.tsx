@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import { fetchTodaysVaRequests, getVaAuthUser, getVaRole } from "@/lib/va-server";
 import VaLoginForm from "./VaLoginForm";
 import VaPortal from "./VaPortal";
@@ -19,7 +18,7 @@ export default async function VaPage() {
 
   const role = await getVaRole(user.id, user.email);
   if (role !== "va") {
-    redirect("/dashboard");
+    return <VaLoginForm denied />;
   }
 
   const { requests, error } = await fetchTodaysVaRequests(user.id);

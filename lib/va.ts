@@ -1,6 +1,23 @@
 export const VA_ACCESS_COOKIE = "va_access_token";
 export const AGENCY_TZ = "America/Chicago";
 
+/** CRM metrics page — never a /va-* URL, so VAs cannot confuse it with the portal. */
+export const TICKET_CENTER_INSIGHTS_PATH = "/ticket-center/insights";
+
+export function isVaPortalPath(pathname: string): boolean {
+  return (
+    pathname === "/va" ||
+    pathname.startsWith("/va/") ||
+    pathname === "/api/va" ||
+    pathname.startsWith("/api/va/")
+  );
+}
+
+/** Old CRM URL that looked like the VA portal. Always send people to /va. */
+export function isConfusableVaInsightsPath(pathname: string): boolean {
+  return pathname === "/va-insights" || pathname.startsWith("/va-insights/");
+}
+
 export const VA_REQUEST_TYPES = [
   "add_vehicle",
   "remove_vehicle",

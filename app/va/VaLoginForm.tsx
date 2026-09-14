@@ -1,17 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const inputClass =
   "w-full px-4 py-3 bg-navy border border-navy-lighter rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent";
 
-export default function VaLoginForm() {
+export default function VaLoginForm({ denied = false }: { denied?: boolean }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    denied ? "This login is for virtual assistants only." : ""
+  );
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!denied) return;
+    void fetch("/api/va/auth", { method: "DELETE" }).then(() => router.refresh());
+  }, [denied, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,7 +47,7 @@ export default function VaLoginForm() {
       <div className="w-full max-w-sm bg-navy-light border border-navy-lighter rounded-xl p-8">
         <h1 className="text-2xl font-bold text-white text-center">VA Portal</h1>
         <p className="text-gray-400 text-sm text-center mt-1">
-          Sign in with your VA email
+          Virtual assistant login only — this is not the agency CRM
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-6">

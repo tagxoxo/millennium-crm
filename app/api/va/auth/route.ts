@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { getCookieOptions } from "@/lib/auth";
 import { getEnv, getEnvOptional } from "@/lib/env";
 import { VA_ACCESS_COOKIE } from "@/lib/va";
+import { getVaRole } from "@/lib/va-server";
 
 function getAuthClient() {
   const url = getEnv("NEXT_PUBLIC_SUPABASE_URL");
@@ -30,10 +31,18 @@ export async function POST(request: NextRequest) {
       password,
     });
 
-    if (error || !data.session) {
+    if (error || !data.session || !data.user) {
       return NextResponse.json(
         { error: "Wrong email or password." },
         { status: 401 }
+      );
+    }
+
+    const role = await getVaRole(data.user.id, data.user.email);
+    if (role !== "va") {
+      return NextResponse.json(
+        { error: "This login is for virtual assistants only." },
+        { status: 403 }
       );
     }
 

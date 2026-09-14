@@ -7,35 +7,62 @@ import {
   isValidSession,
 } from "@/lib/auth";
 import { cleanEnv } from "@/lib/env";
+import {
+  VA_ACCESS_COOKIE,
+  isConfusableVaInsightsPath,
+  isVaPortalPath,
+} from "@/lib/va";
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  const isApiRoute = pathname.startsWith("/api/");
+
+  if (pathname.startsWith("/_next") || pathname.startsWith("/favicon")) {
+    return NextResponse.next();
+  }
+
+  if (isConfusableVaInsightsPath(pathname)) {
+    return NextResponse.redirect(new URL("/va", request.url));
+  }
+
+  if (isVaPortalPath(pathname)) {
+    return NextResponse.next();
+  }
+
   const password = process.env.CRM_PASSWORD
     ? cleanEnv(process.env.CRM_PASSWORD)
     : "";
 
   if (!password) return NextResponse.next();
 
-  const { pathname } = request.nextUrl;
-  const isApiRoute = pathname.startsWith("/api/");
+  const session = request.cookies.get(AUTH_COOKIE)?.value;
+  const authed = await isValidSession(session, password);
+  const vaToken = request.cookies.get(VA_ACCESS_COOKIE)?.value;
+
+  if (vaToken && !authed) {
+    if (isApiRoute) {
+      return NextResponse.json(
+        { error: "VA accounts cannot access the main CRM." },
+        { status: 403 }
+      );
+    }
+    return NextResponse.redirect(new URL("/va", request.url));
+  }
 
   if (
     pathname.startsWith("/login") ||
     pathname.startsWith("/verify-2fa") ||
-    pathname.startsWith("/api/auth") ||
-    pathname.startsWith("/va") ||
-    pathname.startsWith("/api/va") ||
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/favicon")
+    pathname.startsWith("/api/auth")
   ) {
     return NextResponse.next();
   }
 
-  const session = request.cookies.get(AUTH_COOKIE)?.value;
-  const authed = await isValidSession(session, password);
-
   if (!authed) {
     if (isApiRoute) {
-      return NextResponse.json({ error: "Unauthorized. Please log in again." }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized. Please log in again." },
+        { status: 401 }
+      );
     }
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("from", pathname);
