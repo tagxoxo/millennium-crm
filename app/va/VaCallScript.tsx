@@ -157,6 +157,7 @@ function PaymentScript({
             payment. Are you ready?&rdquo;
           </Line>
           <CopyNumber number="877-784-7466" />
+          <Line>&ldquo;Then press 2.&rdquo;</Line>
           <Line>&ldquo;Is there anything else I can help you with today?&rdquo;</Line>
         </div>
       )}
@@ -166,7 +167,7 @@ function PaymentScript({
           <Line>
             &ldquo;Sure! I&apos;ll give you Progressive&apos;s payment line right now. Are you ready?&rdquo;
           </Line>
-          <CopyNumber number="1-855-347-3939" />
+          <CopyNumber number="1-888-671-4405" />
           <Line>&ldquo;Is there anything else I can help you with today?&rdquo;</Line>
         </div>
       )}
