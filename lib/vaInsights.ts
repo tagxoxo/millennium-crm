@@ -62,6 +62,7 @@ export type VaInsights = {
   byCarrier: VaCountSlice[];
   byLanguage: VaCountSlice[];
   tickets: VaRequest[];
+  emailById: Record<string, string>;
 };
 
 function agencyDateOf(iso: string): string {
@@ -159,21 +160,23 @@ export function computeVaInsights(
 
   const vaIds = new Set<string>();
   for (const ticket of tickets) vaIds.add(vaKey(ticket));
-  for (const id of Object.keys(emailById)) vaIds.add(id);
 
-  const byVa: VaPersonStats[] = [...vaIds].map((id) => {
-    const submitted = submittedTickets.filter((ticket) => vaKey(ticket) === id);
-    const completed = completedTickets.filter((ticket) => vaKey(ticket) === id);
-    const open = openTickets.filter((ticket) => vaKey(ticket) === id);
-    return {
-      vaUserId: id,
-      email: emailById[id] || (id === UNKNOWN_VA_ID ? "Unknown VA" : id),
-      submitted: submitted.length,
-      completed: completed.length,
-      open: open.length,
-      spanish: submitted.filter((ticket) => ticket.language === "spanish").length,
-    };
-  }).sort((a, b) => b.submitted - a.submitted);
+  const byVa: VaPersonStats[] = Array.from(vaIds)
+    .map((id) => {
+      const submitted = submittedTickets.filter((ticket) => vaKey(ticket) === id);
+      const completed = completedTickets.filter((ticket) => vaKey(ticket) === id);
+      const open = openTickets.filter((ticket) => vaKey(ticket) === id);
+      return {
+        vaUserId: id,
+        email: emailById[id] || (id === UNKNOWN_VA_ID ? "Unknown VA" : id),
+        submitted: submitted.length,
+        completed: completed.length,
+        open: open.length,
+        spanish: submitted.filter((ticket) => ticket.language === "spanish").length,
+      };
+    })
+    .filter((person) => person.submitted > 0 || person.completed > 0 || person.open > 0)
+    .sort((a, b) => b.submitted - a.submitted);
 
   return {
     range,
@@ -191,6 +194,7 @@ export function computeVaInsights(
       { english: "English", spanish: "Spanish" }
     ),
     tickets: submittedTickets,
+    emailById,
   };
 }
 
@@ -205,14 +209,13 @@ function buildDailyRows(
   }
   dates.add(todayInAgencyTz());
 
-  const vaIds = new Set<string>([UNKNOWN_VA_ID]);
+  const vaIds = new Set<string>();
   for (const ticket of tickets) vaIds.add(vaKey(ticket));
-  for (const id of Object.keys(emailById)) vaIds.add(id);
 
   const rows: VaDailyMetricRow[] = [];
 
-  for (const date of [...dates].sort()) {
-    for (const vaId of vaIds) {
+  for (const date of Array.from(dates).sort()) {
+    for (const vaId of Array.from(vaIds)) {
       const submitted = tickets.filter(
         (ticket) => vaKey(ticket) === vaId && agencyDateOf(ticket.created_at) === date
       );
@@ -229,23 +232,6 @@ function buildDailyRows(
         return agencyDateOf(ticket.completed_at) > date;
       });
 
-      if (
-        submitted.length === 0 &&
-        completed.length === 0 &&
-        openEod.length === 0 &&
-        !emailById[vaId]
-      ) {
-        continue;
-      }
-      if (
-        submitted.length === 0 &&
-        completed.length === 0 &&
-        vaId !== UNKNOWN_VA_ID &&
-        openEod.length === 0
-      ) {
-        // Keep a row for known VAs on days with activity only
-        continue;
-      }
       if (submitted.length === 0 && completed.length === 0) continue;
 
       const byType: Record<string, number> = {};

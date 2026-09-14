@@ -116,7 +116,9 @@ export default function VaInsightsView({
             <thead>
               <tr className="border-b border-navy-lighter text-gray-400 text-left">
                 <th className="px-5 py-2 font-medium">When</th>
+                <th className="px-5 py-2 font-medium">VA</th>
                 <th className="px-5 py-2 font-medium">Caller</th>
+                <th className="px-5 py-2 font-medium">Policy</th>
                 <th className="px-5 py-2 font-medium">Type</th>
                 <th className="px-5 py-2 font-medium">Carrier</th>
                 <th className="px-5 py-2 font-medium">Language</th>
@@ -130,7 +132,13 @@ export default function VaInsightsView({
                   <td className="px-5 py-3 text-gray-300 whitespace-nowrap">
                     {formatVaDateTime(ticket.created_at)}
                   </td>
+                  <td className="px-5 py-3 text-gray-200">
+                    {insights.emailById[ticket.submitted_by ?? ""] ?? "Unknown VA"}
+                  </td>
                   <td className="px-5 py-3 text-white">{ticket.caller_name}</td>
+                  <td className="px-5 py-3 text-gray-200 whitespace-nowrap">
+                    {ticket.policy_number || "—"}
+                  </td>
                   <td className="px-5 py-3 text-gray-200">
                     {VA_REQUEST_TYPE_LABELS[ticket.request_type] ?? ticket.request_type}
                   </td>

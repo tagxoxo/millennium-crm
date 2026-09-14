@@ -1,10 +1,10 @@
 import Link from "next/link";
 import LogoutButton from "./LogoutButton";
 
-const navItems = [
+const navItems: { href: string; label: string; icon: string; nested?: boolean }[] = [
   { href: "/", label: "Dashboard", icon: "📊" },
   { href: "/ticket-center", label: "Ticket Center", icon: "🎫" },
-  { href: "/va-insights", label: "VA Insights", icon: "📌" },
+  { href: "/va-insights", label: "VA Insights", icon: "📌", nested: true },
   { href: "/retention", label: "Retention Center", icon: "🔄" },
   { href: "/service-center", label: "Service Center", icon: "🎧" },
   { href: "/sales-center", label: "Sales Center", icon: "🎯" },
@@ -32,7 +32,9 @@ export default function Sidebar({
           <Link
             key={item.href}
             href={item.href}
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-navy-lighter hover:text-white transition-colors"
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-navy-lighter hover:text-white transition-colors ${
+              item.nested ? "ml-4 py-2 text-sm" : ""
+            }`}
           >
             <span>{item.icon}</span>
             <span>{item.label}</span>
