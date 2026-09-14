@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import { sendTicketAlertEmail } from "@/lib/sendTicketAlert";
+import { refreshSavedVaMetrics } from "@/lib/vaInsights";
 import {
   isVaCarrier,
   isVaRequestType,
@@ -76,6 +77,10 @@ export async function POST(request: NextRequest) {
     } catch (emailError) {
       console.error("VA ticket email failed:", emailError);
     }
+
+    void refreshSavedVaMetrics().catch((err) => {
+      console.error("VA metrics sync failed:", err);
+    });
 
     return NextResponse.json({ id: ticket.id });
   } catch {

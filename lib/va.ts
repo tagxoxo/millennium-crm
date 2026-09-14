@@ -82,6 +82,15 @@ export function formatVaTime(iso: string): string {
   });
 }
 
+export function formatVaDate(dateStr: string): string {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+}
+
 export function formatVaDateTime(iso: string): string {
   return new Date(iso).toLocaleString("en-US", {
     timeZone: AGENCY_TZ,

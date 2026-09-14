@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase/server";
+import { refreshSavedVaMetrics } from "@/lib/vaInsights";
 
 export async function PATCH(
   request: NextRequest,
@@ -23,6 +24,10 @@ export async function PATCH(
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
+
+    void refreshSavedVaMetrics().catch((err) => {
+      console.error("VA metrics sync failed:", err);
+    });
 
     return NextResponse.json({ ok: true });
   } catch {
