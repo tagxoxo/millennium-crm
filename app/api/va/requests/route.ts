@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
     const language = (body.language === "spanish" ? "spanish" : "english") as VaLanguage;
     const policyNumber = String(body.policy_number ?? "").trim();
     const phoneNumber = String(body.phone_number ?? "").trim();
+    const email = String(body.email ?? "").trim().toLowerCase();
     const notes = String(body.notes ?? "").trim();
     const carrier = String(body.carrier ?? "").trim();
 
@@ -43,6 +44,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Carrier is required." }, { status: 400 });
     }
 
+    if (email && !email.includes("@")) {
+      return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
+    }
+
     const supabase = getSupabaseServer();
     const { data, error } = await supabase
       .from("va_requests")
@@ -50,6 +55,7 @@ export async function POST(request: NextRequest) {
         caller_name: callerName,
         policy_number: policyNumber || null,
         phone_number: phoneNumber || null,
+        email: email || null,
         request_type: requestType,
         carrier,
         language,
@@ -58,7 +64,7 @@ export async function POST(request: NextRequest) {
         submitted_by: user.id,
       })
       .select(
-        "id, created_at, caller_name, policy_number, phone_number, request_type, carrier, language, notes, status, completed_at, submitted_by"
+        "id, created_at, caller_name, policy_number, phone_number, email, request_type, carrier, language, notes, status, completed_at, submitted_by"
       )
       .single();
 

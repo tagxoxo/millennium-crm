@@ -356,7 +356,7 @@ export async function refreshSavedVaMetrics(): Promise<{ error: string | null }>
   const { data, error } = await supabaseTickets
     .from("va_requests")
     .select(
-      "id, created_at, caller_name, policy_number, phone_number, request_type, carrier, language, notes, status, completed_at, submitted_by"
+      "id, created_at, caller_name, policy_number, phone_number, email, request_type, carrier, language, notes, status, completed_at, submitted_by"
     );
 
   if (error) return { error: error.message };

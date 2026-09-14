@@ -51,6 +51,7 @@ export default function VaPortal({
   const [callerName, setCallerName] = useState("");
   const [policyNumber, setPolicyNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setEmail] = useState("");
   const [requestType, setRequestType] = useState<VaRequestType | "">("");
   const [carrier, setCarrier] = useState<VaCarrier | "">("");
   const [language, setLanguage] = useState<VaLanguage>("english");
@@ -63,6 +64,7 @@ export default function VaPortal({
     setCallerName("");
     setPolicyNumber("");
     setPhoneNumber("");
+    setEmail("");
     setRequestType("");
     setCarrier("");
     setLanguage("english");
@@ -83,6 +85,7 @@ export default function VaPortal({
           caller_name: callerName,
           policy_number: policyNumber,
           phone_number: phoneNumber,
+          email,
           request_type: requestType,
           carrier,
           language,
@@ -153,15 +156,27 @@ export default function VaPortal({
                   className={inputClass}
                 />
               </div>
-              <div>
-                <label className="block text-xs text-gray-400 mb-1">Phone number</label>
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="931-555-0100"
-                  className={inputClass}
-                />
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Phone number</label>
+                  <input
+                    type="tel"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    placeholder="931-555-0100"
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Optional"
+                    className={inputClass}
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-xs text-gray-400 mb-1">Request type *</label>

@@ -42,6 +42,7 @@ export type VaRequest = {
   caller_name: string;
   policy_number: string | null;
   phone_number: string | null;
+  email: string | null;
   request_type: VaRequestType;
   carrier: VaCarrier | null;
   language: VaLanguage;

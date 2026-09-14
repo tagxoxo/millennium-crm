@@ -91,6 +91,10 @@ function TicketCard({
           <dd className="text-gray-200">{ticket.phone_number || "—"}</dd>
         </div>
         <div>
+          <dt className="text-gray-500 text-xs">Email</dt>
+          <dd className="text-gray-200">{ticket.email || "—"}</dd>
+        </div>
+        <div>
           <dt className="text-gray-500 text-xs">Language</dt>
           <dd className="text-gray-200 capitalize">{ticket.language}</dd>
         </div>

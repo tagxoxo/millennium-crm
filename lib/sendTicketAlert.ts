@@ -44,6 +44,7 @@ export async function sendTicketAlertEmail(ticket: VaRequest) {
         ${row("Caller", ticket.caller_name)}
         ${row("Policy #", ticket.policy_number)}
         ${row("Phone", ticket.phone_number)}
+        ${row("Email", ticket.email)}
         ${row("Request type", typeLabel)}
         ${row("Carrier", carrierLabel)}
         ${row("Language", ticket.language === "spanish" ? "Spanish" : "English")}

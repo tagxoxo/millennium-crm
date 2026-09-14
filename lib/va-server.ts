@@ -51,7 +51,7 @@ export async function fetchTodaysVaRequests(
   const { data, error } = await supabase
     .from("va_requests")
     .select(
-      "id, created_at, caller_name, policy_number, phone_number, request_type, carrier, language, notes, status, completed_at, submitted_by"
+      "id, created_at, caller_name, policy_number, phone_number, email, request_type, carrier, language, notes, status, completed_at, submitted_by"
     )
     .eq("submitted_by", userId)
     .gte("created_at", since)
@@ -76,7 +76,7 @@ export async function fetchAllVaTickets(): Promise<{
   const { data, error } = await supabase
     .from("va_requests")
     .select(
-      "id, created_at, caller_name, policy_number, phone_number, request_type, carrier, language, notes, status, completed_at, submitted_by"
+      "id, created_at, caller_name, policy_number, phone_number, email, request_type, carrier, language, notes, status, completed_at, submitted_by"
     )
     .order("created_at", { ascending: false });
 
