@@ -76,6 +76,7 @@ export default function VaPortal({
   const [quoteAnswers, setQuoteAnswers] = useState(() =>
     emptyScriptAnswers(VA_QUOTE_SCRIPT_ITEMS)
   );
+  const [policyEmailedOnCall, setPolicyEmailedOnCall] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -94,6 +95,7 @@ export default function VaPortal({
     setPaymentNotes("");
     setPolicyAnswers(emptyScriptAnswers(VA_POLICY_SCRIPT_ITEMS));
     setQuoteAnswers(emptyScriptAnswers(VA_QUOTE_SCRIPT_ITEMS));
+    setPolicyEmailedOnCall(false);
   }
 
   function guessCarrier(value: string): VaCarrier | "" {
@@ -128,6 +130,7 @@ export default function VaPortal({
     if (key === "full_name") setCallerName(value);
     if (key === "policy_number") setPolicyNumber(value);
     if (key === "phone_number") setPhoneNumber(value);
+    if (key === "email") setEmail(value);
     if (key === "carrier") {
       const matched = guessCarrier(value);
       if (matched) setCarrier(matched);
@@ -155,7 +158,14 @@ export default function VaPortal({
       return rows;
     }
     if (requestType === "policy_change") {
-      return answersFromRecord(VA_POLICY_SCRIPT_ITEMS, policyAnswers);
+      const rows = answersFromRecord(VA_POLICY_SCRIPT_ITEMS, policyAnswers);
+      if (policyEmailedOnCall) {
+        rows.push({
+          label: "Emailed summary on this call",
+          answer: "Yes",
+        });
+      }
+      return rows;
     }
     if (requestType === "new_quote") {
       return answersFromRecord(VA_QUOTE_SCRIPT_ITEMS, quoteAnswers);
@@ -163,8 +173,16 @@ export default function VaPortal({
     return [];
   }
 
+  const policyNeedsEmailOnCall =
+    requestType === "policy_change" && !policyEmailedOnCall;
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (policyNeedsEmailOnCall) {
+      setError("Email the insured a summary on this call first, then submit.");
+      setScriptTab("policy");
+      return;
+    }
     setSaving(true);
     setError(null);
     setSuccess(false);
@@ -347,6 +365,11 @@ export default function VaPortal({
               />
             </div>
 
+            {policyNeedsEmailOnCall && (
+              <p className="text-red-400 text-sm font-medium">
+                Email the change summary on this call first (red box on the Call Script), then submit.
+              </p>
+            )}
             {error && <p className="text-red-400 text-sm">{error}</p>}
             {success && (
               <p className="text-green-400 text-sm">Request submitted.</p>
@@ -354,7 +377,7 @@ export default function VaPortal({
 
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || policyNeedsEmailOnCall}
               className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors disabled:opacity-50"
             >
               {saving ? "Submitting..." : "Submit request"}
@@ -437,6 +460,8 @@ export default function VaPortal({
         onPaymentNotes={setPaymentNotes}
         policyAnswers={policyAnswers}
         onPolicyAnswer={handlePolicyAnswer}
+        policyEmailedOnCall={policyEmailedOnCall}
+        onPolicyEmailedOnCall={setPolicyEmailedOnCall}
         quoteAnswers={quoteAnswers}
         onQuoteAnswer={handleQuoteAnswer}
       />

@@ -188,11 +188,15 @@ function PaymentScript({
 function PolicyScript({
   answers,
   onAnswer,
+  emailedOnCall,
+  onEmailedOnCall,
 }: {
   answers: Record<string, string>;
   onAnswer: (key: string, value: string) => void;
+  emailedOnCall: boolean;
+  onEmailedOnCall: (value: boolean) => void;
 }) {
-  const ready = VA_POLICY_SCRIPT_ITEMS.every((item) => (answers[item.key] ?? "").trim());
+  const detailsReady = VA_POLICY_SCRIPT_ITEMS.every((item) => (answers[item.key] ?? "").trim());
 
   return (
     <div className="space-y-4">
@@ -204,28 +208,44 @@ function PolicyScript({
       <Cue>Ask and write down each answer:</Cue>
       <AnswerList items={VA_POLICY_SCRIPT_ITEMS} answers={answers} onAnswer={onAnswer} />
 
-      {ready && (
-        <div className="space-y-3">
-          <div className="bg-green-500/10 border border-green-500/40 rounded-lg px-3 py-2.5">
-            <p className="text-green-300 text-sm font-medium leading-relaxed">
-              Ready to submit — fill out the New Request form on the left. These answers go with the
-              ticket.
-            </p>
-          </div>
-          <Cue>Post-submission steps</Cue>
-          <ol className="space-y-2 text-sm text-gray-200 list-decimal pl-4">
-            <li>Email the insured a summary of their requested change</li>
-            <li>
-              Tell them:{" "}
-              <span className="text-white font-semibold">
-                &ldquo;You&apos;ll receive an email summarizing your request. Please reply back with
-                &apos;I confirm this endorsement&apos; so we can process it.&rdquo;
-              </span>
-            </li>
-            <li className="text-yellow-300 font-medium">
-              ⚠️ Do not process the endorsement until written confirmation is received.
-            </li>
-          </ol>
+      <div className="rounded-lg border border-red-500/70 bg-red-500/15 px-3 py-3 space-y-2.5">
+        <p className="text-red-400 text-xs font-bold uppercase tracking-wide">
+          On this call — before you submit
+        </p>
+        <ol className="space-y-2 text-sm text-red-300 list-decimal pl-4 font-medium">
+          <li>
+            Email them a summary of this change <span className="font-bold text-red-200">now, while they are still on the phone</span>.
+          </li>
+          <li>
+            Tell them:{" "}
+            <span className="font-bold text-red-200">
+              &ldquo;You&apos;ll receive an email summarizing your request. Please reply back with
+              &apos;I confirm this endorsement&apos; so we can process it.&rdquo;
+            </span>
+          </li>
+          <li>
+            Then press <span className="font-bold text-red-200">Submit ticket</span> on the left.
+            Do not process the endorsement yourself — the agent will do it after they reply in writing.
+          </li>
+        </ol>
+        <label className="flex items-start gap-2.5 pt-1 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={emailedOnCall}
+            onChange={(e) => onEmailedOnCall(e.target.checked)}
+            className="mt-0.5 h-4 w-4 accent-red-500"
+          />
+          <span className="text-sm font-bold text-red-200 leading-snug">
+            I emailed the insured a summary on this call
+          </span>
+        </label>
+      </div>
+
+      {detailsReady && emailedOnCall && (
+        <div className="bg-green-500/10 border border-green-500/40 rounded-lg px-3 py-2.5">
+          <p className="text-green-300 text-sm font-medium leading-relaxed">
+            Now press Submit ticket. The agent will process the endorsement after written confirmation.
+          </p>
         </div>
       )}
     </div>
@@ -280,6 +300,8 @@ export default function VaCallScript({
   onPaymentNotes,
   policyAnswers,
   onPolicyAnswer,
+  policyEmailedOnCall,
+  onPolicyEmailedOnCall,
   quoteAnswers,
   onQuoteAnswer,
 }: {
@@ -291,6 +313,8 @@ export default function VaCallScript({
   onPaymentNotes: (value: string) => void;
   policyAnswers: Record<string, string>;
   onPolicyAnswer: (key: string, value: string) => void;
+  policyEmailedOnCall: boolean;
+  onPolicyEmailedOnCall: (value: boolean) => void;
   quoteAnswers: Record<string, string>;
   onQuoteAnswer: (key: string, value: string) => void;
 }) {
@@ -332,7 +356,12 @@ export default function VaCallScript({
           />
         )}
         {tab === "policy" && (
-          <PolicyScript answers={policyAnswers} onAnswer={onPolicyAnswer} />
+          <PolicyScript
+            answers={policyAnswers}
+            onAnswer={onPolicyAnswer}
+            emailedOnCall={policyEmailedOnCall}
+            onEmailedOnCall={onPolicyEmailedOnCall}
+          />
         )}
         {tab === "quote" && (
           <QuoteScript answers={quoteAnswers} onAnswer={onQuoteAnswer} />

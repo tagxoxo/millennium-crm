@@ -16,6 +16,7 @@ export const VA_POLICY_SCRIPT_ITEMS: VaScriptItem[] = [
   { key: "full_name", label: "Full name", say: "Can I get your full name please?" },
   { key: "policy_number", label: "Policy number", say: "And your policy number?" },
   { key: "phone_number", label: "Phone number", say: "What's the best phone number for you?" },
+  { key: "email", label: "Email", say: "What's the best email to send your change summary to?" },
   {
     key: "requested_change",
     label: "Requested change",
