@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase/server";
-import { isVaCarrier, isVaRequestType, type VaLanguage } from "@/lib/va";
+import { sendTicketAlertEmail } from "@/lib/sendTicketAlert";
+import {
+  isVaCarrier,
+  isVaRequestType,
+  type VaLanguage,
+  type VaRequest,
+} from "@/lib/va";
 import { getVaAuthUser, getVaRole } from "@/lib/va-server";
 
 export async function POST(request: NextRequest) {
@@ -50,14 +56,28 @@ export async function POST(request: NextRequest) {
         status: "pending",
         submitted_by: user.id,
       })
-      .select("id")
+      .select(
+        "id, created_at, caller_name, policy_number, phone_number, request_type, carrier, language, notes, status, completed_at, submitted_by"
+      )
       .single();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json({ id: data.id });
+    const ticket = data as VaRequest;
+
+    try {
+      await sendTicketAlertEmail(ticket);
+      await supabase
+        .from("va_requests")
+        .update({ status: "sent_to_agent" })
+        .eq("id", ticket.id);
+    } catch (emailError) {
+      console.error("VA ticket email failed:", emailError);
+    }
+
+    return NextResponse.json({ id: ticket.id });
   } catch {
     return NextResponse.json({ error: "Failed to submit request." }, { status: 500 });
   }

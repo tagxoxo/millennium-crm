@@ -51,7 +51,7 @@ export async function fetchTodaysVaRequests(
   const { data, error } = await supabase
     .from("va_requests")
     .select(
-      "id, created_at, caller_name, policy_number, phone_number, request_type, carrier, language, notes, status, submitted_by"
+      "id, created_at, caller_name, policy_number, phone_number, request_type, carrier, language, notes, status, completed_at, submitted_by"
     )
     .eq("submitted_by", userId)
     .gte("created_at", since)
@@ -66,4 +66,23 @@ export async function fetchTodaysVaRequests(
   );
 
   return { requests, error: null };
+}
+
+export async function fetchAllVaTickets(): Promise<{
+  tickets: VaRequest[];
+  error: string | null;
+}> {
+  const supabase = getSupabaseServer();
+  const { data, error } = await supabase
+    .from("va_requests")
+    .select(
+      "id, created_at, caller_name, policy_number, phone_number, request_type, carrier, language, notes, status, completed_at, submitted_by"
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    return { tickets: [], error: error.message };
+  }
+
+  return { tickets: (data ?? []) as VaRequest[], error: null };
 }

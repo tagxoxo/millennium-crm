@@ -3,6 +3,7 @@ import LogoutButton from "./LogoutButton";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: "📊" },
+  { href: "/ticket-center", label: "Ticket Center", icon: "🎫" },
   { href: "/retention", label: "Retention Center", icon: "🔄" },
   { href: "/service-center", label: "Service Center", icon: "🎧" },
   { href: "/sales-center", label: "Sales Center", icon: "🎯" },

@@ -30,6 +30,7 @@ export type VaRequest = {
   language: VaLanguage;
   notes: string | null;
   status: VaStatus;
+  completed_at: string | null;
   submitted_by: string | null;
 };
 
@@ -46,6 +47,12 @@ export const VA_CARRIER_LABELS: Record<VaCarrier, string> = {
   trexis: "Trexis",
   progressive: "Progressive",
   safeway: "Safeway",
+};
+
+export const VA_STATUS_LABELS: Record<VaStatus, string> = {
+  pending: "Pending",
+  sent_to_agent: "Sent to agent",
+  completed: "Completed",
 };
 
 export function isVaRequestType(value: string): value is VaRequestType {
@@ -70,6 +77,17 @@ export function isTodayInAgencyTz(iso: string): boolean {
 export function formatVaTime(iso: string): string {
   return new Date(iso).toLocaleTimeString("en-US", {
     timeZone: AGENCY_TZ,
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+export function formatVaDateTime(iso: string): string {
+  return new Date(iso).toLocaleString("en-US", {
+    timeZone: AGENCY_TZ,
+    month: "short",
+    day: "numeric",
+    year: "numeric",
     hour: "numeric",
     minute: "2-digit",
   });
