@@ -51,7 +51,7 @@ export async function fetchTodaysVaRequests(
   const { data, error } = await supabase
     .from("va_requests")
     .select(
-      "id, created_at, caller_name, policy_number, phone_number, request_type, language, notes, status, submitted_by"
+      "id, created_at, caller_name, policy_number, phone_number, request_type, carrier, language, notes, status, submitted_by"
     )
     .eq("submitted_by", userId)
     .gte("created_at", since)

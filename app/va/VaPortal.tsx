@@ -4,8 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   formatVaTime,
+  VA_CARRIER_LABELS,
+  VA_CARRIERS,
   VA_REQUEST_TYPE_LABELS,
   VA_REQUEST_TYPES,
+  type VaCarrier,
   type VaLanguage,
   type VaRequest,
   type VaRequestType,
@@ -49,6 +52,7 @@ export default function VaPortal({
   const [policyNumber, setPolicyNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [requestType, setRequestType] = useState<VaRequestType | "">("");
+  const [carrier, setCarrier] = useState<VaCarrier | "">("");
   const [language, setLanguage] = useState<VaLanguage>("english");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
@@ -60,6 +64,7 @@ export default function VaPortal({
     setPolicyNumber("");
     setPhoneNumber("");
     setRequestType("");
+    setCarrier("");
     setLanguage("english");
     setNotes("");
   }
@@ -79,6 +84,7 @@ export default function VaPortal({
           policy_number: policyNumber,
           phone_number: phoneNumber,
           request_type: requestType,
+          carrier,
           language,
           notes,
         }),
@@ -173,6 +179,22 @@ export default function VaPortal({
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Carrier *</label>
+                <select
+                  required
+                  value={carrier}
+                  onChange={(e) => setCarrier(e.target.value as VaCarrier | "")}
+                  className={inputClass}
+                >
+                  <option value="">Select…</option>
+                  {VA_CARRIERS.map((value) => (
+                    <option key={value} value={value}>
+                      {VA_CARRIER_LABELS[value]}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
             <div>
@@ -250,6 +272,7 @@ export default function VaPortal({
                     <th className="px-4 py-3 font-medium">Caller name</th>
                     <th className="px-4 py-3 font-medium">Policy #</th>
                     <th className="px-4 py-3 font-medium">Request type</th>
+                    <th className="px-4 py-3 font-medium">Carrier</th>
                     <th className="px-4 py-3 font-medium">Language</th>
                     <th className="px-4 py-3 font-medium">Status</th>
                     <th className="px-4 py-3 font-medium">Notes</th>
@@ -272,6 +295,9 @@ export default function VaPortal({
                       </td>
                       <td className="px-4 py-3 text-gray-300">
                         {VA_REQUEST_TYPE_LABELS[row.request_type] ?? row.request_type}
+                      </td>
+                      <td className="px-4 py-3 text-gray-300">
+                        {row.carrier ? VA_CARRIER_LABELS[row.carrier] : "—"}
                       </td>
                       <td className="px-4 py-3 text-gray-300 capitalize">
                         {row.language}

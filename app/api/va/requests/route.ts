@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase/server";
-import { isVaRequestType, type VaLanguage } from "@/lib/va";
+import { isVaCarrier, isVaRequestType, type VaLanguage } from "@/lib/va";
 import { getVaAuthUser, getVaRole } from "@/lib/va-server";
 
 export async function POST(request: NextRequest) {
@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
     const policyNumber = String(body.policy_number ?? "").trim();
     const phoneNumber = String(body.phone_number ?? "").trim();
     const notes = String(body.notes ?? "").trim();
+    const carrier = String(body.carrier ?? "").trim();
 
     if (!callerName) {
       return NextResponse.json({ error: "Caller name is required." }, { status: 400 });
@@ -29,6 +30,10 @@ export async function POST(request: NextRequest) {
 
     if (!isVaRequestType(requestType)) {
       return NextResponse.json({ error: "Invalid request type." }, { status: 400 });
+    }
+
+    if (!isVaCarrier(carrier)) {
+      return NextResponse.json({ error: "Carrier is required." }, { status: 400 });
     }
 
     const supabase = getSupabaseServer();
@@ -39,6 +44,7 @@ export async function POST(request: NextRequest) {
         policy_number: policyNumber || null,
         phone_number: phoneNumber || null,
         request_type: requestType,
+        carrier,
         language,
         notes: notes || null,
         status: "pending",

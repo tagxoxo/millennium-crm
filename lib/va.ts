@@ -4,12 +4,16 @@ export const AGENCY_TZ = "America/Chicago";
 export const VA_REQUEST_TYPES = [
   "add_vehicle",
   "remove_vehicle",
+  "add_remove_driver",
   "payment_question",
   "new_quote",
   "other",
 ] as const;
 
+export const VA_CARRIERS = ["trexis", "progressive", "safeway"] as const;
+
 export type VaRequestType = (typeof VA_REQUEST_TYPES)[number];
+export type VaCarrier = (typeof VA_CARRIERS)[number];
 
 export type VaLanguage = "english" | "spanish";
 
@@ -22,6 +26,7 @@ export type VaRequest = {
   policy_number: string | null;
   phone_number: string | null;
   request_type: VaRequestType;
+  carrier: VaCarrier | null;
   language: VaLanguage;
   notes: string | null;
   status: VaStatus;
@@ -31,13 +36,24 @@ export type VaRequest = {
 export const VA_REQUEST_TYPE_LABELS: Record<VaRequestType, string> = {
   add_vehicle: "Add vehicle",
   remove_vehicle: "Remove vehicle",
+  add_remove_driver: "Add/remove driver",
   payment_question: "Payment question",
   new_quote: "New quote",
   other: "Other",
 };
 
+export const VA_CARRIER_LABELS: Record<VaCarrier, string> = {
+  trexis: "Trexis",
+  progressive: "Progressive",
+  safeway: "Safeway",
+};
+
 export function isVaRequestType(value: string): value is VaRequestType {
   return (VA_REQUEST_TYPES as readonly string[]).includes(value);
+}
+
+export function isVaCarrier(value: string): value is VaCarrier {
+  return (VA_CARRIERS as readonly string[]).includes(value);
 }
 
 export function todayInAgencyTz(): string {
