@@ -56,6 +56,7 @@ function HubCard({
   return (
     <Link
       href={href}
+      prefetch={false}
       className={`group block border rounded-xl p-5 md:p-6 transition-all shadow-lg shadow-black/20 ${styles.card}`}
     >
       <div className="flex items-start justify-between gap-3 mb-4">

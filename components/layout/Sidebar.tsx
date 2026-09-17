@@ -32,6 +32,7 @@ export default function Sidebar({
           <Link
             key={item.href}
             href={item.href}
+            prefetch={false}
             className={`flex items-center gap-3 px-4 py-3 rounded-lg text-gray-300 hover:bg-navy-lighter hover:text-white transition-colors ${
               item.nested ? "ml-4 py-2 text-sm" : ""
             }`}

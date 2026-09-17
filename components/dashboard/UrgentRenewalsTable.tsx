@@ -28,6 +28,7 @@ export default function UrgentRenewalsTable({
           <Link
             key={policy.id}
             href={`/policies/${policy.id}`}
+            prefetch={false}
             className="block p-4 hover:bg-navy-lighter/50"
           >
             <div className="flex justify-between items-start mb-2">
@@ -66,6 +67,7 @@ export default function UrgentRenewalsTable({
                 <td className="px-4 py-3">
                   <Link
                     href={`/policies/${policy.id}`}
+                    prefetch={false}
                     className="text-white hover:text-accent"
                   >
                     {policy.client_name}

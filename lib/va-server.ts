@@ -88,12 +88,16 @@ export async function fetchAllVaTickets(): Promise<{
 }
 
 export async function countOpenVaTickets(): Promise<number> {
-  const supabase = getSupabaseServer();
-  const { count, error } = await supabase
-    .from("va_requests")
-    .select("id", { count: "exact", head: true })
-    .neq("status", "completed");
+  try {
+    const supabase = getSupabaseServer();
+    const { count, error } = await supabase
+      .from("va_requests")
+      .select("id", { count: "exact", head: true })
+      .neq("status", "completed");
 
-  if (error) return 0;
-  return count ?? 0;
+    if (error) return 0;
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
 }

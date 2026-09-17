@@ -93,7 +93,7 @@ export default function LeadCard({
 
   if (!draggable) {
     return (
-      <Link href={href} className={cardClass}>
+      <Link href={href} prefetch={false} className={cardClass}>
         {content}
       </Link>
     );

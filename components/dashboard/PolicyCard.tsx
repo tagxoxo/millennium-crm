@@ -119,7 +119,7 @@ export default function PolicyCard({
 
   if (!draggable) {
     return (
-      <Link href={href} className={cardClass}>
+      <Link href={href} prefetch={false} className={cardClass}>
         {content}
       </Link>
     );

@@ -16,6 +16,7 @@ export default function DashboardFocusBanner({ alerts }: DashboardFocusBannerPro
           <li key={alert.message}>
             <Link
               href={alert.href}
+              prefetch={false}
               className={`flex items-center gap-2 text-sm rounded-lg px-3 py-2.5 transition-colors ${
                 alert.urgent
                   ? "text-orange-100 bg-orange-500/20 border border-orange-400/40 hover:bg-orange-500/30"

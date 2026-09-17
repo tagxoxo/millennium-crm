@@ -20,6 +20,7 @@ export default function MobileNav({
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               className={`relative flex flex-col items-center px-3 py-2 text-xs ${
                 isActive ? "text-accent" : "text-gray-400"
               }`}

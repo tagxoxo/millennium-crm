@@ -34,7 +34,11 @@ export default function DashboardBookHealth({ health }: DashboardBookHealthProps
     <section>
       <div className="flex items-center justify-between gap-3 mb-3">
         <h2 className="text-lg font-semibold text-white">Book Health</h2>
-        <Link href="/insights" className="text-sm text-accent hover:text-sky-300 hover:underline">
+        <Link
+          href="/insights"
+          prefetch={false}
+          className="text-sm text-accent hover:text-sky-300 hover:underline"
+        >
           Full analytics →
         </Link>
       </div>
@@ -43,6 +47,7 @@ export default function DashboardBookHealth({ health }: DashboardBookHealthProps
           <Link
             key={item.label}
             href={item.href}
+            prefetch={false}
             className={`rounded-xl p-4 ${CARD_CLASS}`}
           >
             <p className="text-2xl font-bold text-red-200">{item.value.toLocaleString()}</p>
