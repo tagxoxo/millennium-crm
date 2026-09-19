@@ -1,9 +1,9 @@
 {
-  "exported_at": "2026-09-18T01:00:07.120Z",
+  "exported_at": "2026-09-19T01:01:09.988Z",
   "counts": {
-    "policies": 74,
+    "policies": 76,
     "contact_log": 0,
-    "policy_documents": 75,
+    "policy_documents": 76,
     "automations": 5,
     "leads": 2,
     "users": 2
@@ -1784,6 +1784,54 @@
       "is_historical": false,
       "effective_date": "2026-09-17",
       "client_state": "TN"
+    },
+    {
+      "id": "3c6d43cc-b855-445b-89ca-87f1f3cffde2",
+      "client_name": "Cathy Freeman",
+      "carrier": "trexis",
+      "premium": 955,
+      "renewal_date": "82027-09-01",
+      "stage": "active",
+      "spanish_speaker": false,
+      "phone": "931-378-9611",
+      "email": null,
+      "policy_number": "Agent",
+      "notes": null,
+      "created_at": "2026-09-18T17:06:00.995297+00:00",
+      "commercial": false,
+      "term_months": 12,
+      "client_since": null,
+      "prior_carrier": null,
+      "client_address": "2113 RINGGOLD CT APT 305Garaging Address:, CLARKSVILLE, TN 37042",
+      "client_id": "c2cdbf65-06fb-41af-aaf7-585d0629ad94",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-09-18",
+      "client_state": "TN"
+    },
+    {
+      "id": "571a91a5-df01-4381-9485-144cadffbcd3",
+      "client_name": "Angel Bustamante",
+      "carrier": "progressive",
+      "premium": 4274,
+      "renewal_date": "2027-09-18",
+      "stage": "active",
+      "spanish_speaker": true,
+      "phone": "931-436-7089",
+      "email": null,
+      "policy_number": null,
+      "notes": null,
+      "created_at": "2026-09-18T17:08:17.822451+00:00",
+      "commercial": false,
+      "term_months": 12,
+      "client_since": null,
+      "prior_carrier": null,
+      "client_address": null,
+      "client_id": "6fafe728-0700-4874-8c49-a4e712776261",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-09-18",
+      "client_state": "TN"
     }
   ],
   "contact_log": [],
@@ -2461,6 +2509,15 @@
       "r2_key": "Lisa_Holley/1789652083276-ID_cards.pdf",
       "file_size": 151652,
       "uploaded_at": "2026-09-17T13:34:43.719854+00:00",
+      "notes": null
+    },
+    {
+      "id": "1ffa285b-221e-4991-adff-ce6a1573bc86",
+      "policy_id": "3c6d43cc-b855-445b-89ca-87f1f3cffde2",
+      "file_name": "Trexis.pdf",
+      "r2_key": "Cathy_Freeman/1789751184380-Trexis.pdf",
+      "file_size": 149975,
+      "uploaded_at": "2026-09-18T17:06:25.255028+00:00",
       "notes": null
     }
   ],
