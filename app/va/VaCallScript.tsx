@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import type { ReactNode } from "react";
+import { VA_CARRIER_LABELS, VA_CARRIERS, type VaCarrier } from "@/lib/va";
+import {
+  digitsOnly,
+  formatCardNumberInput,
+  formatExpInput,
+  type PaymentCardInput,
+} from "@/lib/vaPayment";
 import {
   VA_POLICY_SCRIPT_ITEMS,
   VA_QUOTE_SCRIPT_ITEMS,
@@ -26,29 +33,142 @@ function Cue({ children }: { children: ReactNode }) {
   return <p className="text-gray-400 text-xs font-medium uppercase tracking-wide">{children}</p>;
 }
 
-function CopyNumber({ number }: { number: string }) {
-  const [copied, setCopied] = useState(false);
-
-  async function handleCopy() {
-    try {
-      await navigator.clipboard.writeText(number);
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
-    } catch {
-      setCopied(false);
-    }
-  }
-
+function PaymentScript({
+  carrier,
+  notes,
+  card,
+  onSelect,
+  onNotes,
+  onCard,
+}: {
+  carrier: VaCarrier | null;
+  notes: string;
+  card: PaymentCardInput;
+  onSelect: (value: VaCarrier) => void;
+  onNotes: (value: string) => void;
+  onCard: (field: keyof PaymentCardInput, value: string) => void;
+}) {
   return (
-    <div className="flex items-center gap-2 py-1">
-      <p className="text-2xl font-bold text-white tracking-wide tabular-nums">{number}</p>
-      <button
-        type="button"
-        onClick={handleCopy}
-        className="shrink-0 px-2 py-1 rounded-md border border-navy-lighter bg-navy text-[11px] text-gray-300 hover:text-white hover:border-accent"
-      >
-        {copied ? "Copied" : "Copy number"}
-      </button>
+    <div className="space-y-4">
+      <Cue>Ask:</Cue>
+      <Line>&ldquo;Of course! Who is your insurance carrier?&rdquo;</Line>
+
+      <div className="grid grid-cols-3 gap-2">
+        {VA_CARRIERS.map((value) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => onSelect(value)}
+            className={`py-3 rounded-lg text-xs font-semibold border transition-colors ${
+              carrier === value
+                ? "bg-accent text-white border-accent"
+                : "bg-navy text-gray-200 border-navy-lighter hover:border-accent hover:text-white"
+            }`}
+          >
+            {VA_CARRIER_LABELS[value]}
+          </button>
+        ))}
+      </div>
+
+      {carrier && (
+        <div className="space-y-3 pt-1">
+          <Line>
+            &ldquo;I can take your card information and submit the payment for the agent to process.&rdquo;
+          </Line>
+
+          <div>
+            <p className="text-white text-sm font-semibold">
+              &ldquo;What&apos;s the card number?&rdquo;
+            </p>
+            <input
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              value={card.number}
+              onChange={(e) => onCard("number", formatCardNumberInput(e.target.value))}
+              placeholder="•••• •••• •••• ••••"
+              className={scriptInputClass}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <p className="text-white text-sm font-semibold">&ldquo;Expiration — month and year?&rdquo;</p>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                value={card.exp}
+                onChange={(e) => onCard("exp", formatExpInput(e.target.value))}
+                placeholder="MM/YY"
+                className={scriptInputClass}
+              />
+            </div>
+            <div>
+              <p className="text-white text-sm font-semibold">&ldquo;And the CVC?&rdquo;</p>
+              <input
+                type="text"
+                inputMode="numeric"
+                autoComplete="off"
+                value={card.cvc}
+                onChange={(e) => onCard("cvc", digitsOnly(e.target.value).slice(0, 4))}
+                placeholder="123"
+                className={scriptInputClass}
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-white text-sm font-semibold">
+              &ldquo;Name as it appears on the card?&rdquo;
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              <input
+                type="text"
+                autoComplete="off"
+                value={card.first_name}
+                onChange={(e) => onCard("first_name", e.target.value)}
+                placeholder="First name"
+                className={scriptInputClass}
+              />
+              <input
+                type="text"
+                autoComplete="off"
+                value={card.last_name}
+                onChange={(e) => onCard("last_name", e.target.value)}
+                placeholder="Last name"
+                className={scriptInputClass}
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-white text-sm font-semibold">&ldquo;Billing zip code?&rdquo;</p>
+            <input
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              value={card.zip}
+              onChange={(e) => onCard("zip", digitsOnly(e.target.value).slice(0, 10))}
+              placeholder="37040"
+              className={scriptInputClass}
+            />
+          </div>
+
+          <Line>&ldquo;I&apos;ll submit this for the agent to process. Is there anything else I can help you with today?&rdquo;</Line>
+        </div>
+      )}
+
+      <div>
+        <Cue>Write down anything else they said</Cue>
+        <textarea
+          value={notes}
+          onChange={(e) => onNotes(e.target.value)}
+          rows={3}
+          placeholder="Payment notes for this ticket"
+          className={`${scriptInputClass} resize-y min-h-[72px]`}
+        />
+      </div>
     </div>
   );
 }
@@ -105,83 +225,6 @@ function GreetingScript() {
       <p className="text-gray-400 text-sm italic leading-relaxed">
         Listen for what the caller needs, then click the matching tab above.
       </p>
-    </div>
-  );
-}
-
-function PaymentScript({
-  carrier,
-  notes,
-  onSelect,
-  onNotes,
-}: {
-  carrier: "trexis" | "progressive" | null;
-  notes: string;
-  onSelect: (value: "trexis" | "progressive") => void;
-  onNotes: (value: string) => void;
-}) {
-  return (
-    <div className="space-y-4">
-      <Cue>Ask:</Cue>
-      <Line>&ldquo;Of course! Who is your insurance carrier?&rdquo;</Line>
-
-      <div className="grid grid-cols-2 gap-2">
-        <button
-          type="button"
-          onClick={() => onSelect("trexis")}
-          className={`py-4 rounded-lg text-sm font-semibold border transition-colors ${
-            carrier === "trexis"
-              ? "bg-accent text-white border-accent"
-              : "bg-navy text-gray-200 border-navy-lighter hover:border-accent hover:text-white"
-          }`}
-        >
-          Trexis
-        </button>
-        <button
-          type="button"
-          onClick={() => onSelect("progressive")}
-          className={`py-4 rounded-lg text-sm font-semibold border transition-colors ${
-            carrier === "progressive"
-              ? "bg-accent text-white border-accent"
-              : "bg-navy text-gray-200 border-navy-lighter hover:border-accent hover:text-white"
-          }`}
-        >
-          Progressive
-        </button>
-      </div>
-
-      {carrier === "trexis" && (
-        <div className="space-y-3 pt-1">
-          <Line>
-            &ldquo;Great, I&apos;m going to give you the number to call Trexis directly to process your
-            payment. Are you ready?&rdquo;
-          </Line>
-          <CopyNumber number="877-784-7466" />
-          <Line>&ldquo;Then press 2.&rdquo;</Line>
-          <Line>&ldquo;Is there anything else I can help you with today?&rdquo;</Line>
-        </div>
-      )}
-
-      {carrier === "progressive" && (
-        <div className="space-y-3 pt-1">
-          <Line>
-            &ldquo;Sure! I&apos;ll give you Progressive&apos;s payment line right now. Are you ready?&rdquo;
-          </Line>
-          <CopyNumber number="1-888-671-4405" />
-          <Line>&ldquo;Is there anything else I can help you with today?&rdquo;</Line>
-        </div>
-      )}
-
-      <div>
-        <Cue>Write down anything else they said</Cue>
-        <textarea
-          value={notes}
-          onChange={(e) => onNotes(e.target.value)}
-          rows={3}
-          placeholder="Payment notes for this ticket"
-          className={`${scriptInputClass} resize-y min-h-[72px]`}
-        />
-      </div>
     </div>
   );
 }
@@ -299,6 +342,8 @@ export default function VaCallScript({
   onPaymentCarrier,
   paymentNotes,
   onPaymentNotes,
+  paymentCard,
+  onPaymentCard,
   policyAnswers,
   onPolicyAnswer,
   policyEmailedOnCall,
@@ -308,10 +353,12 @@ export default function VaCallScript({
 }: {
   tab: VaScriptTab;
   onTabChange: (tab: VaScriptTab) => void;
-  paymentCarrier: "trexis" | "progressive" | null;
-  onPaymentCarrier: (value: "trexis" | "progressive") => void;
+  paymentCarrier: VaCarrier | null;
+  onPaymentCarrier: (value: VaCarrier) => void;
   paymentNotes: string;
   onPaymentNotes: (value: string) => void;
+  paymentCard: PaymentCardInput;
+  onPaymentCard: (field: keyof PaymentCardInput, value: string) => void;
   policyAnswers: Record<string, string>;
   onPolicyAnswer: (key: string, value: string) => void;
   policyEmailedOnCall: boolean;
@@ -352,8 +399,10 @@ export default function VaCallScript({
           <PaymentScript
             carrier={paymentCarrier}
             notes={paymentNotes}
+            card={paymentCard}
             onSelect={onPaymentCarrier}
             onNotes={onPaymentNotes}
+            onCard={onPaymentCard}
           />
         )}
         {tab === "policy" && (

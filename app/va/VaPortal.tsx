@@ -23,6 +23,12 @@ import {
   type VaIntakeAnswer,
   type VaScriptTab,
 } from "@/lib/vaScript";
+import {
+  CARD_NUMBER_LABEL,
+  emptyPaymentCard,
+  paymentCardError,
+  type PaymentCardInput,
+} from "@/lib/vaPayment";
 
 const inputClass =
   "w-full px-4 py-2.5 bg-navy border border-navy-lighter rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent text-sm";
@@ -66,10 +72,9 @@ export default function VaPortal({
   const [language, setLanguage] = useState<VaLanguage>("english");
   const [notes, setNotes] = useState("");
   const [scriptTab, setScriptTab] = useState<VaScriptTab>("greeting");
-  const [paymentCarrier, setPaymentCarrier] = useState<"trexis" | "progressive" | null>(
-    null
-  );
+  const [paymentCarrier, setPaymentCarrier] = useState<VaCarrier | null>(null);
   const [paymentNotes, setPaymentNotes] = useState("");
+  const [paymentCard, setPaymentCard] = useState<PaymentCardInput>(emptyPaymentCard());
   const [policyAnswers, setPolicyAnswers] = useState(() =>
     emptyScriptAnswers(VA_POLICY_SCRIPT_ITEMS)
   );
@@ -93,6 +98,7 @@ export default function VaPortal({
     setScriptTab("greeting");
     setPaymentCarrier(null);
     setPaymentNotes("");
+    setPaymentCard(emptyPaymentCard());
     setPolicyAnswers(emptyScriptAnswers(VA_POLICY_SCRIPT_ITEMS));
     setQuoteAnswers(emptyScriptAnswers(VA_QUOTE_SCRIPT_ITEMS));
     setPolicyEmailedOnCall(false);
@@ -120,9 +126,13 @@ export default function VaPortal({
     if (value === "new_quote") setScriptTab("quote");
   }
 
-  function handlePaymentCarrier(value: "trexis" | "progressive") {
+  function handlePaymentCarrier(value: VaCarrier) {
     setPaymentCarrier(value);
     setCarrier(value);
+  }
+
+  function handlePaymentCard(field: keyof PaymentCardInput, value: string) {
+    setPaymentCard((current) => ({ ...current, [field]: value }));
   }
 
   function handlePolicyAnswer(key: string, value: string) {
@@ -175,12 +185,19 @@ export default function VaPortal({
 
   const policyNeedsEmailOnCall =
     requestType === "policy_change" && !policyEmailedOnCall;
+  const paymentNeedsCard =
+    requestType === "payment" ? paymentCardError(paymentCard) : null;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (policyNeedsEmailOnCall) {
       setError("Email the insured a summary on this call first, then submit.");
       setScriptTab("policy");
+      return;
+    }
+    if (requestType === "payment" && paymentNeedsCard) {
+      setError(paymentNeedsCard);
+      setScriptTab("payment");
       return;
     }
     setSaving(true);
@@ -201,6 +218,7 @@ export default function VaPortal({
           language,
           notes,
           intake: buildIntake(),
+          payment_card: requestType === "payment" ? paymentCard : undefined,
         }),
       });
       const json = await res.json();
@@ -370,6 +388,11 @@ export default function VaPortal({
                 Email the change summary on this call first (red box on the Call Script), then submit.
               </p>
             )}
+            {paymentNeedsCard && requestType === "payment" && (
+              <p className="text-red-400 text-sm font-medium">
+                Enter the card details on the Payment tab, then submit.
+              </p>
+            )}
             {error && <p className="text-red-400 text-sm">{error}</p>}
             {success && (
               <p className="text-green-400 text-sm">Request submitted.</p>
@@ -377,7 +400,7 @@ export default function VaPortal({
 
             <button
               type="submit"
-              disabled={saving || policyNeedsEmailOnCall}
+              disabled={saving || policyNeedsEmailOnCall || Boolean(paymentNeedsCard)}
               className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors disabled:opacity-50"
             >
               {saving ? "Submitting..." : "Submit request"}
@@ -408,6 +431,7 @@ export default function VaPortal({
                     <th className="px-4 py-3 font-medium">Request type</th>
                     <th className="px-4 py-3 font-medium">Carrier</th>
                     <th className="px-4 py-3 font-medium">Language</th>
+                    <th className="px-4 py-3 font-medium">Card</th>
                     <th className="px-4 py-3 font-medium">Status</th>
                     <th className="px-4 py-3 font-medium">Notes</th>
                   </tr>
@@ -436,6 +460,10 @@ export default function VaPortal({
                       <td className="px-4 py-3 text-gray-300 capitalize">
                         {row.language}
                       </td>
+                      <td className="px-4 py-3 text-gray-300 font-mono">
+                        {row.intake.find((item) => item.label === CARD_NUMBER_LABEL)
+                          ?.answer ?? "—"}
+                      </td>
                       <td className="px-4 py-3">
                         <StatusPill status={row.status} />
                       </td>
@@ -458,6 +486,8 @@ export default function VaPortal({
         onPaymentCarrier={handlePaymentCarrier}
         paymentNotes={paymentNotes}
         onPaymentNotes={setPaymentNotes}
+        paymentCard={paymentCard}
+        onPaymentCard={handlePaymentCard}
         policyAnswers={policyAnswers}
         onPolicyAnswer={handlePolicyAnswer}
         policyEmailedOnCall={policyEmailedOnCall}

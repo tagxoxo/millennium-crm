@@ -5,6 +5,7 @@ import {
   VA_REQUEST_TYPE_LABELS,
   type VaRequest,
 } from "@/lib/va";
+import { maskIntakeForVa } from "@/lib/vaPaymentSecret";
 
 const TICKET_ALERT_EMAIL = "jacob@wilshireinsure.com";
 
@@ -51,7 +52,7 @@ export async function sendTicketAlertEmail(ticket: VaRequest) {
         ${row("Notes", ticket.notes)}
         ${
           ticket.intake?.length
-            ? ticket.intake
+            ? maskIntakeForVa(ticket.intake)
                 .map((item) => row(item.label, item.answer))
                 .join("")
             : ""

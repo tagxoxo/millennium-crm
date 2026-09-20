@@ -109,10 +109,18 @@ function TicketCard({
       {ticket.intake && ticket.intake.length > 0 && (
         <div className="border-t border-navy-lighter pt-3 space-y-1.5">
           <p className="text-xs text-gray-500 uppercase tracking-wide">Call script answers</p>
-          {ticket.intake.map((item) => (
-            <div key={item.label} className="text-sm">
+          {ticket.intake.map((item, index) => (
+            <div key={`${item.label}-${index}`} className="text-sm">
               <p className="text-gray-500 text-xs">{item.label}</p>
-              <p className="text-gray-200 whitespace-pre-wrap">{item.answer}</p>
+              <p
+                className={`text-gray-200 whitespace-pre-wrap ${
+                  item.label === "Card number" || item.label === "CVC"
+                    ? "font-mono tracking-wide"
+                    : ""
+                }`}
+              >
+                {item.answer}
+              </p>
             </div>
           ))}
         </div>

@@ -9,6 +9,8 @@ import {
   type VaRequest,
 } from "@/lib/va";
 import { getVaAuthUser, getVaRole } from "@/lib/va-server";
+import { CARD_SECRET_LABEL, parsePaymentCard } from "@/lib/vaPayment";
+import { buildPaymentIntake } from "@/lib/vaPaymentSecret";
 import { parseIntakeAnswers } from "@/lib/vaScript";
 
 export async function POST(request: NextRequest) {
@@ -32,7 +34,9 @@ export async function POST(request: NextRequest) {
     const email = String(body.email ?? "").trim().toLowerCase();
     const notes = String(body.notes ?? "").trim();
     const carrier = String(body.carrier ?? "").trim();
-    const intake = parseIntakeAnswers(body.intake);
+    let intake = parseIntakeAnswers(body.intake).filter(
+      (item) => item.label !== CARD_SECRET_LABEL
+    );
 
     if (!callerName) {
       return NextResponse.json({ error: "Caller name is required." }, { status: 400 });
@@ -48,6 +52,21 @@ export async function POST(request: NextRequest) {
 
     if (email && !email.includes("@")) {
       return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
+    }
+
+    if (requestType === "payment") {
+      const card = parsePaymentCard(body.payment_card);
+      if (!card) {
+        return NextResponse.json(
+          { error: "Enter the card details on the Payment tab." },
+          { status: 400 }
+        );
+      }
+      const built = buildPaymentIntake(card, intake);
+      if (built.error) {
+        return NextResponse.json({ error: built.error }, { status: 400 });
+      }
+      intake = built.intake;
     }
 
     const supabase = getSupabaseServer();

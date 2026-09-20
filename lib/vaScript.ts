@@ -86,7 +86,7 @@ export function parseIntakeAnswers(raw: unknown): VaIntakeAnswer[] {
     if (!label || !answer) continue;
     answers.push({
       label: label.slice(0, 80),
-      answer: answer.slice(0, 2000),
+      answer: answer.slice(0, 4000),
     });
   }
   return answers;

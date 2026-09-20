@@ -5,6 +5,8 @@ import {
   VA_ACCESS_COOKIE,
   type VaRequest,
 } from "@/lib/va";
+import { maskIntakeForVa, revealIntakeForCrm } from "@/lib/vaPaymentSecret";
+import { parseIntakeAnswers } from "@/lib/vaScript";
 
 /** Role lives on public.users — this project has no profiles table. */
 export async function getVaRole(
@@ -61,9 +63,12 @@ export async function fetchTodaysVaRequests(
     return { requests: [], error: error.message };
   }
 
-  const requests = ((data ?? []) as VaRequest[]).filter((row) =>
-    isTodayInAgencyTz(row.created_at)
-  );
+  const requests = ((data ?? []) as VaRequest[])
+    .filter((row) => isTodayInAgencyTz(row.created_at))
+    .map((row) => ({
+      ...row,
+      intake: maskIntakeForVa(parseIntakeAnswers(row.intake)),
+    }));
 
   return { requests, error: null };
 }
@@ -84,7 +89,12 @@ export async function fetchAllVaTickets(): Promise<{
     return { tickets: [], error: error.message };
   }
 
-  return { tickets: (data ?? []) as VaRequest[], error: null };
+  const tickets = ((data ?? []) as VaRequest[]).map((row) => ({
+    ...row,
+    intake: revealIntakeForCrm(parseIntakeAnswers(row.intake)),
+  }));
+
+  return { tickets, error: null };
 }
 
 export async function countOpenVaTickets(): Promise<number> {
