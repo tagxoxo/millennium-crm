@@ -155,7 +155,7 @@ function PaymentScript({
             />
           </div>
 
-          <Line>&ldquo;I&apos;ll submit this for the agent to process. Is there anything else I can help you with today?&rdquo;</Line>
+          <Line>&ldquo;Submitting this now....one moment please&rdquo;</Line>
         </div>
       )}
 
