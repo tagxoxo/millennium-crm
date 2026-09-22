@@ -1,9 +1,9 @@
 {
-  "exported_at": "2026-09-20T01:00:07.395Z",
+  "exported_at": "2026-09-22T01:00:06.471Z",
   "counts": {
-    "policies": 76,
+    "policies": 77,
     "contact_log": 0,
-    "policy_documents": 76,
+    "policy_documents": 77,
     "automations": 5,
     "leads": 2,
     "users": 2
@@ -826,30 +826,6 @@
       "client_state": "TN"
     },
     {
-      "id": "5d7a8e03-bb0a-443b-9226-30009c59eeb0",
-      "client_name": "William Doering",
-      "carrier": "safeco",
-      "premium": 1823,
-      "renewal_date": "2026-11-19",
-      "stage": "active",
-      "spanish_speaker": false,
-      "phone": "(303) 718-6798",
-      "email": "wdoering10@gmail.com",
-      "policy_number": "F4073827",
-      "notes": null,
-      "created_at": "2026-06-24T21:08:51.801569+00:00",
-      "commercial": false,
-      "term_months": 12,
-      "client_since": "2025-11-19",
-      "prior_carrier": null,
-      "client_address": "2480 First St Apt 369, FORT MYERS, FL 33901-3056",
-      "client_id": "34bca0b1-f0f9-4956-8fa7-360d8e7b3072",
-      "policy_type": "personal_auto",
-      "is_historical": false,
-      "effective_date": "2025-11-19",
-      "client_state": "TN"
-    },
-    {
       "id": "3e5db996-cec6-4719-9275-56c46ccaf667",
       "client_name": "Brennen Henderson",
       "carrier": "safeco",
@@ -1426,6 +1402,30 @@
       "client_state": "TN"
     },
     {
+      "id": "5d7a8e03-bb0a-443b-9226-30009c59eeb0",
+      "client_name": "William Doering",
+      "carrier": "safeco",
+      "premium": 1823,
+      "renewal_date": "2026-11-19",
+      "stage": "upcoming",
+      "spanish_speaker": false,
+      "phone": "(303) 718-6798",
+      "email": "wdoering10@gmail.com",
+      "policy_number": "F4073827",
+      "notes": null,
+      "created_at": "2026-06-24T21:08:51.801569+00:00",
+      "commercial": false,
+      "term_months": 12,
+      "client_since": "2025-11-19",
+      "prior_carrier": null,
+      "client_address": "2480 First St Apt 369, FORT MYERS, FL 33901-3056",
+      "client_id": "34bca0b1-f0f9-4956-8fa7-360d8e7b3072",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2025-11-19",
+      "client_state": "TN"
+    },
+    {
       "id": "3de4c274-e409-47c6-8140-1dcbbd80033f",
       "client_name": "Patricia Duff",
       "carrier": "bruce_messier",
@@ -1831,6 +1831,30 @@
       "policy_type": "personal_auto",
       "is_historical": false,
       "effective_date": "2026-09-18",
+      "client_state": "TN"
+    },
+    {
+      "id": "3bcc5875-80d5-4431-bfcc-e5866c702670",
+      "client_name": "Rashone Ricketts",
+      "carrier": "trexis",
+      "premium": 1254,
+      "renewal_date": "2027-09-21",
+      "stage": "active",
+      "spanish_speaker": false,
+      "phone": null,
+      "email": null,
+      "policy_number": "Agent",
+      "notes": null,
+      "created_at": "2026-09-21T16:31:56.052559+00:00",
+      "commercial": false,
+      "term_months": 12,
+      "client_since": null,
+      "prior_carrier": null,
+      "client_address": "529 HICKMAN RDGaraging Address:, NEW JOHNSONVILLE, TN 37134",
+      "client_id": "b047dc62-a6f4-4588-a127-ea864be4c7cf",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-09-21",
       "client_state": "TN"
     }
   ],
@@ -2518,6 +2542,15 @@
       "r2_key": "Cathy_Freeman/1789751184380-Trexis.pdf",
       "file_size": 149975,
       "uploaded_at": "2026-09-18T17:06:25.255028+00:00",
+      "notes": null
+    },
+    {
+      "id": "32357de8-4b0b-4d3d-9fe3-4da5de21f8f6",
+      "policy_id": "3bcc5875-80d5-4431-bfcc-e5866c702670",
+      "file_name": "RASHONE.pdf",
+      "r2_key": "Rashone_Ricketts/1790008326500-RASHONE.pdf",
+      "file_size": 147914,
+      "uploaded_at": "2026-09-21T16:32:07.012939+00:00",
       "notes": null
     }
   ],
