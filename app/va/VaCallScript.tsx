@@ -72,10 +72,6 @@ function PaymentScript({
 
       {carrier && (
         <div className="space-y-3 pt-1">
-          <Line>
-            &ldquo;I can take your card information and submit the payment for the agent to process.&rdquo;
-          </Line>
-
           <div>
             <p className="text-white text-sm font-semibold">
               &ldquo;What&apos;s the card number?&rdquo;
@@ -264,12 +260,12 @@ function PolicyScript({
             Tell them:{" "}
             <span className="font-bold text-red-200">
               &ldquo;You&apos;ll receive an email summarizing your request. Please reply back with
-              &apos;I confirm this endorsement&apos; so we can process it.&rdquo;
+              &apos;I confirm this&apos; so we can process it.&rdquo;
             </span>
           </li>
           <li>
             Then press <span className="font-bold text-red-200">Submit ticket</span> on the left.
-            Do not process the endorsement yourself — the agent will do it after they reply in writing.
+            Do not process the change yourself — the agent will do it after they reply in writing.
           </li>
         </ol>
         <label className="flex items-start gap-2.5 pt-1 cursor-pointer">
@@ -288,7 +284,7 @@ function PolicyScript({
       {detailsReady && emailedOnCall && (
         <div className="bg-green-500/10 border border-green-500/40 rounded-lg px-3 py-2.5">
           <p className="text-green-300 text-sm font-medium leading-relaxed">
-            Now press Submit ticket. The agent will process the endorsement after written confirmation.
+            Now press Submit ticket. The agent will process the change after written confirmation.
           </p>
         </div>
       )}
