@@ -34,14 +34,14 @@ const inputClass =
   "w-full px-4 py-2.5 bg-navy border border-navy-lighter rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent text-sm";
 
 const STATUS_PILL: Record<VaStatus, string> = {
-  pending: "bg-yellow-500/15 text-yellow-300 border-yellow-500/40",
-  sent_to_agent: "bg-blue-500/15 text-blue-300 border-blue-500/40",
+  pending: "bg-red-500/15 text-red-300 border-red-500/40",
+  sent_to_agent: "bg-red-500/15 text-red-300 border-red-500/40",
   completed: "bg-green-500/15 text-green-300 border-green-500/40",
 };
 
 const STATUS_LABEL: Record<VaStatus, string> = {
   pending: "Pending",
-  sent_to_agent: "Sent to agent",
+  sent_to_agent: "Pending",
   completed: "Completed",
 };
 
