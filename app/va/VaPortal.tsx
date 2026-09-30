@@ -14,6 +14,9 @@ import {
   type VaRequest,
   type VaStatus,
 } from "@/lib/va";
+import CancelOutreachTracker from "@/components/va-cancels/CancelOutreachTracker";
+import type { CancelOutreach } from "@/lib/vaCancelOutreach";
+import { getTrackerState } from "@/lib/vaCancelOutreach";
 import VaCallScript from "./VaCallScript";
 import {
   answersFromRecord,
@@ -57,12 +60,21 @@ function StatusPill({ status }: { status: VaStatus }) {
 
 export default function VaPortal({
   requests,
+  cancels,
   vaEmail,
+  initialTab,
 }: {
   requests: VaRequest[];
+  cancels: CancelOutreach[];
   vaEmail: string;
+  initialTab: "requests" | "cancels";
 }) {
   const router = useRouter();
+  const [desk, setDesk] = useState<"requests" | "cancels">(initialTab);
+  const dueCancelCount = cancels.filter((row) => {
+    const kind = getTrackerState(row).kind;
+    return kind === "due_today" || kind === "overdue";
+  }).length;
   const [callerName, setCallerName] = useState("");
   const [policyNumber, setPolicyNumber] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -241,12 +253,16 @@ export default function VaPortal({
 
   return (
     <div className="min-h-screen bg-navy">
-      <div className="lg:pr-[320px]">
+      <div className={desk === "requests" ? "lg:pr-[320px]" : ""}>
         <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-white">VA Desk</h1>
-            <p className="text-gray-400 text-sm mt-1">Log calls and track today&apos;s queue</p>
+            <p className="text-gray-400 text-sm mt-1">
+              {desk === "cancels"
+                ? "Call people whose policy canceled — follow the 8-day cadence"
+                : "Log calls and track today's queue"}
+            </p>
           </div>
           <div className="text-right">
             <p className="text-xs text-gray-500">{vaEmail}</p>
@@ -260,6 +276,40 @@ export default function VaPortal({
           </div>
         </div>
 
+        <div className="inline-flex rounded-xl border border-navy-lighter overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setDesk("requests")}
+            className={`px-4 py-2 text-sm font-medium ${
+              desk === "requests"
+                ? "bg-accent text-white"
+                : "bg-navy-light text-gray-400 hover:text-white"
+            }`}
+          >
+            Incoming calls
+          </button>
+          <button
+            type="button"
+            onClick={() => setDesk("cancels")}
+            className={`px-4 py-2 text-sm font-medium inline-flex items-center gap-2 ${
+              desk === "cancels"
+                ? "bg-accent text-white"
+                : "bg-navy-light text-gray-400 hover:text-white"
+            }`}
+          >
+            Canceled policies
+            {dueCancelCount > 0 && (
+              <span className="min-w-[1.25rem] h-5 px-1 rounded-full bg-white/15 text-[11px] font-semibold flex items-center justify-center">
+                {dueCancelCount}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {desk === "cancels" ? (
+          <CancelOutreachTracker rows={cancels} mode="va" />
+        ) : (
+          <>
         <section className="bg-navy-light border border-navy-lighter rounded-xl p-5 md:p-6">
           <h2 className="text-lg font-semibold text-white mb-4">New Request</h2>
 
@@ -477,8 +527,11 @@ export default function VaPortal({
             </div>
           )}
         </section>
+          </>
+        )}
         </div>
       </div>
+      {desk === "requests" && (
       <VaCallScript
         tab={scriptTab}
         onTabChange={handleScriptTab}
@@ -495,6 +548,7 @@ export default function VaPortal({
         quoteAnswers={quoteAnswers}
         onQuoteAnswer={handleQuoteAnswer}
       />
+      )}
     </div>
   );
 }

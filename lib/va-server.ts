@@ -5,8 +5,15 @@ import {
   VA_ACCESS_COOKIE,
   type VaRequest,
 } from "@/lib/va";
+import {
+  mapCancelRow,
+  type CancelOutreach,
+} from "@/lib/vaCancelOutreach";
 import { maskIntakeForVa, revealIntakeForCrm } from "@/lib/vaPaymentSecret";
 import { parseIntakeAnswers } from "@/lib/vaScript";
+
+export const CANCEL_OUTREACH_SELECT =
+  "id, created_at, client_name, phone_number, policy_number, cancelled_date, amount_due, status, attempts, notes, submitted_by";
 
 /** Role lives on public.users — this project has no profiles table. */
 export async function getVaRole(
@@ -110,4 +117,24 @@ export async function countOpenVaTickets(): Promise<number> {
   } catch {
     return 0;
   }
+}
+
+export async function fetchCancelOutreach(): Promise<{
+  rows: CancelOutreach[];
+  error: string | null;
+}> {
+  const supabase = getSupabaseServer();
+  const { data, error } = await supabase
+    .from("va_cancel_outreach")
+    .select(CANCEL_OUTREACH_SELECT)
+    .order("cancelled_date", { ascending: false });
+
+  if (error) {
+    return { rows: [], error: error.message };
+  }
+
+  return {
+    rows: (data ?? []).map((row) => mapCancelRow(row as Record<string, unknown>)),
+    error: null,
+  };
 }
