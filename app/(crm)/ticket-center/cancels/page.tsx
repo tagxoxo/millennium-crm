@@ -12,8 +12,9 @@ export default async function CanceledCallsPage() {
       <div>
         <h1 className="text-2xl md:text-3xl font-bold text-white">Canceled policy calls</h1>
         <p className="text-gray-400 text-sm mt-1">
-          The VA enters cancelled people from the daily spreadsheet, then follows Day 1,
-          2, 3, 5, and 8. You can see who was called and mark reinstated from here too.
+          The VA enters cancelled people from the daily spreadsheet. Call days 1, 2, 3, 5,
+          and 8 start on the start date — not the cancelled date, since you usually see
+          yesterday&apos;s cancels the next morning.
         </p>
       </div>
 

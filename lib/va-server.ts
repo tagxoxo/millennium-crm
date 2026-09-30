@@ -13,7 +13,7 @@ import { maskIntakeForVa, revealIntakeForCrm } from "@/lib/vaPaymentSecret";
 import { parseIntakeAnswers } from "@/lib/vaScript";
 
 export const CANCEL_OUTREACH_SELECT =
-  "id, created_at, client_name, phone_number, policy_number, cancelled_date, amount_due, status, attempts, notes, submitted_by";
+  "id, created_at, client_name, phone_number, policy_number, cancelled_date, start_date, amount_due, status, attempts, notes, submitted_by";
 
 /** Role lives on public.users — this project has no profiles table. */
 export async function getVaRole(
@@ -127,7 +127,7 @@ export async function fetchCancelOutreach(): Promise<{
   const { data, error } = await supabase
     .from("va_cancel_outreach")
     .select(CANCEL_OUTREACH_SELECT)
-    .order("cancelled_date", { ascending: false });
+    .order("start_date", { ascending: false });
 
   if (error) {
     return { rows: [], error: error.message };

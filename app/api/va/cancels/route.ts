@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
     const phoneNumber = String(body.phone_number ?? "").trim();
     const policyNumber = String(body.policy_number ?? "").trim();
     const cancelledDate = String(body.cancelled_date ?? "").trim();
+    const startDate = String(body.start_date ?? "").trim();
     const amountDue = parseAmountDue(body.amount_due);
 
     if (!clientName) {
@@ -44,6 +45,9 @@ export async function POST(request: NextRequest) {
     if (!isYmd(cancelledDate)) {
       return NextResponse.json({ error: "Enter a valid cancelled date." }, { status: 400 });
     }
+    if (!isYmd(startDate)) {
+      return NextResponse.json({ error: "Enter a valid start date." }, { status: 400 });
+    }
     if (amountDue == null) {
       return NextResponse.json({ error: "Amount due is required." }, { status: 400 });
     }
@@ -56,6 +60,7 @@ export async function POST(request: NextRequest) {
         phone_number: phoneNumber,
         policy_number: policyNumber,
         cancelled_date: cancelledDate,
+        start_date: startDate,
         amount_due: amountDue,
         status: "active",
         attempts: [],
@@ -90,7 +95,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("va_cancel_outreach")
       .select(CANCEL_OUTREACH_SELECT)
-      .order("cancelled_date", { ascending: false });
+      .order("start_date", { ascending: false });
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });

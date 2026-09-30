@@ -87,3 +87,34 @@ export async function PATCH(
     return NextResponse.json({ error: "Failed to save that call." }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const user = await getVaAuthUser();
+    if (!user) {
+      return NextResponse.json({ error: "Please sign in." }, { status: 401 });
+    }
+
+    const role = await getVaRole(user.id, user.email);
+    if (role !== "va") {
+      return NextResponse.json({ error: "VA access only." }, { status: 403 });
+    }
+
+    const supabase = getSupabaseServer();
+    const { error } = await supabase
+      .from("va_cancel_outreach")
+      .delete()
+      .eq("id", params.id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to delete this person." }, { status: 500 });
+  }
+}

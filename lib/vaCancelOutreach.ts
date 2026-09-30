@@ -36,6 +36,7 @@ export type CancelOutreach = {
   phone_number: string;
   policy_number: string;
   cancelled_date: string;
+  start_date: string;
   amount_due: number;
   status: CancelOutreachStatus;
   attempts: CancelAttempt[];
@@ -109,17 +110,27 @@ export function addDaysYmd(ymd: string, days: number): string {
   return `${year}-${month}-${day}`;
 }
 
+export function yesterdayInAgencyTz(): string {
+  return addDaysYmd(todayInAgencyTz(), -1);
+}
+
+export function cadenceStartDate(
+  row: Pick<CancelOutreach, "start_date" | "cancelled_date">
+): string {
+  return row.start_date || row.cancelled_date;
+}
+
 export function cadenceDayNumber(
-  cancelledDate: string,
+  startDate: string,
   todayYmd = todayInAgencyTz()
 ): number {
-  const start = parseLocalDate(cancelledDate).getTime();
+  const start = parseLocalDate(startDate).getTime();
   const today = parseLocalDate(todayYmd).getTime();
   return Math.round((today - start) / 86_400_000) + 1;
 }
 
-export function stepDate(cancelledDate: string, day: number): string {
-  return addDaysYmd(cancelledDate, day - 1);
+export function stepDate(startDate: string, day: number): string {
+  return addDaysYmd(startDate, day - 1);
 }
 
 export function parseAttempts(value: unknown): CancelAttempt[] {
@@ -153,6 +164,7 @@ export function mapCancelRow(row: Record<string, unknown>): CancelOutreach {
     phone_number: String(row.phone_number ?? ""),
     policy_number: String(row.policy_number ?? ""),
     cancelled_date: String(row.cancelled_date ?? "").slice(0, 10),
+    start_date: String(row.start_date ?? row.cancelled_date ?? "").slice(0, 10),
     amount_due: Number(row.amount_due ?? 0) || 0,
     status: isCancelOutreachStatus(String(row.status ?? "active"))
       ? (row.status as CancelOutreachStatus)
@@ -189,11 +201,11 @@ export function stepIsComplete(
 
 export function stepState(
   step: CancelCadenceStep,
-  row: Pick<CancelOutreach, "cancelled_date" | "attempts" | "status">,
+  row: Pick<CancelOutreach, "start_date" | "cancelled_date" | "attempts" | "status">,
   todayYmd = todayInAgencyTz()
 ): CancelStepState {
   if (stepIsComplete(step, row.attempts)) return "done";
-  const dayNumber = cadenceDayNumber(row.cancelled_date, todayYmd);
+  const dayNumber = cadenceDayNumber(cadenceStartDate(row), todayYmd);
   if (dayNumber < step.day) return "upcoming";
   if (dayNumber === step.day) return "due";
   return "overdue";
@@ -202,11 +214,12 @@ export function stepState(
 export function getTrackerState(
   row: Pick<
     CancelOutreach,
-    "cancelled_date" | "attempts" | "status"
+    "start_date" | "cancelled_date" | "attempts" | "status"
   >,
   todayYmd = todayInAgencyTz()
 ): CancelTrackerState {
-  const dayNumber = cadenceDayNumber(row.cancelled_date, todayYmd);
+  const startDate = cadenceStartDate(row);
+  const dayNumber = cadenceDayNumber(startDate, todayYmd);
 
   if (row.status === "reinstated") {
     return {
@@ -239,9 +252,9 @@ export function getTrackerState(
       dayNumber,
       dueStep: null,
       nextStep: first,
-      nextDate: stepDate(row.cancelled_date, first.day),
+      nextDate: stepDate(startDate, first.day),
       headline: "Not started yet",
-      detail: `First call is ${formatVaDate(stepDate(row.cancelled_date, first.day))}.`,
+      detail: `First call is ${formatVaDate(stepDate(startDate, first.day))}.`,
     };
   }
 
@@ -257,7 +270,7 @@ export function getTrackerState(
       dayNumber,
       dueStep,
       nextStep: dueStep,
-      nextDate: stepDate(row.cancelled_date, dueStep.day),
+      nextDate: stepDate(startDate, dueStep.day),
       headline: overdue
         ? `Catch up — Day ${dueStep.day}`
         : `Today — Day ${dueStep.day}`,
@@ -285,10 +298,10 @@ export function getTrackerState(
     dayNumber,
     dueStep: null,
     nextStep,
-    nextDate: stepDate(row.cancelled_date, nextStep.day),
+    nextDate: stepDate(startDate, nextStep.day),
     headline: "All caught up today",
     detail: `Next: Day ${nextStep.day} · ${nextStep.label} · ${formatVaDate(
-      stepDate(row.cancelled_date, nextStep.day)
+      stepDate(startDate, nextStep.day)
     )}`,
   };
 }
@@ -396,9 +409,9 @@ export function groupCancelRows(rows: CancelOutreach[]): {
 
   dueNow.sort((a, b) => rank(a) - rank(b) || a.client_name.localeCompare(b.client_name));
   rest.sort((a, b) => a.client_name.localeCompare(b.client_name));
-  finished.sort((a, b) => b.cancelled_date.localeCompare(a.cancelled_date));
-  reinstated.sort((a, b) => b.cancelled_date.localeCompare(a.cancelled_date));
-  closed.sort((a, b) => b.cancelled_date.localeCompare(a.cancelled_date));
+  finished.sort((a, b) => b.start_date.localeCompare(a.start_date));
+  reinstated.sort((a, b) => b.start_date.localeCompare(a.start_date));
+  closed.sort((a, b) => b.start_date.localeCompare(a.start_date));
 
   return { dueNow, rest, finished, reinstated, closed };
 }

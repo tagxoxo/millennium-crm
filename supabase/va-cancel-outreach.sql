@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS va_cancel_outreach (
   phone_number TEXT NOT NULL,
   policy_number TEXT NOT NULL,
   cancelled_date DATE NOT NULL,
+  start_date DATE NOT NULL,
   amount_due NUMERIC(12, 2) NOT NULL DEFAULT 0,
   status TEXT NOT NULL DEFAULT 'active' CHECK (
     status IN ('active', 'reinstated', 'closed')
@@ -22,6 +23,9 @@ CREATE INDEX IF NOT EXISTS idx_va_cancel_outreach_status
 
 CREATE INDEX IF NOT EXISTS idx_va_cancel_outreach_cancelled_date
   ON va_cancel_outreach (cancelled_date);
+
+CREATE INDEX IF NOT EXISTS idx_va_cancel_outreach_start_date
+  ON va_cancel_outreach (start_date);
 
 CREATE INDEX IF NOT EXISTS idx_va_cancel_outreach_created_at
   ON va_cancel_outreach (created_at DESC);
@@ -118,6 +122,19 @@ CREATE POLICY "Admin can update va_cancel_outreach"
       SELECT 1 FROM users
       WHERE users.id = auth.uid()
         AND users.role = 'admin'
+    )
+  );
+
+DROP POLICY IF EXISTS "VA can delete va_cancel_outreach" ON va_cancel_outreach;
+CREATE POLICY "VA can delete va_cancel_outreach"
+  ON va_cancel_outreach
+  FOR DELETE
+  TO authenticated
+  USING (
+    EXISTS (
+      SELECT 1 FROM users
+      WHERE users.id = auth.uid()
+        AND users.role = 'va'
     )
   );
 

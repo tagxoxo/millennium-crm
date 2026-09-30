@@ -73,3 +73,24 @@ export async function PATCH(
     return NextResponse.json({ error: "Failed to update this call." }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = getSupabaseServer();
+    const { error } = await supabase
+      .from("va_cancel_outreach")
+      .delete()
+      .eq("id", params.id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ error: "Failed to delete this person." }, { status: 500 });
+  }
+}
