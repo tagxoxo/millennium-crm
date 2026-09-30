@@ -427,7 +427,7 @@ function AddCancelForm() {
     <section className="bg-navy-light border border-navy-lighter rounded-2xl p-5 md:p-6">
       <h2 className="text-lg font-semibold text-white">Add from today&apos;s spreadsheet</h2>
       <p className="text-sm text-gray-400 mt-1 mb-4">
-        Type them in one at a time. Cancelled date is usually yesterday. Start date is when he begins the call cadence (today).
+        Type them in one at a time. Cancelled date is usually yesterday. Start date is when he begins calling (today). Weekends are skipped.
       </p>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -576,7 +576,7 @@ export default function CancelOutreachTracker({
 
       <div className="rounded-2xl border border-navy-lighter bg-navy-light px-4 py-3">
         <p className="text-[11px] uppercase tracking-wide text-gray-500 mb-2">
-          Call cadence from start date
+          Call cadence from start date · weekdays only (no Sat/Sun)
         </p>
         <div className="flex flex-wrap gap-2 text-xs">
           {CANCEL_CADENCE.map((step) => (

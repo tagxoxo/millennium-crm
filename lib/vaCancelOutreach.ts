@@ -50,6 +50,7 @@ export type CancelTrackerKind =
   | "due_today"
   | "overdue"
   | "rest_day"
+  | "weekend"
   | "cadence_complete"
   | "not_started"
   | "reinstated"
@@ -114,6 +115,33 @@ export function yesterdayInAgencyTz(): string {
   return addDaysYmd(todayInAgencyTz(), -1);
 }
 
+export function isWeekendYmd(ymd: string): boolean {
+  const weekday = parseLocalDate(ymd).getDay();
+  return weekday === 0 || weekday === 6;
+}
+
+export function nextWeekday(ymd: string): string {
+  let date = ymd;
+  while (isWeekendYmd(date)) {
+    date = addDaysYmd(date, 1);
+  }
+  return date;
+}
+
+export function nextWeekdayAfter(ymd: string): string {
+  return nextWeekday(addDaysYmd(ymd, 1));
+}
+
+/** Move forward by N weekdays. 0 keeps the first weekday on or after the date. */
+export function addBusinessDays(ymd: string, days: number): string {
+  let date = nextWeekday(ymd);
+  for (let i = 0; i < days; i++) {
+    date = addDaysYmd(date, 1);
+    date = nextWeekday(date);
+  }
+  return date;
+}
+
 export function cadenceStartDate(
   row: Pick<CancelOutreach, "start_date" | "cancelled_date">
 ): string {
@@ -124,13 +152,20 @@ export function cadenceDayNumber(
   startDate: string,
   todayYmd = todayInAgencyTz()
 ): number {
-  const start = parseLocalDate(startDate).getTime();
-  const today = parseLocalDate(todayYmd).getTime();
-  return Math.round((today - start) / 86_400_000) + 1;
+  const start = nextWeekday(startDate);
+  if (parseLocalDate(todayYmd) < parseLocalDate(start)) return 0;
+
+  let count = 0;
+  let date = start;
+  while (parseLocalDate(date) <= parseLocalDate(todayYmd)) {
+    if (!isWeekendYmd(date)) count += 1;
+    date = addDaysYmd(date, 1);
+  }
+  return count;
 }
 
 export function stepDate(startDate: string, day: number): string {
-  return addDaysYmd(startDate, day - 1);
+  return addBusinessDays(startDate, day - 1);
 }
 
 export function parseAttempts(value: unknown): CancelAttempt[] {
@@ -205,9 +240,9 @@ export function stepState(
   todayYmd = todayInAgencyTz()
 ): CancelStepState {
   if (stepIsComplete(step, row.attempts)) return "done";
-  const dayNumber = cadenceDayNumber(cadenceStartDate(row), todayYmd);
-  if (dayNumber < step.day) return "upcoming";
-  if (dayNumber === step.day) return "due";
+  const date = stepDate(cadenceStartDate(row), step.day);
+  if (todayYmd < date) return "upcoming";
+  if (todayYmd === date) return "due";
   return "overdue";
 }
 
@@ -263,6 +298,46 @@ export function getTrackerState(
       (step) => step.day <= dayNumber && !stepIsComplete(step, row.attempts)
     ) ?? null;
 
+  const nextStep =
+    CANCEL_CADENCE.find((step) => step.day > dayNumber) ?? null;
+
+  if (isWeekendYmd(todayYmd)) {
+    const nextBiz = nextWeekdayAfter(todayYmd);
+    if (dueStep) {
+      return {
+        kind: "weekend",
+        dayNumber,
+        dueStep,
+        nextStep: dueStep,
+        nextDate: nextBiz,
+        headline: "Weekend — no call today",
+        detail: `Next weekday ${formatVaDate(nextBiz)}: Day ${dueStep.day} · ${dueStep.label}`,
+      };
+    }
+    if (!nextStep) {
+      return {
+        kind: "cadence_complete",
+        dayNumber,
+        dueStep: null,
+        nextStep: null,
+        nextDate: null,
+        headline: "Cadence complete",
+        detail: "All 5 call days are done.",
+      };
+    }
+    return {
+      kind: "weekend",
+      dayNumber,
+      dueStep: null,
+      nextStep,
+      nextDate: stepDate(startDate, nextStep.day),
+      headline: "Weekend — no call today",
+      detail: `Next: Day ${nextStep.day} · ${nextStep.label} · ${formatVaDate(
+        stepDate(startDate, nextStep.day)
+      )}`,
+    };
+  }
+
   if (dueStep) {
     const overdue = dueStep.day < dayNumber;
     return {
@@ -277,9 +352,6 @@ export function getTrackerState(
       detail: dueStep.label,
     };
   }
-
-  const nextStep =
-    CANCEL_CADENCE.find((step) => step.day > dayNumber) ?? null;
 
   if (!nextStep) {
     return {
@@ -328,7 +400,7 @@ export function applyCancelAction(
   }
 
   const state = getTrackerState(row);
-  if (!state.dueStep) {
+  if (!state.dueStep || state.kind === "weekend") {
     return { error: "No call is due on this cadence today." };
   }
 
