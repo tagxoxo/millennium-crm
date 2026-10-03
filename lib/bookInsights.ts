@@ -150,7 +150,7 @@ export function computeProductionSummary(
 }
 
 function activePolicies(policies: Policy[]): Policy[] {
-  return policies.filter((p) => p.stage !== "lapsed");
+  return policies.filter((p) => p.stage !== "lapsed" && !p.cancelled_on);
 }
 
 function policyPremium(policy: Policy): number {

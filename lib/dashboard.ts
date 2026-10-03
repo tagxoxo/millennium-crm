@@ -2,7 +2,7 @@ import type { ClientState, Policy } from "./types";
 import { CLIENT_STATE_LABELS, CLIENT_STATES, normalizeClientState } from "./types";
 import { estimateBookMonthlyCommission } from "./commission";
 import { getSupabaseServer } from "./supabase/server";
-import { annualizedPremium, parseLocalDate } from "./utils";
+import { annualizedPremium, isMidTermCancel, parseLocalDate } from "./utils";
 
 export const URGENT_RENEWAL_DAYS = 30;
 export const RETENTION_RATE_WINDOW_DAYS = 90;
@@ -81,7 +81,7 @@ export function computeDashboardStats(
     lapsedLast90: 0,
   }
 ): DashboardStats {
-  const active = policies.filter((p) => p.stage !== "lapsed");
+  const active = policies.filter((p) => p.stage !== "lapsed" && !isMidTermCancel(p));
   const retentionDecisions = outcomes.renewedLast90 + outcomes.lapsedLast90;
 
   const today = new Date();
@@ -150,7 +150,7 @@ export function computePremiumByState(
 ): StatePremiumSlice[] {
   const active = includeLapsed
     ? policies
-    : policies.filter((p) => p.stage !== "lapsed");
+    : policies.filter((p) => p.stage !== "lapsed" && !isMidTermCancel(p));
   const buckets = new Map<
     ClientState,
     {
@@ -217,6 +217,7 @@ export function getUrgentRenewals(policies: Policy[]): Policy[] {
 
   return policies
     .filter((p) => {
+      if (p.stage === "lapsed" || isMidTermCancel(p)) return false;
       const renewal = parseLocalDate(p.renewal_date);
       renewal.setHours(0, 0, 0, 0);
       return renewal >= today && renewal <= inWindow;

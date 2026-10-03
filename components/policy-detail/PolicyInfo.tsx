@@ -41,6 +41,11 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
                 Past Policy
               </span>
             )}
+            {policy.cancelled_on && (
+              <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/15 text-red-300 border border-red-500/40">
+                Cancelled {formatDate(policy.cancelled_on)}
+              </span>
+            )}
             {normalizeClientState(policy.client_state) !== DEFAULT_CLIENT_STATE && (
               <StateTag state={normalizeClientState(policy.client_state)} />
             )}

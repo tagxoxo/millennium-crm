@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import CancelPolicyControl from "@/components/policy-detail/CancelPolicyControl";
 import type { ClientState, Policy } from "@/lib/types";
 import {
   CLIENT_STATE_LABELS,
@@ -125,6 +126,8 @@ export default function EditClientInfoForm({ policy }: EditClientInfoFormProps) 
           Open full client profile →
         </Link>
       )}
+
+      <CancelPolicyControl policyId={policy.id} cancelledOn={policy.cancelled_on} />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="sm:col-span-2">

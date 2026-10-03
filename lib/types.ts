@@ -143,6 +143,7 @@ export interface Policy {
   created_at: string;
   is_historical?: boolean;
   retained_at?: string | null;
+  cancelled_on?: string | null;
 }
 
 export interface ContactLog {

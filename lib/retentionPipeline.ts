@@ -1,7 +1,7 @@
 import { isWithinRetainedHold } from "./retainPolicy";
 import type { Policy, Stage } from "./types";
 import { STAGE_LABELS } from "./types";
-import { daysUntilRenewal } from "./utils";
+import { daysUntilRenewal, isMidTermCancel } from "./utils";
 
 /** Policies enter the retention kanban when expiration is within this many days. */
 export const RETENTION_PIPELINE_DAYS = 60;
@@ -9,18 +9,19 @@ export const RETENTION_PIPELINE_DAYS = 60;
 const ACTIVE_PIPELINE_STAGES: Stage[] = ["upcoming", "contacted", "quoted"];
 
 export function isInRetentionPipeline(
-  policy: Pick<Policy, "renewal_date" | "stage" | "is_historical" | "retained_at">
+  policy: Pick<Policy, "renewal_date" | "stage" | "is_historical" | "retained_at" | "cancelled_on">
 ): boolean {
   if (policy.is_historical) return false;
+  if (isMidTermCancel(policy)) return false;
   if (policy.stage === "lapsed") return false;
   if (isWithinRetainedHold(policy)) return true;
   return daysUntilRenewal(policy.renewal_date) <= RETENTION_PIPELINE_DAYS;
 }
 
 export function isActiveBookClient(
-  policy: Pick<Policy, "stage" | "is_historical">
+  policy: Pick<Policy, "stage" | "is_historical" | "cancelled_on">
 ): boolean {
-  if (policy.is_historical) return false;
+  if (policy.is_historical || isMidTermCancel(policy)) return false;
   return policy.stage === "active";
 }
 
@@ -30,7 +31,7 @@ export function daysUntilPipelineEntry(renewalDate: string): number {
 
 /** Auto-sync stage based on days until expiration. */
 export function computeAutoPipelineStage(policy: Policy): Stage {
-  if (policy.is_historical) return policy.stage;
+  if (policy.is_historical || isMidTermCancel(policy)) return policy.stage;
   if (policy.stage === "lapsed") return "lapsed";
   if (isWithinRetainedHold(policy)) return "retained";
 

@@ -30,7 +30,7 @@ export async function fetchAllClients(): Promise<{
     const { data: policies, error: policiesError } = await supabase
       .from("policies")
       .select(
-        "client_id, premium, stage, carrier, client_name, email, phone, client_address, spanish_speaker, notes, is_historical"
+        "client_id, premium, stage, carrier, client_name, email, phone, client_address, spanish_speaker, notes, is_historical, cancelled_on"
       );
 
     if (policiesError) return { clients: [], error: policiesError.message };
@@ -56,8 +56,9 @@ export async function fetchAllClients(): Promise<{
         carriers: new Set<Carrier>(),
       };
       entry.count += 1;
-      if (!policyRow.is_historical && p.stage !== "lapsed") entry.active += 1;
-      if (!policyRow.is_historical) entry.premium += Number(p.premium) || 0;
+      const cancelled = Boolean(p.cancelled_on);
+      if (!policyRow.is_historical && p.stage !== "lapsed" && !cancelled) entry.active += 1;
+      if (!policyRow.is_historical && !cancelled) entry.premium += Number(p.premium) || 0;
       if (p.carrier) entry.carriers.add(p.carrier as Carrier);
       statsMap.set(p.client_id, entry);
     }

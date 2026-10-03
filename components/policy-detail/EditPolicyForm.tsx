@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import CancelPolicyControl from "@/components/policy-detail/CancelPolicyControl";
 import type { Carrier, Policy, PolicyType, TermMonths } from "@/lib/types";
 import {
   CARRIERS,
@@ -171,6 +172,8 @@ export default function EditPolicyForm({ policy }: EditPolicyFormProps) {
           Cancel
         </button>
       </div>
+
+      <CancelPolicyControl policyId={policy.id} cancelledOn={policy.cancelled_on} />
 
       <div
         className={`rounded-lg border p-4 ${

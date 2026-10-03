@@ -100,8 +100,10 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <CarrierBadge carrier={policy.carrier} />
-                  <span className="text-sm text-gray-400">
-                    {STAGE_LABELS[policy.stage]}
+                  <span className={`text-sm ${policy.cancelled_on ? "text-red-300" : "text-gray-400"}`}>
+                    {policy.cancelled_on
+                      ? `Cancelled ${formatDate(policy.cancelled_on)}`
+                      : STAGE_LABELS[policy.stage]}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-300 gap-4">
@@ -157,8 +159,10 @@ export default function PoliciesTable({ policies }: PoliciesTableProps) {
                     <td className="px-4 py-3 text-gray-300">
                       {formatDate(policy.renewal_date)}
                     </td>
-                    <td className="px-4 py-3 text-accent">
-                      {STAGE_LABELS[policy.stage]}
+                    <td className={`px-4 py-3 ${policy.cancelled_on ? "text-red-300" : "text-accent"}`}>
+                      {policy.cancelled_on
+                        ? `Cancelled ${formatDate(policy.cancelled_on)}`
+                        : STAGE_LABELS[policy.stage]}
                     </td>
                     <td className="px-4 py-3">
                       {policy.spanish_speaker ? (

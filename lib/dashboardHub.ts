@@ -49,7 +49,7 @@ function renewingInWindow(policies: Policy[], days: number): Policy[] {
   end.setDate(end.getDate() + days);
 
   return policies.filter((policy) => {
-    if (policy.stage === "lapsed") return false;
+    if (policy.stage === "lapsed" || policy.cancelled_on) return false;
     const renewal = parseLocalDate(policy.renewal_date);
     renewal.setHours(0, 0, 0, 0);
     return renewal >= today && renewal <= end;

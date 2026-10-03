@@ -67,6 +67,16 @@ export async function PATCH(
       updates.term_months = termMonths;
     }
     if (body.notes !== undefined) updates.notes = body.notes?.trim() || null;
+    if (body.cancelled_on !== undefined) {
+      const raw = body.cancelled_on == null ? "" : String(body.cancelled_on).trim();
+      if (!raw) {
+        updates.cancelled_on = null;
+      } else if (!/^\d{4}-\d{2}-\d{2}$/.test(raw.slice(0, 10))) {
+        return NextResponse.json({ error: "Enter a valid cancellation date." }, { status: 400 });
+      } else {
+        updates.cancelled_on = raw.slice(0, 10);
+      }
+    }
     if (body.stage !== undefined) updates.stage = body.stage;
     if (body.policy_type !== undefined) {
       const policyType = body.policy_type as PolicyType;

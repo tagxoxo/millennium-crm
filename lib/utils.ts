@@ -48,6 +48,10 @@ export function annualizedPremium(
   return normalizeTermMonths(termMonths) === 6 ? premium * 2 : premium;
 }
 
+export function isMidTermCancel(policy: { cancelled_on?: string | null }): boolean {
+  return Boolean(policy.cancelled_on);
+}
+
 export function cn(...classes: (string | boolean | undefined | null)[]): string {
   return classes.filter(Boolean).join(" ");
 }
