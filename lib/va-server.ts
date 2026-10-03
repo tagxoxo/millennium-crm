@@ -9,11 +9,18 @@ import {
   mapCancelRow,
   type CancelOutreach,
 } from "@/lib/vaCancelOutreach";
+import {
+  mapInboundRow,
+  type InboundLead,
+} from "@/lib/vaInboundOutreach";
 import { maskIntakeForVa, revealIntakeForCrm } from "@/lib/vaPaymentSecret";
 import { parseIntakeAnswers } from "@/lib/vaScript";
 
 export const CANCEL_OUTREACH_SELECT =
   "id, created_at, client_name, phone_number, policy_number, cancelled_date, start_date, amount_due, status, attempts, notes, submitted_by";
+
+export const INBOUND_LEAD_SELECT =
+  "id, created_at, client_name, phone_number, start_date, status, callback_at, attempts, notes, submitted_by";
 
 /** Role lives on public.users — this project has no profiles table. */
 export async function getVaRole(
@@ -135,6 +142,26 @@ export async function fetchCancelOutreach(): Promise<{
 
   return {
     rows: (data ?? []).map((row) => mapCancelRow(row as Record<string, unknown>)),
+    error: null,
+  };
+}
+
+export async function fetchInboundLeads(): Promise<{
+  rows: InboundLead[];
+  error: string | null;
+}> {
+  const supabase = getSupabaseServer();
+  const { data, error } = await supabase
+    .from("va_inbound_leads")
+    .select(INBOUND_LEAD_SELECT)
+    .order("start_date", { ascending: false });
+
+  if (error) {
+    return { rows: [], error: error.message };
+  }
+
+  return {
+    rows: (data ?? []).map((row) => mapInboundRow(row as Record<string, unknown>)),
     error: null,
   };
 }

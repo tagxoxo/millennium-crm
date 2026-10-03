@@ -6,6 +6,7 @@ const navItems: { href: string; label: string; icon: string; nested?: boolean }[
   { href: "/ticket-center", label: "Ticket Center", icon: "🎫" },
   { href: "/ticket-center/insights", label: "VA Insights", icon: "📌", nested: true },
   { href: "/ticket-center/cancels", label: "Canceled calls", icon: "📞", nested: true },
+  { href: "/ticket-center/inbound", label: "Inbound leads", icon: "📲", nested: true },
   { href: "/retention", label: "Retention Center", icon: "🔄" },
   { href: "/service-center", label: "Service Center", icon: "🎧" },
   { href: "/sales-center", label: "Sales Center", icon: "🎯" },

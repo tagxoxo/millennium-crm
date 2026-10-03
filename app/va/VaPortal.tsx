@@ -15,8 +15,11 @@ import {
   type VaStatus,
 } from "@/lib/va";
 import CancelOutreachTracker from "@/components/va-cancels/CancelOutreachTracker";
+import InboundLeadTracker from "@/components/va-inbound/InboundLeadTracker";
 import type { CancelOutreach } from "@/lib/vaCancelOutreach";
 import { getTrackerState } from "@/lib/vaCancelOutreach";
+import type { InboundLead } from "@/lib/vaInboundOutreach";
+import { getInboundTrackerState } from "@/lib/vaInboundOutreach";
 import VaCallScript from "./VaCallScript";
 import {
   answersFromRecord,
@@ -61,18 +64,24 @@ function StatusPill({ status }: { status: VaStatus }) {
 export default function VaPortal({
   requests,
   cancels,
+  inbound,
   vaEmail,
   initialTab,
 }: {
   requests: VaRequest[];
   cancels: CancelOutreach[];
+  inbound: InboundLead[];
   vaEmail: string;
-  initialTab: "requests" | "cancels";
+  initialTab: "requests" | "cancels" | "inbound";
 }) {
   const router = useRouter();
-  const [desk, setDesk] = useState<"requests" | "cancels">(initialTab);
+  const [desk, setDesk] = useState<"requests" | "cancels" | "inbound">(initialTab);
   const dueCancelCount = cancels.filter((row) => {
     const kind = getTrackerState(row).kind;
+    return kind === "due_today" || kind === "overdue";
+  }).length;
+  const dueInboundCount = inbound.filter((row) => {
+    const kind = getInboundTrackerState(row).kind;
     return kind === "due_today" || kind === "overdue";
   }).length;
   const [callerName, setCallerName] = useState("");
@@ -261,7 +270,9 @@ export default function VaPortal({
             <p className="text-gray-400 text-sm mt-1">
               {desk === "cancels"
                 ? "Call people whose policy canceled — follow the 8-day cadence"
-                : "Log calls and track today's queue"}
+                : desk === "inbound"
+                  ? "Call website quote leads — live transfer to Jacob"
+                  : "Log calls and track today's queue"}
             </p>
           </div>
           <div className="text-right">
@@ -304,10 +315,28 @@ export default function VaPortal({
               </span>
             )}
           </button>
+          <button
+            type="button"
+            onClick={() => setDesk("inbound")}
+            className={`px-4 py-2 text-sm font-medium inline-flex items-center gap-2 ${
+              desk === "inbound"
+                ? "bg-accent text-white"
+                : "bg-navy-light text-gray-400 hover:text-white"
+            }`}
+          >
+            Inbound
+            {dueInboundCount > 0 && (
+              <span className="min-w-[1.25rem] h-5 px-1 rounded-full bg-white/15 text-[11px] font-semibold flex items-center justify-center">
+                {dueInboundCount}
+              </span>
+            )}
+          </button>
         </div>
 
         {desk === "cancels" ? (
           <CancelOutreachTracker rows={cancels} mode="va" />
+        ) : desk === "inbound" ? (
+          <InboundLeadTracker rows={inbound} mode="va" />
         ) : (
           <>
         <section className="bg-navy-light border border-navy-lighter rounded-xl p-5 md:p-6">

@@ -1,4 +1,10 @@
-import { fetchCancelOutreach, fetchTodaysVaRequests, getVaAuthUser, getVaRole } from "@/lib/va-server";
+import {
+  fetchCancelOutreach,
+  fetchInboundLeads,
+  fetchTodaysVaRequests,
+  getVaAuthUser,
+  getVaRole,
+} from "@/lib/va-server";
 import VaLoginForm from "./VaLoginForm";
 import VaPortal from "./VaPortal";
 
@@ -25,14 +31,23 @@ export default async function VaPage({
     return <VaLoginForm denied />;
   }
 
-  const [{ requests, error }, { rows: cancels, error: cancelError }] =
-    await Promise.all([
-      fetchTodaysVaRequests(user.id),
-      fetchCancelOutreach(),
-    ]);
+  const [
+    { requests, error },
+    { rows: cancels, error: cancelError },
+    { rows: inbound, error: inboundError },
+  ] = await Promise.all([
+    fetchTodaysVaRequests(user.id),
+    fetchCancelOutreach(),
+    fetchInboundLeads(),
+  ]);
 
-  const loadError = error ?? cancelError;
-  const initialTab = searchParams.tab === "cancels" ? "cancels" : "requests";
+  const loadError = error ?? cancelError ?? inboundError;
+  const initialTab =
+    searchParams.tab === "cancels"
+      ? "cancels"
+      : searchParams.tab === "inbound"
+        ? "inbound"
+        : "requests";
 
   return (
     <>
@@ -47,6 +62,7 @@ export default async function VaPage({
       <VaPortal
         requests={requests}
         cancels={cancels}
+        inbound={inbound}
         vaEmail={user.email ?? ""}
         initialTab={initialTab}
       />
