@@ -9,6 +9,7 @@ import {
 } from "@/lib/dashboardHub";
 import {
   computeDashboardStats,
+  fetchRetentionOutcomes,
   getUrgentRenewals,
   URGENT_RENEWAL_DAYS,
 } from "@/lib/dashboard";
@@ -26,16 +27,19 @@ export default async function DashboardPage() {
     { activities, error: activitiesError },
     { leads, error: leadsError },
     recentReminderPolicyIds,
+    retentionOutcomes,
   ] = await Promise.all([
     fetchAllPolicies(),
     fetchOutreachActivity(),
     fetchAllLeads(),
     fetchRecentRenewalReminderPolicyIds(),
+    fetchRetentionOutcomes(),
   ]);
 
-  const error = policiesError ?? activitiesError ?? leadsError;
+  const error =
+    policiesError ?? activitiesError ?? leadsError ?? retentionOutcomes.error;
 
-  const stats = computeDashboardStats(policies);
+  const stats = computeDashboardStats(policies, retentionOutcomes);
   const hub = computeDashboardHubData(
     policies,
     activities,

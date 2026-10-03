@@ -52,8 +52,9 @@ export default async function RetentionCenterPage() {
         <h2 className="text-lg font-semibold text-white mb-1">Pipeline</h2>
         <p className="text-xs text-gray-500 mb-4 hidden md:block">
           Clients enter the pipeline automatically when expiration is within{" "}
-          {RETENTION_PIPELINE_DAYS} days. Active clients are your current book — they
-          move to Upcoming when the window opens. Green envelope = 45-day reminder sent;
+          {RETENTION_PIPELINE_DAYS} days. Drag a card to Retained to save the new premium
+          and move the expiration forward. It stays in Retained for 14 days, then returns
+          to Active Clients until the next window. Green envelope = 45-day reminder sent;
           yellow = needs reminder.
         </p>
         <KanbanBoard

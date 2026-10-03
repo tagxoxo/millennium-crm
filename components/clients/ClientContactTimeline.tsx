@@ -12,6 +12,7 @@ const TYPE_LABELS: Record<ContactLog["contact_type"], string> = {
   manual_policy_review: "Policy Review",
   policy_review_response: "Review Response",
   welcome_email: "Welcome Email",
+  renewed: "Renewed",
 };
 
 const TYPE_COLORS: Record<ContactLog["contact_type"], string> = {
@@ -25,6 +26,7 @@ const TYPE_COLORS: Record<ContactLog["contact_type"], string> = {
   manual_policy_review: "bg-blue-500/20 text-blue-400 border-blue-500/40",
   policy_review_response: "bg-cyan-500/20 text-cyan-400 border-cyan-500/40",
   welcome_email: "bg-blue-500/20 text-blue-400 border-blue-500/40",
+  renewed: "bg-emerald-500/20 text-emerald-400 border-emerald-500/40",
 };
 
 interface ClientContactTimelineProps {

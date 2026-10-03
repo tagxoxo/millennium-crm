@@ -30,8 +30,16 @@ export default function KpiCards({ stats }: KpiCardsProps) {
       />
       <KpiCard
         label="Retention Rate"
-        value={`${stats.retentionRate.toFixed(1)}%`}
-        subtext="Retained ÷ total policies"
+        value={
+          stats.retentionDecisions === 0
+            ? "—"
+            : `${stats.retentionRate.toFixed(1)}%`
+        }
+        subtext={
+          stats.retentionDecisions === 0
+            ? "No renewals or lapses in the last 90 days"
+            : "Renewed ÷ renewed + lapsed, last 90 days"
+        }
       />
       <KpiCard
         label="Renewals (30 days)"

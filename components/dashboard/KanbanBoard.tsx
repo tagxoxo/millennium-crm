@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import RetainPolicyDialog from "@/components/policy-detail/RetainPolicyDialog";
 import PolicyCard from "./PolicyCard";
 import type { Policy, Stage } from "@/lib/types";
 import { RETENTION_KANBAN_STAGES, STAGE_LABELS } from "@/lib/types";
@@ -32,6 +33,7 @@ export default function KanbanBoard({
 }: KanbanBoardProps) {
   const router = useRouter();
   const [policies, setPolicies] = useState(initialPolicies);
+  const [retainPolicy, setRetainPolicy] = useState<Policy | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverStage, setDragOverStage] = useState<Stage | "active_clients" | null>(
     null
@@ -108,7 +110,15 @@ export default function KanbanBoard({
     const policyId = event.dataTransfer.getData(POLICY_DRAG_TYPE);
     setDragOverStage(null);
     setDraggingId(null);
-    if (policyId) movePolicy(policyId, stage);
+    if (!policyId) return;
+
+    if (stage === "retained") {
+      const policy = policies.find((item) => item.id === policyId);
+      if (policy && policy.stage !== "retained") setRetainPolicy(policy);
+      return;
+    }
+
+    movePolicy(policyId, stage);
   }
 
   function renderPolicyCards(items: Policy[], draggable: boolean) {
@@ -185,6 +195,7 @@ export default function KanbanBoard({
   const lapsedStage = "lapsed" as const;
 
   return (
+    <>
     <div className="overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0">
       <p className="text-xs text-gray-500 mb-3 md:hidden">
         Tap a client to open. Drag-and-drop works on desktop.
@@ -220,5 +231,16 @@ export default function KanbanBoard({
         )}
       </div>
     </div>
+    {retainPolicy && (
+      <RetainPolicyDialog
+        policy={retainPolicy}
+        onCancel={() => setRetainPolicy(null)}
+        onSaved={() => {
+          setRetainPolicy(null);
+          router.refresh();
+        }}
+      />
+    )}
+    </>
   );
 }

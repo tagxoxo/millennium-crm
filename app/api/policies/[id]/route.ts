@@ -18,6 +18,21 @@ export async function PATCH(
     }
 
     const supabase = getSupabaseServer();
+
+    if (body.stage === "retained") {
+      const { data: existing } = await supabase
+        .from("policies")
+        .select("stage")
+        .eq("id", params.id)
+        .single();
+      if (existing && existing.stage !== "retained") {
+        return NextResponse.json(
+          { error: "Confirm the renewal premium before marking this policy retained." },
+          { status: 400 }
+        );
+      }
+    }
+
     const updates: Record<string, unknown> = {};
 
     if (body.client_name !== undefined) updates.client_name = String(body.client_name).trim();

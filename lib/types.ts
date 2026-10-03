@@ -34,7 +34,8 @@ export type ContactType =
   | "renewal_reminder_45"
   | "manual_policy_review"
   | "policy_review_response"
-  | "welcome_email";
+  | "welcome_email"
+  | "renewed";
 
 export type OutreachStatus = "sent" | "failed" | "pending";
 
@@ -141,6 +142,7 @@ export interface Policy {
   notes: string | null;
   created_at: string;
   is_historical?: boolean;
+  retained_at?: string | null;
 }
 
 export interface ContactLog {

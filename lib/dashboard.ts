@@ -1,13 +1,22 @@
 import type { ClientState, Policy } from "./types";
 import { CLIENT_STATE_LABELS, CLIENT_STATES, normalizeClientState } from "./types";
 import { estimateBookMonthlyCommission } from "./commission";
+import { getSupabaseServer } from "./supabase/server";
 import { annualizedPremium, parseLocalDate } from "./utils";
 
 export const URGENT_RENEWAL_DAYS = 30;
+export const RETENTION_RATE_WINDOW_DAYS = 90;
+
+export interface RetentionOutcomes {
+  renewedLast90: number;
+  lapsedLast90: number;
+  error: string | null;
+}
 
 export interface DashboardStats {
   totalActive: number;
   retentionRate: number;
+  retentionDecisions: number;
   renewalsDue30: number;
   commercialBookPremium: number;
   commercialPolicyCount: number;
@@ -16,12 +25,64 @@ export interface DashboardStats {
   monthlyCommission: number;
 }
 
-export function computeDashboardStats(policies: Policy[]): DashboardStats {
-  const total = policies.length;
-  const retained = policies.filter(
-    (p) => p.stage === "retained" || p.stage === "active"
-  ).length;
+function startOfDaysAgo(days: number): Date {
+  const date = new Date();
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() - days);
+  return date;
+}
+
+function toDateOnly(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/** Renewed contact logs and lapsed policies whose expiration fell in the last 90 days. */
+export async function fetchRetentionOutcomes(): Promise<RetentionOutcomes> {
+  try {
+    const supabase = getSupabaseServer();
+    const since = startOfDaysAgo(RETENTION_RATE_WINDOW_DAYS);
+    const sinceDate = toDateOnly(since);
+    const today = toDateOnly(new Date());
+
+    const [renewed, lapsed] = await Promise.all([
+      supabase
+        .from("contact_log")
+        .select("id", { count: "exact", head: true })
+        .eq("contact_type", "renewed")
+        .gte("contact_date", since.toISOString()),
+      supabase
+        .from("policies")
+        .select("id", { count: "exact", head: true })
+        .eq("stage", "lapsed")
+        .eq("is_historical", false)
+        .gte("renewal_date", sinceDate)
+        .lte("renewal_date", today),
+    ]);
+
+    const error = renewed.error?.message ?? lapsed.error?.message ?? null;
+    return {
+      renewedLast90: renewed.count ?? 0,
+      lapsedLast90: lapsed.count ?? 0,
+      error,
+    };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return { renewedLast90: 0, lapsedLast90: 0, error: message };
+  }
+}
+
+export function computeDashboardStats(
+  policies: Policy[],
+  outcomes: Pick<RetentionOutcomes, "renewedLast90" | "lapsedLast90"> = {
+    renewedLast90: 0,
+    lapsedLast90: 0,
+  }
+): DashboardStats {
   const active = policies.filter((p) => p.stage !== "lapsed");
+  const retentionDecisions = outcomes.renewedLast90 + outcomes.lapsedLast90;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -48,7 +109,11 @@ export function computeDashboardStats(policies: Policy[]): DashboardStats {
 
   return {
     totalActive: active.length,
-    retentionRate: total > 0 ? (retained / total) * 100 : 0,
+    retentionRate:
+      retentionDecisions > 0
+        ? (outcomes.renewedLast90 / retentionDecisions) * 100
+        : 0,
+    retentionDecisions,
     renewalsDue30,
     commercialBookPremium,
     commercialPolicyCount: commercialActive.length,

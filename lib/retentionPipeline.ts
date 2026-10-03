@@ -1,3 +1,4 @@
+import { isWithinRetainedHold } from "./retainPolicy";
 import type { Policy, Stage } from "./types";
 import { STAGE_LABELS } from "./types";
 import { daysUntilRenewal } from "./utils";
@@ -8,10 +9,11 @@ export const RETENTION_PIPELINE_DAYS = 60;
 const ACTIVE_PIPELINE_STAGES: Stage[] = ["upcoming", "contacted", "quoted"];
 
 export function isInRetentionPipeline(
-  policy: Pick<Policy, "renewal_date" | "stage" | "is_historical">
+  policy: Pick<Policy, "renewal_date" | "stage" | "is_historical" | "retained_at">
 ): boolean {
   if (policy.is_historical) return false;
   if (policy.stage === "lapsed") return false;
+  if (isWithinRetainedHold(policy)) return true;
   return daysUntilRenewal(policy.renewal_date) <= RETENTION_PIPELINE_DAYS;
 }
 
@@ -30,6 +32,7 @@ export function daysUntilPipelineEntry(renewalDate: string): number {
 export function computeAutoPipelineStage(policy: Policy): Stage {
   if (policy.is_historical) return policy.stage;
   if (policy.stage === "lapsed") return "lapsed";
+  if (isWithinRetainedHold(policy)) return "retained";
 
   const inPipeline = isInRetentionPipeline(policy);
 
@@ -76,6 +79,10 @@ export function filterActiveClientPolicies(policies: Policy[]): Policy[] {
 
 export function getPipelineStageNote(policy: Policy): string | null {
   if (policy.is_historical || policy.stage === "lapsed") return null;
+  if (isWithinRetainedHold(policy)) {
+    return "Renewed — stays in Retained for 14 days, then returns to the book.";
+  }
+
   if (isInRetentionPipeline(policy)) {
     if (policy.stage === "retained") {
       return "Renewed this term — still within the renewal window.";
@@ -105,7 +112,7 @@ export function selectablePipelineStages(policy: Policy): Stage[] {
 }
 
 export const RETENTION_KANBAN_COLUMN_HINTS: Partial<Record<Stage, string>> = {
-  retained: "Renewed with you this term",
+  retained: "Just renewed — stays here for 14 days",
   lapsed: "Did not renew",
 };
 

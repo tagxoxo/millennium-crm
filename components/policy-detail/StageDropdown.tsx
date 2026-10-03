@@ -2,22 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import RetainPolicyDialog from "@/components/policy-detail/RetainPolicyDialog";
 import {
   getPipelineStageNote,
   isInRetentionPipeline,
   selectablePipelineStages,
 } from "@/lib/retentionPipeline";
+import { isWithinRetainedHold } from "@/lib/retainPolicy";
 import type { Policy, Stage } from "@/lib/types";
 import { STAGE_LABELS } from "@/lib/types";
 
 interface StageDropdownProps {
   policyId: string;
-  policy: Pick<Policy, "renewal_date" | "stage" | "is_historical">;
+  policy: Policy;
 }
 
 export default function StageDropdown({ policyId, policy }: StageDropdownProps) {
   const router = useRouter();
   const [stage, setStage] = useState(policy.stage);
+  const [retainOpen, setRetainOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,6 +33,13 @@ export default function StageDropdown({ policyId, policy }: StageDropdownProps) 
   }, [policy.stage]);
 
   async function handleChange(newStage: Stage) {
+    if (newStage === "retained" && policy.stage !== "retained") {
+      setStage(newStage);
+      setError(null);
+      setRetainOpen(true);
+      return;
+    }
+
     setStage(newStage);
     setSaving(true);
     setError(null);
@@ -61,7 +71,7 @@ export default function StageDropdown({ policyId, policy }: StageDropdownProps) 
           id="stage"
           value={stage}
           onChange={(e) => handleChange(e.target.value as Stage)}
-          disabled={saving}
+          disabled={saving || retainOpen}
           className="flex-1 px-4 py-2.5 bg-navy border border-navy-lighter rounded-lg text-white focus:outline-none focus:border-accent disabled:opacity-50"
         >
           {options.map((s) => (
@@ -72,7 +82,11 @@ export default function StageDropdown({ policyId, policy }: StageDropdownProps) 
         </select>
         {saving && <span className="text-xs text-gray-400">Saving...</span>}
       </div>
-      {inPipeline ? (
+      {isWithinRetainedHold(policy) ? (
+        <p className="text-xs text-gray-500 mt-2">
+          Renewed — stays in Retained for 14 days, then returns to the book.
+        </p>
+      ) : inPipeline ? (
         <p className="text-xs text-gray-500 mt-2">
           In renewal pipeline — expiration within 60 days.
         </p>
@@ -90,6 +104,22 @@ export default function StageDropdown({ policyId, policy }: StageDropdownProps) 
         </p>
       )}
       {error && <p className="text-red-400 text-sm mt-2">{error}</p>}
+      {retainOpen && (
+        <RetainPolicyDialog
+          policy={policy}
+          onCancel={() => {
+            setRetainOpen(false);
+            setStage(policy.stage);
+          }}
+          onSaved={(result) => {
+            setRetainOpen(false);
+            if (result.rewritten) {
+              router.push(`/policies/${result.id}`);
+            }
+            router.refresh();
+          }}
+        />
+      )}
     </div>
   );
 }
