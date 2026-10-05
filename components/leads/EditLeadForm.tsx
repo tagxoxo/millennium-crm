@@ -6,6 +6,7 @@ import { AgentAvatar, LeadLabelTag } from "@/components/leads/LeadCard";
 import type { Lead, LeadStage } from "@/lib/types";
 import { LEAD_STAGES, LEAD_STAGE_LABELS } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
+import { leadLeftOn, todayYmd, winBackCallDate } from "@/lib/winBack";
 
 interface EditLeadFormProps {
   lead: Lead;
@@ -42,6 +43,7 @@ export default function EditLeadForm({ lead }: EditLeadFormProps) {
   const [phone, setPhone] = useState(lead.phone ?? "");
   const [email, setEmail] = useState(lead.email ?? "");
   const [stage, setStage] = useState<LeadStage>(lead.stage);
+  const [leftOn, setLeftOn] = useState(lead.left_on?.slice(0, 10) ?? "");
   const [label, setLabel] = useState(lead.label ?? "");
   const [agentInitials, setAgentInitials] = useState(lead.agent_initials);
   const [notes, setNotes] = useState(lead.notes ?? "");
@@ -57,6 +59,7 @@ export default function EditLeadForm({ lead }: EditLeadFormProps) {
         phone,
         email,
         stage,
+        left_on: stage === "win_back" ? leftOn || todayYmd() : leftOn || null,
         label: label || null,
         agent_initials: agentInitials,
         notes,
@@ -150,7 +153,11 @@ export default function EditLeadForm({ lead }: EditLeadFormProps) {
           <label className="block text-xs text-gray-400 mb-1">Stage</label>
           <select
             value={stage}
-            onChange={(e) => setStage(e.target.value as LeadStage)}
+            onChange={(e) => {
+              const next = e.target.value as LeadStage;
+              setStage(next);
+              if (next === "win_back" && !leftOn) setLeftOn(todayYmd());
+            }}
             className={inputClass}
           >
             {LEAD_STAGES.map((s) => (
@@ -158,8 +165,23 @@ export default function EditLeadForm({ lead }: EditLeadFormProps) {
                 {LEAD_STAGE_LABELS[s]}
               </option>
             ))}
-          </select>
+            </select>
         </div>
+        {stage === "win_back" && (
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Date they left</label>
+            <input
+              type="date"
+              required
+              value={leftOn}
+              onChange={(e) => setLeftOn(e.target.value)}
+              className={inputClass}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Call about 6 months after this date.
+            </p>
+          </div>
+        )}
         <div>
           <label className="block text-xs text-gray-400 mb-1">Agent initials</label>
           <input
@@ -288,6 +310,20 @@ export function LeadInfoCard({ lead }: LeadInfoCardProps) {
           <dt className="text-gray-500 mb-1">Added</dt>
           <dd className="text-white">{formatDate(lead.created_at)}</dd>
         </div>
+        {lead.stage === "win_back" && (
+          <>
+            <div>
+              <dt className="text-gray-500 mb-1">Left</dt>
+              <dd className="text-white">{formatDate(leadLeftOn(lead))}</dd>
+            </div>
+            <div>
+              <dt className="text-gray-500 mb-1">Call around</dt>
+              <dd className="text-white">
+                {formatDate(winBackCallDate(leadLeftOn(lead)))}
+              </dd>
+            </div>
+          </>
+        )}
         {lead.notes && (
           <div className="sm:col-span-2">
             <dt className="text-gray-500 mb-1">Notes</dt>

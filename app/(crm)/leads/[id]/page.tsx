@@ -20,7 +20,7 @@ export default async function LeadDetailPage({
         href="/leads"
         className="inline-flex items-center text-sm text-gray-400 hover:text-accent transition-colors"
       >
-        ← Back to Leads Pipeline
+        ← Back to Sales Center
       </Link>
 
       <LeadInfoCard lead={lead} />

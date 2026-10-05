@@ -76,3 +76,25 @@ async function releaseExpiredRetainedHolds(policies: Policy[]): Promise<Policy[]
 
   return released;
 }
+
+/** Lapsed or cancelled policies still on the Sales Center Win Back list. */
+export async function fetchWinBackPolicies(): Promise<{
+  policies: Policy[];
+  error: string | null;
+}> {
+  try {
+    const supabase = getSupabaseServer();
+    const { data, error } = await supabase
+      .from("policies")
+      .select("*")
+      .eq("is_historical", false)
+      .is("win_back_closed_at", null)
+      .or("stage.eq.lapsed,cancelled_on.not.is.null");
+
+    if (error) return { policies: [], error: error.message };
+    return { policies: (data ?? []) as Policy[], error: null };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unknown error";
+    return { policies: [], error: message };
+  }
+}

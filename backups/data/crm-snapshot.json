@@ -1,7 +1,7 @@
 {
-  "exported_at": "2026-10-05T01:00:06.944Z",
+  "exported_at": "2026-10-05T14:53:16.162Z",
   "counts": {
-    "policies": 99,
+    "policies": 100,
     "contact_log": 3,
     "policy_documents": 96,
     "automations": 5,
@@ -33,7 +33,8 @@
       "effective_date": null,
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "97d1687c-6239-473b-9fd2-fea33e2adac4",
@@ -59,7 +60,8 @@
       "effective_date": "2026-10-15",
       "client_state": "TN",
       "retained_at": "2026-10-03T14:43:01.464+00:00",
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "fc2ba15b-4630-441a-a183-78c0f72d12c9",
@@ -85,7 +87,8 @@
       "effective_date": "2025-10-29",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "66d76e64-567f-45f5-b591-7f369ea0df23",
@@ -111,7 +114,8 @@
       "effective_date": "2026-09-10",
       "client_state": "KY",
       "retained_at": null,
-      "cancelled_on": "2026-09-29"
+      "cancelled_on": "2026-09-29",
+      "win_back_closed_at": null
     },
     {
       "id": "e7c422a5-a562-4023-9107-f2c4c5c7d101",
@@ -137,7 +141,8 @@
       "effective_date": "2026-09-03",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "103dcfcb-3806-4247-8dfa-dc40551dd9b6",
@@ -163,7 +168,8 @@
       "effective_date": null,
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "15949f79-185e-40e4-8520-d022b4ac18f5",
@@ -189,7 +195,8 @@
       "effective_date": "2026-01-13",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "b81a3306-f8b9-4cea-b0c4-245c696457a3",
@@ -215,7 +222,8 @@
       "effective_date": "2026-09-01",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "f91c0a84-83f6-4000-9e7b-e4599a53eb8f",
@@ -241,7 +249,8 @@
       "effective_date": "2026-09-01",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "62a16383-71d2-4f61-9b20-a49480941dfe",
@@ -267,7 +276,8 @@
       "effective_date": "2026-02-02",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "885b60c1-7443-4bab-b4f3-d0803f2ef8b5",
@@ -293,7 +303,8 @@
       "effective_date": "2026-05-06",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "1a91588e-e717-414e-a172-52b4ed57c835",
@@ -319,7 +330,8 @@
       "effective_date": "2026-04-18",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "95fb33e8-274e-4077-83ba-978afe8c08ff",
@@ -345,7 +357,8 @@
       "effective_date": "2026-09-03",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "0e6c0a18-2424-4908-9eaf-3dbcb8e6cd24",
@@ -371,7 +384,8 @@
       "effective_date": "2026-09-02",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "f3912533-00db-4981-a7fc-df59af4077dd",
@@ -397,7 +411,8 @@
       "effective_date": "2026-05-03",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "85828e9d-cdb3-448c-9e49-1fc00860cef5",
@@ -423,7 +438,8 @@
       "effective_date": null,
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "b5b4b5d3-323c-4aab-ab48-7e95ef0e8ce6",
@@ -449,7 +465,8 @@
       "effective_date": "2026-08-07",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "e73b8773-18bf-4d09-9701-7779c510a021",
@@ -475,7 +492,8 @@
       "effective_date": null,
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "f029a09b-154b-463c-a4fd-d4ea764a12d7",
@@ -501,7 +519,8 @@
       "effective_date": "2026-04-05",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "fb163e2b-da0d-451f-8873-88f547580691",
@@ -527,7 +546,8 @@
       "effective_date": null,
       "client_state": "TX",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "e2d0a28d-31e5-48a1-a5ab-86e7a9bdba87",
@@ -553,7 +573,8 @@
       "effective_date": "2026-09-08",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "7d751ba2-22fc-45b4-addd-4c0074d2351b",
@@ -579,7 +600,8 @@
       "effective_date": "2026-09-08",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "fe0e7332-80e6-4905-a838-6497c0fa450e",
@@ -605,7 +627,8 @@
       "effective_date": "2026-09-08",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "41002864-a136-404e-ba2d-221777273c3b",
@@ -631,7 +654,8 @@
       "effective_date": "2026-09-08",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "aeeed235-066e-45a4-9787-7d433a3da51a",
@@ -657,7 +681,8 @@
       "effective_date": "2026-09-08",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "536051a6-0475-4967-983e-09b1067c5354",
@@ -683,7 +708,8 @@
       "effective_date": "2026-09-02",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "ca6253f0-10c2-4e15-b52a-458a6687f9d3",
@@ -709,7 +735,8 @@
       "effective_date": "2026-09-10",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "46bc55b8-068d-4b66-9ed2-e570e452bb76",
@@ -735,7 +762,8 @@
       "effective_date": "2026-09-10",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "accabafa-7476-4378-a73c-1daaac129f99",
@@ -761,7 +789,8 @@
       "effective_date": "2026-09-10",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "7523085a-5af7-4ce4-9840-d452d5452df2",
@@ -787,7 +816,8 @@
       "effective_date": "2025-11-21",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "cf6b817c-8708-4c10-af67-1cdc1f73d594",
@@ -813,7 +843,8 @@
       "effective_date": null,
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "acc08f5d-741a-4d3b-a8f1-f92126a17cbd",
@@ -839,7 +870,8 @@
       "effective_date": "2026-01-16",
       "client_state": "TN",
       "retained_at": "2026-10-03T14:41:45.072+00:00",
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "fca598ec-4f86-499c-b13d-cc99a4567284",
@@ -865,33 +897,35 @@
       "effective_date": "2026-02-15",
       "client_state": "TN",
       "retained_at": "2026-10-03T14:42:35.561+00:00",
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
-      "id": "45b68e06-1bb2-4fa7-9cd9-5cd4e220dc99",
-      "client_name": "Christopher Morello",
+      "id": "366b1e01-0418-459a-91fe-e0146e80c56a",
+      "client_name": "Parker Schoeing",
       "carrier": "progressive",
-      "premium": 931,
+      "premium": 1900,
       "renewal_date": "2026-12-04",
-      "stage": "active",
+      "stage": "upcoming",
       "spanish_speaker": false,
-      "phone": "(201) 364-5679",
-      "email": "chrisrhinos74@gmail.com",
-      "policy_number": "865577873",
+      "phone": "(845) 664-5514",
+      "email": "parkerschoening@gmail.com",
+      "policy_number": "866542000",
       "notes": null,
-      "created_at": "2026-06-23T16:58:54.430445+00:00",
+      "created_at": "2026-06-23T16:58:54.350369+00:00",
       "commercial": false,
       "term_months": 6,
       "client_since": "2025-12-04",
       "prior_carrier": null,
-      "client_address": "328 SUMMIT AVE, LEONIA, NJ 07605",
-      "client_id": "2e276b53-a231-4d90-912a-edbecb6d963b",
+      "client_address": "622 Merritt Avenue, NASHVILLE, TN 37203",
+      "client_id": "e1b77ab5-e4de-42ea-9ce5-5db9b2d28213",
       "policy_type": "personal_auto",
       "is_historical": false,
       "effective_date": "2026-06-04",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "fc38d156-929d-4cec-b9f0-6b17d2d508cf",
@@ -917,7 +951,8 @@
       "effective_date": "2025-10-23",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "72c72b93-78e8-4c66-baac-127757405331",
@@ -943,7 +978,8 @@
       "effective_date": null,
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "2fa69b97-c094-4d5d-aa6d-3fc821d384cf",
@@ -969,7 +1005,35 @@
       "effective_date": "2025-10-29",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
+    },
+    {
+      "id": "45b68e06-1bb2-4fa7-9cd9-5cd4e220dc99",
+      "client_name": "Christopher Morello",
+      "carrier": "progressive",
+      "premium": 931,
+      "renewal_date": "2026-12-04",
+      "stage": "upcoming",
+      "spanish_speaker": false,
+      "phone": "(201) 364-5679",
+      "email": "chrisrhinos74@gmail.com",
+      "policy_number": "865577873",
+      "notes": null,
+      "created_at": "2026-06-23T16:58:54.430445+00:00",
+      "commercial": false,
+      "term_months": 6,
+      "client_since": "2025-12-04",
+      "prior_carrier": null,
+      "client_address": "328 SUMMIT AVE, LEONIA, NJ 07605",
+      "client_id": "2e276b53-a231-4d90-912a-edbecb6d963b",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-06-04",
+      "client_state": "TN",
+      "retained_at": null,
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "3e5db996-cec6-4719-9275-56c46ccaf667",
@@ -995,7 +1059,8 @@
       "effective_date": "2025-12-16",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "f1c7abec-3830-4e9b-9db5-429809833670",
@@ -1021,7 +1086,8 @@
       "effective_date": "2026-06-22",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "9f03f73b-9ced-493e-af8b-8cd429e51c54",
@@ -1047,7 +1113,8 @@
       "effective_date": "2026-06-10",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "3eb4f886-741b-4f2e-aee5-6d5a25d5a19d",
@@ -1073,7 +1140,8 @@
       "effective_date": null,
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "541a0f82-d2fb-4a20-9f99-da888b72d47d",
@@ -1099,7 +1167,8 @@
       "effective_date": "2026-04-08",
       "client_state": "RI",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "815d349f-e3f8-4a74-a523-ddfe2560d614",
@@ -1125,7 +1194,8 @@
       "effective_date": "2026-03-03",
       "client_state": "RI",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "a8e7b1e8-53fc-4b3d-bf99-71db0afb1e16",
@@ -1151,7 +1221,8 @@
       "effective_date": "2026-05-05",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "dc5f2ac0-5839-4844-bfbe-34befcb052fb",
@@ -1177,7 +1248,8 @@
       "effective_date": "2026-04-26",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "2fe65e93-3262-4090-bf18-e59135065214",
@@ -1203,7 +1275,8 @@
       "effective_date": "2026-03-06",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "ffc8337d-6786-43fb-8971-1488a16f7d65",
@@ -1229,7 +1302,8 @@
       "effective_date": "2026-07-23",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "ebb298c2-472b-44fc-b14b-addac88f9511",
@@ -1255,7 +1329,8 @@
       "effective_date": null,
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "423c128e-5502-4d08-9fd2-8616b0e47364",
@@ -1281,7 +1356,8 @@
       "effective_date": "2026-05-11",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "cab68a16-3cb3-4c26-935e-6b5cbc065004",
@@ -1307,7 +1383,8 @@
       "effective_date": "2026-08-28",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "32569a91-9e70-4130-a748-636291d7bb5c",
@@ -1333,7 +1410,8 @@
       "effective_date": null,
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "c821ac0e-3dbf-4699-9f56-3292ec8f3135",
@@ -1359,7 +1437,8 @@
       "effective_date": "2026-05-06",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "8b3b2b05-7310-422f-af10-7ada7165ed12",
@@ -1385,7 +1464,8 @@
       "effective_date": "2026-02-25",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "fba2c28a-312e-4b79-be17-5413b5c1142a",
@@ -1411,7 +1491,8 @@
       "effective_date": "2026-06-19",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "a239bcbc-5e94-4fd4-ae4a-fee618a94b26",
@@ -1437,7 +1518,8 @@
       "effective_date": "2026-08-17",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "0e8eb497-48c1-438a-8041-1cc3e6f535fd",
@@ -1463,7 +1545,8 @@
       "effective_date": "2026-09-01",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "5d7a8e03-bb0a-443b-9226-30009c59eeb0",
@@ -1489,7 +1572,8 @@
       "effective_date": "2025-11-19",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "72e4ba22-68c9-401c-9850-d451fb3411ab",
@@ -1515,7 +1599,8 @@
       "effective_date": "2026-03-26",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "3de4c274-e409-47c6-8140-1dcbbd80033f",
@@ -1541,7 +1626,8 @@
       "effective_date": null,
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "b4a5bbdb-4aa5-41d1-9440-f0d62f6e3455",
@@ -1567,7 +1653,8 @@
       "effective_date": null,
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "b9715431-833b-4020-b16e-d5a83cbd667d",
@@ -1593,7 +1680,8 @@
       "effective_date": null,
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "9f91dc66-1f6f-424a-827f-7adab5ddb093",
@@ -1619,33 +1707,8 @@
       "effective_date": "2026-03-03",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
-    },
-    {
-      "id": "366b1e01-0418-459a-91fe-e0146e80c56a",
-      "client_name": "Parker Schoeing",
-      "carrier": "progressive",
-      "premium": 1900,
-      "renewal_date": "2026-12-04",
-      "stage": "active",
-      "spanish_speaker": false,
-      "phone": "(845) 664-5514",
-      "email": "parkerschoening@gmail.com",
-      "policy_number": "866542000",
-      "notes": null,
-      "created_at": "2026-06-23T16:58:54.350369+00:00",
-      "commercial": false,
-      "term_months": 6,
-      "client_since": "2025-12-04",
-      "prior_carrier": null,
-      "client_address": "622 Merritt Avenue, NASHVILLE, TN 37203",
-      "client_id": "e1b77ab5-e4de-42ea-9ce5-5db9b2d28213",
-      "policy_type": "personal_auto",
-      "is_historical": false,
-      "effective_date": "2026-06-04",
-      "client_state": "TN",
-      "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "45406e1d-6d06-4d36-98ea-4271ea480b7e",
@@ -1671,7 +1734,8 @@
       "effective_date": null,
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "78bced12-7629-4387-af26-098a5f66e817",
@@ -1697,7 +1761,35 @@
       "effective_date": "2026-09-10",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
+    },
+    {
+      "id": "e09b3c93-c3cd-4568-b251-28c3e3a6e30c",
+      "client_name": "Kristen Weinheimer",
+      "carrier": "geico",
+      "premium": 784,
+      "renewal_date": "2027-02-10",
+      "stage": "active",
+      "spanish_speaker": false,
+      "phone": null,
+      "email": null,
+      "policy_number": null,
+      "notes": null,
+      "created_at": "2026-10-05T14:03:47.54927+00:00",
+      "commercial": false,
+      "term_months": 6,
+      "client_since": null,
+      "prior_carrier": null,
+      "client_address": null,
+      "client_id": "b633062b-31a0-48da-b71c-88d0cb16d90c",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-08-10",
+      "client_state": "TN",
+      "retained_at": null,
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "162aced9-84ce-4d5b-a22f-d9d03e16a053",
@@ -1723,7 +1815,8 @@
       "effective_date": "2026-09-25",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "b295a0e5-fc78-4e92-8937-1c4e13f5ed75",
@@ -1749,7 +1842,8 @@
       "effective_date": "2026-09-11",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "42d6716a-be60-4c23-a9d2-3aadc3d02188",
@@ -1775,7 +1869,8 @@
       "effective_date": "2026-09-22",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "3bad6ae0-bafa-4a3f-9460-ac0dd127f624",
@@ -1801,7 +1896,8 @@
       "effective_date": "2026-09-12",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "fc7701f1-fbae-40a5-b62b-2a4d8c109766",
@@ -1827,7 +1923,8 @@
       "effective_date": "2026-09-15",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "468fbecc-93c7-42db-ab9e-8e0c62e42691",
@@ -1853,7 +1950,8 @@
       "effective_date": "2026-09-23",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "e40e826a-9351-41d0-86bb-50abc3bbce83",
@@ -1879,7 +1977,8 @@
       "effective_date": "2026-09-15",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "30f4adce-584a-471c-8d49-ccf67b31817c",
@@ -1905,7 +2004,8 @@
       "effective_date": "2026-09-15",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "0d200764-29b3-4a64-941f-a3ff48629d0c",
@@ -1931,7 +2031,8 @@
       "effective_date": "2026-09-17",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "3d85f0cd-af7a-4e98-8c1a-a74158fb8581",
@@ -1957,7 +2058,8 @@
       "effective_date": "2026-09-29",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "99ba4471-72c4-4def-810b-7d2c6ca6140e",
@@ -1983,7 +2085,8 @@
       "effective_date": "2026-09-25",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "f9d0f723-1262-43ff-9b09-279454b4ba34",
@@ -2009,7 +2112,8 @@
       "effective_date": "2026-09-23",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "571a91a5-df01-4381-9485-144cadffbcd3",
@@ -2035,7 +2139,8 @@
       "effective_date": "2026-09-18",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "3bcc5875-80d5-4431-bfcc-e5866c702670",
@@ -2061,7 +2166,8 @@
       "effective_date": "2026-09-21",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "f7dc65a1-d2ed-467b-b905-eea0907a1447",
@@ -2087,7 +2193,8 @@
       "effective_date": "2026-09-22",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "0403c91d-381f-4a1c-9f4a-f940c3cfd824",
@@ -2113,7 +2220,8 @@
       "effective_date": "2026-09-23",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "a0f18852-172c-4bc7-8a38-2f2d61cbd09d",
@@ -2139,7 +2247,8 @@
       "effective_date": "2026-09-22",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "0b55a39d-3bd2-4908-8aa6-855fd3235b46",
@@ -2165,7 +2274,8 @@
       "effective_date": "2026-09-24",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "f6f209b9-6b69-4381-a893-21a13c4403e5",
@@ -2191,7 +2301,8 @@
       "effective_date": "2026-09-28",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "b5f0b31b-81db-4d97-a6cb-0a1bd1a8f57c",
@@ -2217,7 +2328,8 @@
       "effective_date": "2026-09-24",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "e51b6aa0-e90d-42e5-9ffd-9d1d9f0839a5",
@@ -2243,7 +2355,8 @@
       "effective_date": "2026-05-21",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "3c6d43cc-b855-445b-89ca-87f1f3cffde2",
@@ -2269,7 +2382,8 @@
       "effective_date": "2026-09-18",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "6c168b93-a5d6-40a7-b774-304716e8bbde",
@@ -2295,7 +2409,8 @@
       "effective_date": "2026-09-28",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "6067d211-69de-45df-8e24-0fc4a84c1bf3",
@@ -2321,7 +2436,8 @@
       "effective_date": "2026-09-29",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "eb49c5f4-e6ad-4426-9079-62acebfa8c33",
@@ -2347,7 +2463,8 @@
       "effective_date": "2026-09-29",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "c715fe32-aa03-4bb5-ad99-bcd38e212368",
@@ -2373,7 +2490,8 @@
       "effective_date": "2026-10-01",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "ac243373-f0a6-48f8-8381-a11ed8498b58",
@@ -2399,7 +2517,8 @@
       "effective_date": "2026-10-01",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "68fba84d-f3cf-4853-a120-47a86293130f",
@@ -2425,7 +2544,8 @@
       "effective_date": null,
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "c610414f-8f3d-46b2-aa3a-f01aaccda962",
@@ -2451,7 +2571,8 @@
       "effective_date": "2026-10-01",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "4d275b6a-5d5c-43fd-9ba7-bc607a3d24b2",
@@ -2477,7 +2598,8 @@
       "effective_date": "2026-10-01",
       "client_state": "MA",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "820033c4-8a25-4c37-99dd-6ae39e1c811e",
@@ -2503,7 +2625,8 @@
       "effective_date": "2026-10-02",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "caa495cc-c8c3-49ec-9c36-9139d289bbc5",
@@ -2529,7 +2652,8 @@
       "effective_date": "2026-10-02",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "3fa9b028-aa68-45e9-a874-124eb567d728",
@@ -2555,7 +2679,8 @@
       "effective_date": "2026-07-16",
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     },
     {
       "id": "20f33d0d-2768-4129-95d8-c7fc032479bb",
@@ -2581,7 +2706,8 @@
       "effective_date": null,
       "client_state": "TN",
       "retained_at": null,
-      "cancelled_on": null
+      "cancelled_on": null,
+      "win_back_closed_at": null
     }
   ],
   "contact_log": [
@@ -3541,7 +3667,8 @@
       "label": "formspree",
       "agent_initials": "JG",
       "notes": null,
-      "created_at": "2026-09-30T19:38:25.335125+00:00"
+      "created_at": "2026-09-30T19:38:25.335125+00:00",
+      "left_on": null
     },
     {
       "id": "99572a2f-9760-4a3d-ab07-37a5259110ca",
@@ -3552,7 +3679,8 @@
       "label": "House insurance",
       "agent_initials": "JG",
       "notes": null,
-      "created_at": "2026-06-25T13:59:42.528082+00:00"
+      "created_at": "2026-06-25T13:59:42.528082+00:00",
+      "left_on": null
     },
     {
       "id": "cc40763e-1133-476c-adb1-36ec7b1b7eff",
@@ -3563,7 +3691,8 @@
       "label": "website---SR22 request",
       "agent_initials": "JG",
       "notes": null,
-      "created_at": "2026-10-01T13:38:24.54124+00:00"
+      "created_at": "2026-10-01T13:38:24.54124+00:00",
+      "left_on": null
     },
     {
       "id": "3d11891f-31ac-419c-b21d-692f51dc69a4",
@@ -3574,7 +3703,8 @@
       "label": "10k package policy....with home he left",
       "agent_initials": "JG",
       "notes": null,
-      "created_at": "2026-10-01T16:34:06.793464+00:00"
+      "created_at": "2026-10-01T16:34:06.793464+00:00",
+      "left_on": null
     },
     {
       "id": "e30cf5d3-c874-4a5b-9fe1-78fd3a87d985",
@@ -3585,7 +3715,8 @@
       "label": "formspree---already quoted",
       "agent_initials": "JG",
       "notes": null,
-      "created_at": "2026-10-01T22:27:51.404752+00:00"
+      "created_at": "2026-10-01T22:27:51.404752+00:00",
+      "left_on": null
     },
     {
       "id": "5492d960-ef9c-4061-b191-04e03b0b4be0",
@@ -3596,7 +3727,8 @@
       "label": "Kentucky",
       "agent_initials": "JG",
       "notes": null,
-      "created_at": "2026-10-02T00:15:11.753666+00:00"
+      "created_at": "2026-10-02T00:15:11.753666+00:00",
+      "left_on": null
     },
     {
       "id": "e293a77b-c115-4e00-adfe-bcedeab207d4",
@@ -3607,7 +3739,8 @@
       "label": null,
       "agent_initials": "JG",
       "notes": null,
-      "created_at": "2026-10-02T19:00:28.095744+00:00"
+      "created_at": "2026-10-02T19:00:28.095744+00:00",
+      "left_on": null
     }
   ],
   "users": [

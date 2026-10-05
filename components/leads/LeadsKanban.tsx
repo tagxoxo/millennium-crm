@@ -3,17 +3,23 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import LeadCard from "./LeadCard";
-import type { Lead, LeadStage } from "@/lib/types";
-import { LEAD_STAGES, LEAD_STAGE_LABELS } from "@/lib/types";
+import WinBackColumn from "./WinBackColumn";
+import type { Lead, LeadStage, Policy } from "@/lib/types";
+import { LEAD_PIPELINE_STAGES, LEAD_STAGE_LABELS } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { todayYmd } from "@/lib/winBack";
 
 interface LeadsKanbanProps {
   leads: Lead[];
+  winBackPolicies: Policy[];
 }
 
 const LEAD_DRAG_TYPE = "application/x-millennium-lead-id";
 
-export default function LeadsKanban({ leads: initialLeads }: LeadsKanbanProps) {
+export default function LeadsKanban({
+  leads: initialLeads,
+  winBackPolicies,
+}: LeadsKanbanProps) {
   const router = useRouter();
   const [leads, setLeads] = useState(initialLeads);
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -23,7 +29,7 @@ export default function LeadsKanban({ leads: initialLeads }: LeadsKanbanProps) {
     setLeads(initialLeads);
   }, [initialLeads]);
 
-  const byStage = LEAD_STAGES.reduce(
+  const byStage = LEAD_PIPELINE_STAGES.reduce(
     (acc, stage) => {
       acc[stage] = leads.filter((l) => l.stage === stage);
       return acc;
@@ -36,15 +42,22 @@ export default function LeadsKanban({ leads: initialLeads }: LeadsKanbanProps) {
     if (!lead || lead.stage === newStage) return;
 
     const previousStage = lead.stage;
+    const previousLeftOn = lead.left_on;
+    const leftOn = newStage === "win_back" && !lead.left_on ? todayYmd() : lead.left_on;
     setLeads((current) =>
-      current.map((l) => (l.id === leadId ? { ...l, stage: newStage } : l))
+      current.map((l) =>
+        l.id === leadId ? { ...l, stage: newStage, left_on: leftOn ?? l.left_on } : l
+      )
     );
 
     try {
       const res = await fetch(`/api/leads/${leadId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ stage: newStage }),
+        body: JSON.stringify({
+          stage: newStage,
+          ...(newStage === "win_back" && !lead.left_on ? { left_on: leftOn } : {}),
+        }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Save failed");
@@ -52,7 +65,9 @@ export default function LeadsKanban({ leads: initialLeads }: LeadsKanbanProps) {
     } catch {
       setLeads((current) =>
         current.map((l) =>
-          l.id === leadId ? { ...l, stage: previousStage } : l
+          l.id === leadId
+            ? { ...l, stage: previousStage, left_on: previousLeftOn }
+            : l
         )
       );
     }
@@ -88,8 +103,8 @@ export default function LeadsKanban({ leads: initialLeads }: LeadsKanbanProps) {
       <p className="text-xs text-gray-500 mb-3 md:hidden">
         Drag-and-drop works on desktop.
       </p>
-      <div className="flex gap-3 md:gap-4 min-w-max md:min-w-0 md:grid md:grid-cols-4">
-        {LEAD_STAGES.map((stage) => (
+      <div className="flex gap-3 md:gap-4 min-w-max items-start">
+        {LEAD_PIPELINE_STAGES.map((stage) => (
           <div
             key={stage}
             onDragOver={(event) => handleDragOver(stage, event)}
@@ -132,6 +147,19 @@ export default function LeadsKanban({ leads: initialLeads }: LeadsKanbanProps) {
             </div>
           </div>
         ))}
+        <WinBackColumn
+          policies={winBackPolicies}
+          leads={leads.filter((lead) => lead.stage === "win_back")}
+          draggingId={draggingId}
+          dragOver={dragOverStage === "win_back"}
+          onDragOver={(event) => handleDragOver("win_back", event)}
+          onDragLeave={() =>
+            setDragOverStage((current) => (current === "win_back" ? null : current))
+          }
+          onDrop={(event) => handleDrop("win_back", event)}
+          onLeadDragStart={handleDragStart}
+          onLeadDragEnd={handleDragEnd}
+        />
       </div>
     </div>
   );

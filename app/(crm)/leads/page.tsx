@@ -1,21 +1,26 @@
 import AddLeadForm from "@/components/leads/AddLeadForm";
 import LeadsKanban from "@/components/leads/LeadsKanban";
 import { fetchAllLeads } from "@/lib/leads";
+import { fetchWinBackPolicies } from "@/lib/policies";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function LeadsPage() {
-  const { leads, error } = await fetchAllLeads();
+  const [{ leads, error }, winBack] = await Promise.all([
+    fetchAllLeads(),
+    fetchWinBackPolicies(),
+  ]);
   const tableMissing = error?.includes("leads") && error?.includes("schema cache");
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white">Leads Pipeline</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-white">Sales Center</h1>
           <p className="text-gray-400 text-sm mt-1">
-            New business prospects — separate from your renewal book
+            New business on the left. Win Back on the right is for people who
+            cancelled or lapsed — call them about 6 months later.
           </p>
         </div>
         <AddLeadForm />
@@ -37,9 +42,15 @@ export default async function LeadsPage() {
       ) : (
         <>
           <p className="text-xs text-gray-500 hidden md:block">
-            Click a lead to open details, or drag a card to another column to change stage.
+            Click a card to open it. Drag a lead between columns, including into Win Back.
           </p>
-          <LeadsKanban leads={leads} />
+          {winBack.error && (
+            <div className="bg-yellow-500/10 border border-yellow-500/40 rounded-xl p-4">
+              <p className="text-yellow-300 font-medium">Win Back list did not load</p>
+              <p className="text-yellow-200/80 text-sm mt-1">{winBack.error}</p>
+            </div>
+          )}
+          <LeadsKanban leads={leads} winBackPolicies={winBack.policies} />
         </>
       )}
     </div>

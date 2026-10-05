@@ -35,7 +35,8 @@ CREATE TABLE policies (
     'tapco', 'cna', 'bruce_messier', 'mesa', 'acceptance_independent'
   )),
   notes TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  win_back_closed_at TIMESTAMPTZ
 );
 
 -- Index for common queries
@@ -113,10 +114,11 @@ CREATE TABLE leads (
   full_name TEXT NOT NULL,
   phone TEXT,
   email TEXT,
-  stage TEXT NOT NULL DEFAULT 'new' CHECK (stage IN ('new', 'contacted', 'quoted', 'sold')),
+  stage TEXT NOT NULL DEFAULT 'new' CHECK (stage IN ('new', 'contacted', 'quoted', 'sold', 'win_back')),
   label TEXT,
   agent_initials TEXT NOT NULL DEFAULT 'JG',
   notes TEXT,
+  left_on DATE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

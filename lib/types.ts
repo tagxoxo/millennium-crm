@@ -58,7 +58,7 @@ export type PolicyType =
   | "life"
   | "other";
 
-export type LeadStage = "new" | "contacted" | "quoted" | "sold";
+export type LeadStage = "new" | "contacted" | "quoted" | "sold" | "win_back";
 
 export type ClientState = "TN" | "TX" | "MA" | "RI" | "KY";
 
@@ -117,6 +117,8 @@ export interface Lead {
   agent_initials: string;
   notes: string | null;
   created_at: string;
+  /** Date they cancelled or lapsed. Win Back follow-up is 6 months after this. */
+  left_on?: string | null;
 }
 
 export interface Policy {
@@ -144,6 +146,8 @@ export interface Policy {
   is_historical?: boolean;
   retained_at?: string | null;
   cancelled_on?: string | null;
+  /** Set when this policy was taken off the Sales Center Win Back list. */
+  win_back_closed_at?: string | null;
 }
 
 export interface ContactLog {
@@ -269,13 +273,22 @@ export const POLICY_TYPE_LABELS: Record<PolicyType, string> = {
   other: "Other",
 };
 
-export const LEAD_STAGES: LeadStage[] = ["new", "contacted", "quoted", "sold"];
+/** New-business columns, left to right. Win Back is a separate column. */
+export const LEAD_PIPELINE_STAGES: LeadStage[] = [
+  "new",
+  "contacted",
+  "quoted",
+  "sold",
+];
+
+export const LEAD_STAGES: LeadStage[] = [...LEAD_PIPELINE_STAGES, "win_back"];
 
 export const LEAD_STAGE_LABELS: Record<LeadStage, string> = {
   new: "New",
   contacted: "Contacted",
   quoted: "Quoted",
   sold: "Sold",
+  win_back: "Win Back",
 };
 
 export const DEFAULT_AGENT_INITIALS = "JG";

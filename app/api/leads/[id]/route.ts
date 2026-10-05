@@ -3,6 +3,7 @@ import { fetchLeadById } from "@/lib/leads";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { LeadStage } from "@/lib/types";
 import { LEAD_STAGES } from "@/lib/types";
+import { isYmd, todayYmd } from "@/lib/winBack";
 
 export async function GET(
   _request: NextRequest,
@@ -34,12 +35,30 @@ export async function PATCH(
     if (body.agent_initials !== undefined) {
       updates.agent_initials = body.agent_initials?.trim() || "JG";
     }
+    if (body.left_on !== undefined) {
+      const raw = body.left_on == null ? "" : String(body.left_on).trim();
+      if (!raw) {
+        updates.left_on = null;
+      } else if (!isYmd(raw.slice(0, 10))) {
+        return NextResponse.json({ error: "Enter the date they left." }, { status: 400 });
+      } else {
+        updates.left_on = raw.slice(0, 10);
+      }
+    }
     if (body.stage !== undefined) {
       const stage = body.stage as LeadStage;
       if (!LEAD_STAGES.includes(stage)) {
         return NextResponse.json({ error: "Invalid stage." }, { status: 400 });
       }
       updates.stage = stage;
+      if (stage === "win_back" && updates.left_on === undefined) {
+        const { data: existing } = await supabase
+          .from("leads")
+          .select("left_on")
+          .eq("id", params.id)
+          .single();
+        if (!existing?.left_on) updates.left_on = todayYmd();
+      }
     }
 
     const { error } = await supabase.from("leads").update(updates).eq("id", params.id);

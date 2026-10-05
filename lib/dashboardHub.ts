@@ -99,7 +99,9 @@ export function computeServiceHubSummary(
 }
 
 export function computeSalesHubSummary(leads: Lead[]): SalesHubSummary {
-  const active = leads.filter((lead) => lead.stage !== "sold");
+  const active = leads.filter(
+    (lead) => lead.stage !== "sold" && lead.stage !== "win_back"
+  );
 
   return {
     activeLeads: active.length,

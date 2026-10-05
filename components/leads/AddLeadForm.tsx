@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { LeadStage } from "@/lib/types";
 import { LEAD_STAGES, LEAD_STAGE_LABELS } from "@/lib/types";
+import { todayYmd } from "@/lib/winBack";
 
 const inputClass =
   "w-full px-4 py-2.5 bg-navy border border-navy-lighter rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent text-sm";
@@ -37,6 +38,7 @@ export default function AddLeadForm() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [stage, setStage] = useState<LeadStage>("new");
+  const [leftOn, setLeftOn] = useState(todayYmd());
   const [label, setLabel] = useState("");
 
   function resetForm() {
@@ -44,6 +46,7 @@ export default function AddLeadForm() {
     setPhone("");
     setEmail("");
     setStage("new");
+    setLeftOn(todayYmd());
     setLabel("");
     setError(null);
   }
@@ -64,6 +67,7 @@ export default function AddLeadForm() {
         phone,
         email,
         stage,
+        left_on: stage === "win_back" ? leftOn : null,
         label: label || null,
       });
       handleClose();
@@ -151,7 +155,11 @@ export default function AddLeadForm() {
             <label className="block text-xs text-gray-400 mb-1">Stage</label>
             <select
               value={stage}
-              onChange={(e) => setStage(e.target.value as LeadStage)}
+              onChange={(e) => {
+                const next = e.target.value as LeadStage;
+                setStage(next);
+                if (next === "win_back" && !leftOn) setLeftOn(todayYmd());
+              }}
               className={inputClass}
             >
               {LEAD_STAGES.map((s) => (
@@ -161,6 +169,22 @@ export default function AddLeadForm() {
               ))}
             </select>
           </div>
+
+          {stage === "win_back" && (
+            <div>
+              <label className="block text-xs text-gray-400 mb-1">Date they left</label>
+              <input
+                type="date"
+                required
+                value={leftOn}
+                onChange={(e) => setLeftOn(e.target.value)}
+                className={inputClass}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                They show up to call about 6 months after this date.
+              </p>
+            </div>
+          )}
 
           <div>
             <label className="block text-xs text-gray-400 mb-1">Label (optional)</label>

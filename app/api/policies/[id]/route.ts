@@ -67,6 +67,9 @@ export async function PATCH(
       updates.term_months = termMonths;
     }
     if (body.notes !== undefined) updates.notes = body.notes?.trim() || null;
+    if (body.win_back_closed !== undefined) {
+      updates.win_back_closed_at = body.win_back_closed ? new Date().toISOString() : null;
+    }
     if (body.cancelled_on !== undefined) {
       const raw = body.cancelled_on == null ? "" : String(body.cancelled_on).trim();
       if (!raw) {

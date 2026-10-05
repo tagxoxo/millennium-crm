@@ -10,6 +10,7 @@ import PolicyDocumentsSection from "@/components/policy-detail/PolicyDocumentsSe
 import PolicyInfo, { BackLink } from "@/components/policy-detail/PolicyInfo";
 import RenewalReminderButton from "@/components/policy-detail/RenewalReminderButton";
 import StageDropdown from "@/components/policy-detail/StageDropdown";
+import WinBackListControl from "@/components/policy-detail/WinBackListControl";
 import { fetchPolicyDocuments } from "@/lib/documentQueries";
 import { buildEnglishRenewalReminder45,
   buildSpanishRenewalReminder45,
@@ -20,6 +21,7 @@ import { getSupabaseServer } from "@/lib/supabase/server";
 import { syncPolicyPipelineStage } from "@/lib/syncRetentionPipeline";
 import type { ContactLog, Policy } from "@/lib/types";
 import { CARRIER_LABELS } from "@/lib/types";
+import { isWinBackCandidate, policyLeftOn, winBackCallDate } from "@/lib/winBack";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -86,6 +88,14 @@ export default async function PolicyDetailPage({
 
       {!policy.is_historical && (
         <StageDropdown policyId={policy.id} policy={policy} />
+      )}
+
+      {isWinBackCandidate(policy) && (
+        <WinBackListControl
+          policyId={policy.id}
+          closed={Boolean(policy.win_back_closed_at)}
+          callOn={winBackCallDate(policyLeftOn(policy))}
+        />
       )}
 
       {!policy.is_historical && (

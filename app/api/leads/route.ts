@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { LeadStage } from "@/lib/types";
 import { DEFAULT_AGENT_INITIALS, LEAD_STAGES } from "@/lib/types";
+import { isYmd, todayYmd } from "@/lib/winBack";
 
 export async function GET() {
   try {
@@ -35,6 +36,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid stage." }, { status: 400 });
     }
 
+    let leftOn: string | null = null;
+    if (body.left_on != null && String(body.left_on).trim()) {
+      leftOn = String(body.left_on).trim().slice(0, 10);
+      if (!isYmd(leftOn)) {
+        return NextResponse.json({ error: "Enter the date they left." }, { status: 400 });
+      }
+    } else if (stage === "win_back") {
+      leftOn = todayYmd();
+    }
+
     const supabase = getSupabaseServer();
     const { data, error } = await supabase
       .from("leads")
@@ -46,6 +57,7 @@ export async function POST(request: NextRequest) {
         label: body.label?.trim() || null,
         agent_initials: body.agent_initials?.trim() || DEFAULT_AGENT_INITIALS,
         notes: body.notes?.trim() || null,
+        left_on: leftOn,
       })
       .select("id")
       .single();
