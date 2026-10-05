@@ -50,6 +50,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Carrier is required." }, { status: 400 });
     }
 
+    if (requestType === "info" && !notes) {
+      return NextResponse.json(
+        { error: "Write what they asked in the Info notes." },
+        { status: 400 }
+      );
+    }
+
     if (email && !email.includes("@")) {
       return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
     }

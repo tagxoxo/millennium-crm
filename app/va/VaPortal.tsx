@@ -135,6 +135,7 @@ export default function VaPortal({
 
   function handleScriptTab(tab: VaScriptTab) {
     setScriptTab(tab);
+    if (tab === "info") setRequestType("info");
     if (tab === "payment") setRequestType("payment");
     if (tab === "policy") setRequestType("policy_change");
     if (tab === "quote") setRequestType("new_quote");
@@ -142,6 +143,7 @@ export default function VaPortal({
 
   function handleRequestType(value: VaFormRequestType | "") {
     setRequestType(value);
+    if (value === "info") setScriptTab("info");
     if (value === "payment") setScriptTab("payment");
     if (value === "policy_change") setScriptTab("policy");
     if (value === "new_quote") setScriptTab("quote");
@@ -208,6 +210,7 @@ export default function VaPortal({
     requestType === "policy_change" && !policyEmailedOnCall;
   const paymentNeedsCard =
     requestType === "payment" ? paymentCardError(paymentCard) : null;
+  const infoNeedsNotes = requestType === "info" && !notes.trim();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -219,6 +222,11 @@ export default function VaPortal({
     if (requestType === "payment" && paymentNeedsCard) {
       setError(paymentNeedsCard);
       setScriptTab("payment");
+      return;
+    }
+    if (requestType === "info" && !notes.trim()) {
+      setError("Write what they asked on the Info tab, then submit.");
+      setScriptTab("info");
       return;
     }
     setSaving(true);
@@ -262,7 +270,7 @@ export default function VaPortal({
 
   return (
     <div className="min-h-screen bg-navy">
-      <div className={desk === "requests" ? "lg:pr-[320px]" : ""}>
+      <div className={desk === "requests" ? "lg:pr-[380px]" : ""}>
         <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -472,6 +480,11 @@ export default function VaPortal({
                 Enter the card details on the Payment tab, then submit.
               </p>
             )}
+            {infoNeedsNotes && (
+              <p className="text-red-400 text-sm font-medium">
+                Write what they asked on the Info tab, then submit.
+              </p>
+            )}
             {error && <p className="text-red-400 text-sm">{error}</p>}
             {success && (
               <p className="text-green-400 text-sm">Request submitted.</p>
@@ -479,7 +492,7 @@ export default function VaPortal({
 
             <button
               type="submit"
-              disabled={saving || policyNeedsEmailOnCall || Boolean(paymentNeedsCard)}
+              disabled={saving || policyNeedsEmailOnCall || Boolean(paymentNeedsCard) || infoNeedsNotes}
               className="px-5 py-2.5 bg-accent hover:bg-accent-hover text-white font-medium rounded-lg transition-colors disabled:opacity-50"
             >
               {saving ? "Submitting..." : "Submit request"}
@@ -564,6 +577,8 @@ export default function VaPortal({
       <VaCallScript
         tab={scriptTab}
         onTabChange={handleScriptTab}
+        infoNotes={notes}
+        onInfoNotes={setNotes}
         paymentCarrier={paymentCarrier}
         onPaymentCarrier={handlePaymentCarrier}
         paymentNotes={paymentNotes}

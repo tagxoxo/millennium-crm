@@ -1,4 +1,4 @@
-export type VaScriptTab = "greeting" | "payment" | "policy" | "quote";
+export type VaScriptTab = "greeting" | "info" | "payment" | "policy" | "quote";
 
 export type VaIntakeAnswer = {
   label: string;

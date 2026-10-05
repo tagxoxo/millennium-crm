@@ -17,6 +17,7 @@ import {
 
 const TABS: { id: VaScriptTab; label: string }[] = [
   { id: "greeting", label: "Greeting" },
+  { id: "info", label: "Info" },
   { id: "payment", label: "Payment" },
   { id: "policy", label: "Policy Change" },
   { id: "quote", label: "New Quote" },
@@ -225,6 +226,45 @@ function GreetingScript() {
   );
 }
 
+function InfoScript({
+  notes,
+  onNotes,
+}: {
+  notes: string;
+  onNotes: (value: string) => void;
+}) {
+  const ready = notes.trim().length > 0;
+
+  return (
+    <div className="space-y-4">
+      <Cue>When they only need information:</Cue>
+      <Line>
+        &ldquo;Of course — what would you like to know? I&apos;ll write it down and have someone follow
+        up.&rdquo;
+      </Line>
+
+      <div>
+        <Cue>Write what they asked</Cue>
+        <textarea
+          value={notes}
+          onChange={(e) => onNotes(e.target.value)}
+          rows={6}
+          placeholder="What information they need"
+          className={`${scriptInputClass} resize-y min-h-[140px]`}
+        />
+      </div>
+
+      {ready && (
+        <div className="bg-green-500/10 border border-green-500/40 rounded-lg px-3 py-2.5">
+          <p className="text-green-300 text-sm font-medium leading-relaxed">
+            Fill in the caller on the left, then press Submit request. This ticket is marked Info.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PolicyScript({
   answers,
   onAnswer,
@@ -334,6 +374,8 @@ function QuoteScript({
 export default function VaCallScript({
   tab,
   onTabChange,
+  infoNotes,
+  onInfoNotes,
   paymentCarrier,
   onPaymentCarrier,
   paymentNotes,
@@ -349,6 +391,8 @@ export default function VaCallScript({
 }: {
   tab: VaScriptTab;
   onTabChange: (tab: VaScriptTab) => void;
+  infoNotes: string;
+  onInfoNotes: (value: string) => void;
   paymentCarrier: VaCarrier | null;
   onPaymentCarrier: (value: VaCarrier) => void;
   paymentNotes: string;
@@ -363,13 +407,13 @@ export default function VaCallScript({
   onQuoteAnswer: (key: string, value: string) => void;
 }) {
   return (
-    <aside className="bg-navy-light border-t lg:border-t-0 lg:border-l border-navy-lighter w-full lg:w-[320px] lg:fixed lg:inset-y-0 lg:right-0 flex flex-col max-h-[75vh] lg:max-h-none">
+    <aside className="bg-navy-light border-t lg:border-t-0 lg:border-l border-navy-lighter w-full lg:w-[380px] lg:fixed lg:inset-y-0 lg:right-0 flex flex-col max-h-[75vh] lg:max-h-none">
       <div className="px-4 pt-5 pb-3 shrink-0">
         <h2 className="text-lg font-semibold text-white">Call Script</h2>
         <p className="text-xs text-gray-500 mt-0.5">Ask, write the answer, then submit the ticket</p>
       </div>
 
-      <div className="grid grid-cols-4 border-y border-navy-lighter shrink-0">
+      <div className="grid grid-cols-5 border-y border-navy-lighter shrink-0">
         {TABS.map((item) => {
           const active = tab === item.id;
           return (
@@ -391,6 +435,7 @@ export default function VaCallScript({
 
       <div className="p-4 flex-1 overflow-y-auto">
         {tab === "greeting" && <GreetingScript />}
+        {tab === "info" && <InfoScript notes={infoNotes} onNotes={onInfoNotes} />}
         {tab === "payment" && (
           <PaymentScript
             carrier={paymentCarrier}

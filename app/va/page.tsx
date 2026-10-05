@@ -52,7 +52,7 @@ export default async function VaPage({
   return (
     <>
       {loadError && (
-        <div className="bg-navy px-4 pt-4 lg:pr-[336px]">
+        <div className="bg-navy px-4 pt-4 lg:pr-[380px]">
           <div className="max-w-5xl mx-auto bg-red-500/10 border border-red-500/40 rounded-xl p-4">
             <p className="text-red-400 font-medium">Could not load today&apos;s queue</p>
             <p className="text-red-300/80 text-sm mt-1">{loadError}</p>

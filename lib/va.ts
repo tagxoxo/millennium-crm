@@ -22,6 +22,7 @@ export const VA_FORM_REQUEST_TYPES = [
   "payment",
   "policy_change",
   "new_quote",
+  "info",
 ] as const;
 
 export const VA_REQUEST_TYPES = [
@@ -65,6 +66,7 @@ export const VA_REQUEST_TYPE_LABELS: Record<VaRequestType, string> = {
   payment: "Payment",
   policy_change: "Policy change",
   new_quote: "New quote",
+  info: "Info",
   add_vehicle: "Add vehicle",
   remove_vehicle: "Remove vehicle",
   add_a_driver: "Add a driver",
