@@ -58,7 +58,7 @@ export type PolicyType =
   | "life"
   | "other";
 
-export type LeadStage = "new" | "contacted" | "quoted" | "sold" | "win_back";
+export type LeadStage = "new" | "quoted" | "luis_leads" | "win_back";
 
 export type ClientState = "TN" | "TX" | "MA" | "RI" | "KY";
 
@@ -273,21 +273,15 @@ export const POLICY_TYPE_LABELS: Record<PolicyType, string> = {
   other: "Other",
 };
 
-/** New-business columns, left to right. Win Back is a separate column. */
-export const LEAD_PIPELINE_STAGES: LeadStage[] = [
-  "new",
-  "contacted",
-  "quoted",
-  "sold",
-];
+/** Sales Center columns, left to right. Win Back is a separate column. */
+export const LEAD_PIPELINE_STAGES: LeadStage[] = ["new", "quoted", "luis_leads"];
 
 export const LEAD_STAGES: LeadStage[] = [...LEAD_PIPELINE_STAGES, "win_back"];
 
 export const LEAD_STAGE_LABELS: Record<LeadStage, string> = {
-  new: "New",
-  contacted: "Contacted",
+  new: "Home nurturing",
   quoted: "Quoted",
-  sold: "Sold",
+  luis_leads: "Luis Leads",
   win_back: "Win Back",
 };
 

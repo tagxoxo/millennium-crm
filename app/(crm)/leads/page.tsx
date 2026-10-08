@@ -19,8 +19,8 @@ export default async function LeadsPage() {
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-white">Sales Center</h1>
           <p className="text-gray-400 text-sm mt-1">
-            New business on the left. Win Back on the right is for people who
-            cancelled or lapsed — call them about 6 months later.
+            Home nurturing, Quoted, and Luis Leads. Win Back on the right is for
+            people who cancelled or lapsed — call them about 6 months later.
           </p>
         </div>
         <AddLeadForm />

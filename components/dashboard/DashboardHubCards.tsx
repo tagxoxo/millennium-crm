@@ -164,7 +164,7 @@ export default function DashboardHubCards({ hub }: DashboardHubCardsProps) {
         theme="emerald"
         title="Sales Center"
         primaryValue={sales.activeLeads.toLocaleString()}
-        primaryLabel="Active leads (not sold)"
+        primaryLabel="Active leads"
         metrics={[
           {
             label: "In Quoted stage",
@@ -172,7 +172,7 @@ export default function DashboardHubCards({ hub }: DashboardHubCardsProps) {
             tone: sales.quotedLeads > 0 ? "good" : "default",
           },
           {
-            label: "New — not contacted",
+            label: "Home nurturing",
             value: sales.newLeads.toLocaleString(),
             tone: sales.newLeads > 0 ? "warn" : "default",
           },

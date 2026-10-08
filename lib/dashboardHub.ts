@@ -99,9 +99,7 @@ export function computeServiceHubSummary(
 }
 
 export function computeSalesHubSummary(leads: Lead[]): SalesHubSummary {
-  const active = leads.filter(
-    (lead) => lead.stage !== "sold" && lead.stage !== "win_back"
-  );
+  const active = leads.filter((lead) => lead.stage !== "win_back");
 
   return {
     activeLeads: active.length,
@@ -177,9 +175,9 @@ export function buildFocusAlerts(hub: DashboardHubData): FocusAlert[] {
 
   if (hub.sales.newLeads > 0) {
     alerts.push({
-      message: `${hub.sales.newLeads} new lead${
+      message: `${hub.sales.newLeads} lead${
         hub.sales.newLeads === 1 ? "" : "s"
-      } waiting for first contact`,
+      } in Home nurturing`,
       href: "/sales-center",
       urgent: false,
     });

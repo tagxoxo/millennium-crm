@@ -114,7 +114,7 @@ CREATE TABLE leads (
   full_name TEXT NOT NULL,
   phone TEXT,
   email TEXT,
-  stage TEXT NOT NULL DEFAULT 'new' CHECK (stage IN ('new', 'contacted', 'quoted', 'sold', 'win_back')),
+  stage TEXT NOT NULL DEFAULT 'new' CHECK (stage IN ('new', 'quoted', 'luis_leads', 'win_back')),
   label TEXT,
   agent_initials TEXT NOT NULL DEFAULT 'JG',
   notes TEXT,
