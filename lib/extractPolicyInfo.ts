@@ -629,3 +629,20 @@ export function hasAnyExtractedInfo(info: ExtractedPolicyInfo): boolean {
       info.term_months
   );
 }
+
+const AUTO_APPLY_FIELDS = [
+  "policy_number",
+  "client_address",
+  "client_email",
+  "client_phone",
+] as const;
+
+/** True when a field the upload screen can save silently was marked low confidence. */
+export function extractedFieldsNeedReview(
+  lowConfidenceFields: readonly string[] | null | undefined
+): boolean {
+  if (!lowConfidenceFields?.length) return false;
+  return lowConfidenceFields.some((field) =>
+    (AUTO_APPLY_FIELDS as readonly string[]).includes(field)
+  );
+}

@@ -22,3 +22,8 @@ export function getEnvOptional(name: string): string | undefined {
   const raw = process.env[name];
   return raw ? cleanEnv(raw) : undefined;
 }
+
+/** Server-only. Missing key means policy scans fall back to the regex extractor. */
+export function getAnthropicApiKey(): string | undefined {
+  return getEnvOptional("ANTHROPIC_API_KEY");
+}

@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import type { ExtractedPolicyInfo } from "@/lib/extractPolicyInfo";
-import { hasAnyExtractedInfo } from "@/lib/extractPolicyInfo";
+import { extractedFieldsNeedReview, hasAnyExtractedInfo } from "@/lib/extractPolicyInfo";
 import { canAutoApplyExtracted } from "@/lib/extractPolicyApply";
 import { readJsonResponse } from "@/lib/apiClient";
 import type { Policy, PolicyDocument } from "@/lib/types";
@@ -118,6 +118,7 @@ export default function PolicyDocumentsSection({
         warning?: string;
         error?: string;
         uploaded?: boolean;
+        low_confidence_fields?: string[];
       }>(res);
 
       if (!res.ok) {
@@ -141,7 +142,10 @@ export default function PolicyDocumentsSection({
           phone: policy.phone,
         };
 
-        if (canAutoApplyExtracted(fields, policyValues)) {
+        if (
+          canAutoApplyExtracted(fields, policyValues) &&
+          !extractedFieldsNeedReview(json.low_confidence_fields)
+        ) {
           await applyExtractedToPolicy(fields);
           showToast("Policy info updated from document");
           router.refresh();

@@ -16,6 +16,7 @@
     "install:nightly-backup": "bash scripts/install-nightly-backup.sh"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
     "@aws-sdk/client-s3": "^3.1075.0",
     "@aws-sdk/s3-request-presigner": "^3.1075.0",
     "@supabase/supabase-js": "^2.49.1",

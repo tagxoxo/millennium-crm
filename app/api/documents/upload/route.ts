@@ -1,16 +1,21 @@
 import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
 import { assignDocumentToHistoricalPolicyIfNeeded } from "@/lib/policyHistory";
+import { hasAnyExtractedInfo } from "@/lib/extractPolicyInfo";
 import {
-  extractPolicyInfoFromText,
-  hasAnyExtractedInfo,
-} from "@/lib/extractPolicyInfo";
-import { extractTextFromPdf } from "@/lib/pdfText";
+  emptyExtractedPolicyInfo,
+  extractPolicyFromFile,
+  lowConfidenceReviewWarning,
+  normalizePolicyMime,
+  policyExtractionPayload,
+  type PolicyFileExtraction,
+} from "@/lib/extractPolicyInfoAI";
 import { getR2Bucket, getR2Client } from "@/lib/r2";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import { sanitizeClientFolder, sanitizeFileName } from "@/lib/utils";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 const MAX_BYTES = 20 * 1024 * 1024;
 const ALLOWED_TYPES = new Set([
@@ -23,24 +28,12 @@ const ALLOWED_TYPES = new Set([
 const EXTRACT_WARNING =
   "Could not extract policy info automatically. Please fill in the fields manually.";
 
-function isPdfFile(file: File, safeName: string): boolean {
-  return (
-    file.type === "application/pdf" ||
-    safeName.toLowerCase().endsWith(".pdf")
-  );
+function withoutLowConfidencePolicyNumber(
+  result: PolicyFileExtraction
+): PolicyFileExtraction["extracted"] {
+  if (!result.low_confidence_fields.includes("policy_number")) return result.extracted;
+  return { ...result.extracted, policy_number: null };
 }
-
-const EMPTY_EXTRACTED = {
-  client_name: null,
-  policy_number: null,
-  client_address: null,
-  client_email: null,
-  client_phone: null,
-  renewal_date: null,
-  effective_date: null,
-  premium: null,
-  term_months: null,
-};
 
 export async function POST(request: NextRequest) {
   try {
@@ -122,17 +115,27 @@ export async function POST(request: NextRequest) {
     }
 
     let extracted = null;
+    let extractedForHistory = null;
     let warning: string | null = null;
+    let extractionPayload: ReturnType<typeof policyExtractionPayload> | null = null;
 
-    if (isPdfFile(file, safeName)) {
+    const mimeType = normalizePolicyMime(file.type, safeName);
+    if (mimeType) {
       try {
-        const text = await extractTextFromPdf(buffer);
-        extracted = extractPolicyInfoFromText(text);
-        if (!hasAnyExtractedInfo(extracted)) {
-          warning = EXTRACT_WARNING;
-        }
+        const result = await extractPolicyFromFile({
+          buffer,
+          mimeType,
+          fileName: file.name || safeName,
+        });
+        extracted = result.extracted;
+        extractedForHistory = withoutLowConfidencePolicyNumber(result);
+        extractionPayload = policyExtractionPayload(result);
+        warning = hasAnyExtractedInfo(result.extracted)
+          ? lowConfidenceReviewWarning(result.low_confidence_fields)
+          : EXTRACT_WARNING;
       } catch {
-        extracted = { ...EMPTY_EXTRACTED };
+        extracted = emptyExtractedPolicyInfo();
+        extractedForHistory = extracted;
         warning = EXTRACT_WARNING;
       }
     }
@@ -141,7 +144,7 @@ export async function POST(request: NextRequest) {
       documentId: document.id,
       policyId,
       fileName: file.name || safeName,
-      extracted,
+      extracted: extractedForHistory,
     });
 
     return NextResponse.json({
@@ -150,6 +153,19 @@ export async function POST(request: NextRequest) {
       warning,
       uploaded: true,
       target_policy_id: targetPolicyId,
+      ...(extractionPayload
+        ? {
+            carrier: extractionPayload.carrier,
+            policy_type: extractionPayload.policy_type,
+            confidence: extractionPayload.confidence,
+            low_confidence_fields: extractionPayload.low_confidence_fields,
+            vehicles: extractionPayload.vehicles,
+            drivers: extractionPayload.drivers,
+            lienholder: extractionPayload.lienholder,
+            sr22: extractionPayload.sr22,
+            source: extractionPayload.source,
+          }
+        : {}),
     });
   } catch (err) {
     const message =

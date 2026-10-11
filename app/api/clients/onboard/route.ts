@@ -1,12 +1,14 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextRequest, NextResponse } from "next/server";
 import { fetchClientById, findDuplicateClients } from "@/lib/clients";
+import { clientNameFromFileName } from "@/lib/extractPolicyInfo";
 import {
-  clientNameFromFileName,
-  extractPolicyInfoFromText,
-} from "@/lib/extractPolicyInfo";
+  extractPolicyFromFile,
+  normalizePolicyMime,
+  pickReviewedValue,
+  type PolicyFileExtraction,
+} from "@/lib/extractPolicyInfoAI";
 import { inferCarrierFromFileName } from "@/lib/policyHistory";
-import { extractTextFromPdf } from "@/lib/pdfText";
 import { getR2Bucket, getR2Client } from "@/lib/r2";
 import { resolveInitialPipelineStage } from "@/lib/retentionPipeline";
 import { getSupabaseServer } from "@/lib/supabase/server";
@@ -15,6 +17,7 @@ import { CARRIERS, normalizeClientState, normalizeLeadSource } from "@/lib/types
 import { sanitizeClientFolder, sanitizeFileName } from "@/lib/utils";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 const MAX_BYTES = 20 * 1024 * 1024;
 
@@ -22,8 +25,14 @@ function readString(value: FormDataEntryValue | null): string {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function isPdf(fileName: string, mimeType: string): boolean {
-  return mimeType === "application/pdf" || fileName.toLowerCase().endsWith(".pdf");
+function reviewedTermMonths(
+  formValue: FormDataEntryValue | null,
+  extraction: PolicyFileExtraction | null
+): 6 | 12 {
+  if (formValue === "6") return 6;
+  if (formValue === "12") return 12;
+  if (extraction?.low_confidence_fields.includes("term_months")) return 12;
+  return extraction?.extracted.term_months === 6 ? 6 : 12;
 }
 
 export async function POST(request: NextRequest) {
@@ -33,7 +42,7 @@ export async function POST(request: NextRequest) {
     const forceCreate = formData.get("force_create") === "true";
     const linkClientId = readString(formData.get("client_id")) || null;
 
-    let extracted = null;
+    let extraction: PolicyFileExtraction | null = null;
     let fileBuffer: Buffer | null = null;
     let fileMeta: {
       originalName: string;
@@ -56,34 +65,66 @@ export async function POST(request: NextRequest) {
         size: file.size,
       };
 
-      if (isPdf(safeName, file.type)) {
+      const mimeType = normalizePolicyMime(file.type, safeName);
+      if (mimeType) {
         try {
-          const text = await extractTextFromPdf(fileBuffer);
-          extracted = extractPolicyInfoFromText(text);
-          if (!extracted.client_name) {
-            extracted.client_name = clientNameFromFileName(
+          extraction = await extractPolicyFromFile({
+            buffer: fileBuffer,
+            mimeType,
+            fileName: fileMeta.originalName,
+          });
+          if (!extraction.carrier) {
+            extraction.carrier = inferCarrierFromFileName(fileMeta.originalName);
+          }
+          if (!extraction.extracted.client_name) {
+            extraction.extracted.client_name = clientNameFromFileName(
               fileMeta.originalName,
               (value) => Boolean(inferCarrierFromFileName(value))
             );
           }
         } catch {
-          extracted = null;
+          extraction = null;
         }
       }
     }
 
+    const extracted = extraction?.extracted ?? null;
+    const lowConfidence = extraction?.low_confidence_fields ?? [];
     const fullName =
-      readString(formData.get("full_name")) || extracted?.client_name?.trim() || "";
+      pickReviewedValue(
+        readString(formData.get("full_name")),
+        extracted?.client_name,
+        "client_name",
+        lowConfidence
+      ) || "";
     if (!fullName) {
       return NextResponse.json({ error: "Full name is required." }, { status: 400 });
     }
 
-    const email = readString(formData.get("email")) || extracted?.client_email || null;
-    const phone = readString(formData.get("phone")) || extracted?.client_phone || null;
-    const address =
-      readString(formData.get("address")) || extracted?.client_address || null;
-    const policyNumber =
-      readString(formData.get("policy_number")) || extracted?.policy_number || null;
+    const email = pickReviewedValue(
+      readString(formData.get("email")),
+      extracted?.client_email,
+      "client_email",
+      lowConfidence
+    );
+    const phone = pickReviewedValue(
+      readString(formData.get("phone")),
+      extracted?.client_phone,
+      "client_phone",
+      lowConfidence
+    );
+    const address = pickReviewedValue(
+      readString(formData.get("address")),
+      extracted?.client_address,
+      "client_address",
+      lowConfidence
+    );
+    const policyNumber = pickReviewedValue(
+      readString(formData.get("policy_number")),
+      extracted?.policy_number,
+      "policy_number",
+      lowConfidence
+    );
     const isSpanishSpeaker = formData.get("is_spanish_speaker") === "true";
     const clientState = normalizeClientState(readString(formData.get("client_state")));
     const leadSourceRaw = readString(formData.get("lead_source"));
@@ -92,22 +133,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid lead source." }, { status: 400 });
     }
     const notes = readString(formData.get("notes")) || null;
+    const premiumFromForm = parseFloat(readString(formData.get("premium")) || "");
+    const premiumFromScan = lowConfidence.includes("premium")
+      ? NaN
+      : parseFloat(extracted?.premium || "");
     const premium =
-      parseFloat(readString(formData.get("premium")) || "0") ||
-      parseFloat(extracted?.premium || "0") ||
+      (Number.isFinite(premiumFromForm) ? premiumFromForm : 0) ||
+      (Number.isFinite(premiumFromScan) ? premiumFromScan : 0) ||
       0;
-    const termMonths =
-      Number(formData.get("term_months")) === 6 || extracted?.term_months === 6 ? 6 : 12;
+    const termMonths = reviewedTermMonths(formData.get("term_months"), extraction);
 
     let carrier = readString(formData.get("carrier"));
-    if ((!carrier || !CARRIERS.includes(carrier as Carrier)) && fileMeta) {
-      carrier = inferCarrierFromFileName(fileMeta.originalName) || "";
+    if (!carrier || !CARRIERS.includes(carrier as Carrier)) {
+      const scannedCarrier = lowConfidence.includes("carrier") ? null : extraction?.carrier;
+      carrier =
+        scannedCarrier ||
+        (fileMeta ? inferCarrierFromFileName(fileMeta.originalName) || "" : "");
     }
 
-    const renewalDate =
-      readString(formData.get("renewal_date")) || extracted?.renewal_date || null;
-    const effectiveDate =
-      readString(formData.get("effective_date")) || extracted?.effective_date || null;
+    const renewalDate = pickReviewedValue(
+      readString(formData.get("renewal_date")),
+      extracted?.renewal_date,
+      "renewal_date",
+      lowConfidence
+    );
+    const effectiveDate = pickReviewedValue(
+      readString(formData.get("effective_date")),
+      extracted?.effective_date,
+      "effective_date",
+      lowConfidence
+    );
 
     if (fileBuffer) {
       if (!carrier || !CARRIERS.includes(carrier as Carrier)) {

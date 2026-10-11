@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { readJsonResponse } from "@/lib/apiClient";
 import type { ExtractedPolicyInfo } from "@/lib/extractPolicyInfo";
-import { hasAnyExtractedInfo } from "@/lib/extractPolicyInfo";
+import { extractedFieldsNeedReview, hasAnyExtractedInfo } from "@/lib/extractPolicyInfo";
 import { canAutoApplyExtracted } from "@/lib/extractPolicyApply";
 
 const ACCEPT = ".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png";
@@ -139,6 +139,7 @@ export default function ClientDocumentUpload({ policies }: ClientDocumentUploadP
         extracted?: ExtractedPolicyInfo | null;
         warning?: string;
         target_policy_id?: string;
+        low_confidence_fields?: string[];
       }>(res);
 
       if (!res.ok) {
@@ -164,7 +165,10 @@ export default function ClientDocumentUpload({ policies }: ClientDocumentUploadP
           phone: policy?.phone ?? null,
         };
 
-        if (canAutoApplyExtracted(fields, policyValues)) {
+        if (
+          canAutoApplyExtracted(fields, policyValues) &&
+          !extractedFieldsNeedReview(json.low_confidence_fields)
+        ) {
           await applyExtractedToPolicy(appliedPolicyId, fields);
           showToast("Client info updated from document");
           router.refresh();
