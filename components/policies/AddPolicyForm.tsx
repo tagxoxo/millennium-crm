@@ -3,13 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import DuplicateClientWarning from "@/components/clients/DuplicateClientWarning";
-import type { Carrier, Client, PolicyType, Stage, TermMonths, ClientState } from "@/lib/types";
+import type { Carrier, Client, PolicyType, Stage, TermMonths, ClientState, LeadSource } from "@/lib/types";
 import {
   CARRIERS,
   CARRIER_LABELS,
   CLIENT_STATE_LABELS,
   CLIENT_STATES,
   DEFAULT_CLIENT_STATE,
+  LEAD_SOURCE_LABELS,
+  LEAD_SOURCES,
   POLICY_TYPE_LABELS,
   POLICY_TYPES,
   STAGE_LABELS,
@@ -68,6 +70,7 @@ export default function AddPolicyForm() {
   const [clientSince, setClientSince] = useState("");
   const [spanishSpeaker, setSpanishSpeaker] = useState(false);
   const [clientState, setClientState] = useState<ClientState>(DEFAULT_CLIENT_STATE);
+  const [leadSource, setLeadSource] = useState<LeadSource | "">("");
   const [commercial, setCommercial] = useState(false);
   const [termMonths, setTermMonths] = useState<TermMonths>(12);
   const [policyType, setPolicyType] = useState<PolicyType>("personal_auto");
@@ -87,6 +90,7 @@ export default function AddPolicyForm() {
     setClientSince("");
     setSpanishSpeaker(false);
     setClientState(DEFAULT_CLIENT_STATE);
+    setLeadSource("");
     setCommercial(false);
     setTermMonths(12);
     setPolicyType("personal_auto");
@@ -117,6 +121,7 @@ export default function AddPolicyForm() {
       client_since: clientSince || null,
       spanish_speaker: spanishSpeaker,
       client_state: clientState,
+      lead_source: leadSource || null,
       commercial,
       term_months: termMonths,
       policy_type: policyType,
@@ -376,6 +381,22 @@ export default function AddPolicyForm() {
               placeholder="client@email.com"
               className={inputClass}
             />
+          </div>
+
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Lead Source</label>
+            <select
+              value={leadSource}
+              onChange={(e) => setLeadSource(e.target.value as LeadSource | "")}
+              className={inputClass}
+            >
+              <option value="">Select...</option>
+              {LEAD_SOURCES.map((source) => (
+                <option key={source} value={source}>
+                  {LEAD_SOURCE_LABELS[source]}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

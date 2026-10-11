@@ -5,7 +5,7 @@ import SpanishTag from "@/components/ui/SpanishTag";
 import StateTag from "@/components/ui/StateTag";
 import TermTag from "@/components/ui/TermTag";
 import type { Policy } from "@/lib/types";
-import { DEFAULT_CLIENT_STATE, normalizeClientState, POLICY_TYPE_LABELS, STAGE_LABELS } from "@/lib/types";
+import { DEFAULT_CLIENT_STATE, LEAD_SOURCE_LABELS, normalizeClientState, normalizeLeadSource, POLICY_TYPE_LABELS, STAGE_LABELS } from "@/lib/types";
 import {
   annualizedPremium,
   daysUntilRenewal,
@@ -17,13 +17,15 @@ import {
 
 interface PolicyInfoProps {
   policy: Policy;
+  leadSource?: string | null;
 }
 
-export default function PolicyInfo({ policy }: PolicyInfoProps) {
+export default function PolicyInfo({ policy, leadSource }: PolicyInfoProps) {
   const isPast = Boolean(policy.is_historical);
   const days = daysUntilRenewal(policy.renewal_date);
   const termMonths = normalizeTermMonths(policy.term_months);
   const annualPremium = annualizedPremium(Number(policy.premium), termMonths);
+  const source = normalizeLeadSource(leadSource);
 
   return (
     <div className="bg-navy-light border border-navy-lighter rounded-xl p-5 md:p-6">
@@ -130,6 +132,10 @@ export default function PolicyInfo({ policy }: PolicyInfoProps) {
           <dd className="text-white">
             {policy.client_since ? formatDate(policy.client_since) : "—"}
           </dd>
+        </div>
+        <div>
+          <dt className="text-gray-500 mb-1">Lead Source</dt>
+          <dd className="text-white">{source ? LEAD_SOURCE_LABELS[source] : "—"}</dd>
         </div>
         <div>
           <dt className="text-gray-500 mb-1">Policy Number</dt>

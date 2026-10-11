@@ -5,8 +5,16 @@ import { useRouter } from "next/navigation";
 import DuplicateClientWarning from "@/components/clients/DuplicateClientWarning";
 import { readJsonResponse } from "@/lib/apiClient";
 import type { ExtractedPolicyInfo } from "@/lib/extractPolicyInfo";
-import type { Carrier, Client, ClientState } from "@/lib/types";
-import { CARRIERS, CARRIER_LABELS, CLIENT_STATE_LABELS, CLIENT_STATES, DEFAULT_CLIENT_STATE } from "@/lib/types";
+import type { Carrier, Client, ClientState, LeadSource } from "@/lib/types";
+import {
+  CARRIERS,
+  CARRIER_LABELS,
+  CLIENT_STATE_LABELS,
+  CLIENT_STATES,
+  DEFAULT_CLIENT_STATE,
+  LEAD_SOURCE_LABELS,
+  LEAD_SOURCES,
+} from "@/lib/types";
 
 const inputClass =
   "w-full px-4 py-2.5 bg-navy border border-navy-lighter rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-accent text-sm";
@@ -33,6 +41,7 @@ export default function AddClientForm() {
   const [address, setAddress] = useState("");
   const [isSpanishSpeaker, setIsSpanishSpeaker] = useState(false);
   const [clientState, setClientState] = useState<ClientState>(DEFAULT_CLIENT_STATE);
+  const [leadSource, setLeadSource] = useState<LeadSource | "">("");
   const [notes, setNotes] = useState("");
   const [carrier, setCarrier] = useState<Carrier>("trexis");
   const [effectiveDate, setEffectiveDate] = useState("");
@@ -48,6 +57,7 @@ export default function AddClientForm() {
     setAddress("");
     setIsSpanishSpeaker(false);
     setClientState(DEFAULT_CLIENT_STATE);
+    setLeadSource("");
     setNotes("");
     setCarrier("trexis");
     setEffectiveDate("");
@@ -136,6 +146,7 @@ export default function AddClientForm() {
       if (address) formData.append("address", address);
       formData.append("is_spanish_speaker", String(isSpanishSpeaker));
       formData.append("client_state", clientState);
+      if (leadSource) formData.append("lead_source", leadSource);
       if (notes) formData.append("notes", notes);
       if (carrier) formData.append("carrier", carrier);
       if (effectiveDate) formData.append("effective_date", effectiveDate);
@@ -322,6 +333,21 @@ export default function AddClientForm() {
               onChange={(e) => setAddress(e.target.value)}
               className={inputClass}
             />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-400 mb-1">Lead Source</label>
+            <select
+              value={leadSource}
+              onChange={(e) => setLeadSource(e.target.value as LeadSource | "")}
+              className={inputClass}
+            >
+              <option value="">Select...</option>
+              {LEAD_SOURCES.map((source) => (
+                <option key={source} value={source}>
+                  {LEAD_SOURCE_LABELS[source]}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-xs text-gray-400 mb-1">State</label>

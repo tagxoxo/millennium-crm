@@ -4,12 +4,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import SpanishTag from "@/components/ui/SpanishTag";
 import StateTag from "@/components/ui/StateTag";
-import type { Client, ClientState } from "@/lib/types";
+import type { Client, ClientState, LeadSource } from "@/lib/types";
 import {
   CLIENT_STATE_LABELS,
   CLIENT_STATES,
   DEFAULT_CLIENT_STATE,
+  LEAD_SOURCE_LABELS,
+  LEAD_SOURCES,
   normalizeClientState,
+  normalizeLeadSource,
 } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
 
@@ -59,6 +62,9 @@ export default function EditClientForm({
   const [clientState, setClientState] = useState<ClientState>(
     normalizeClientState(client.client_state)
   );
+  const [leadSource, setLeadSource] = useState<LeadSource | "">(
+    normalizeLeadSource(client.lead_source) ?? ""
+  );
   const [notes, setNotes] = useState(client.notes ?? "");
 
   async function handleSave(e: React.FormEvent) {
@@ -75,6 +81,7 @@ export default function EditClientForm({
         date_of_birth: dateOfBirth || null,
         is_spanish_speaker: isSpanishSpeaker,
         client_state: clientState,
+        lead_source: leadSource || null,
         notes,
       });
       setOpen(false);
@@ -181,6 +188,21 @@ export default function EditClientForm({
           />
         </div>
         <div>
+          <label className="block text-xs text-gray-400 mb-1">Lead Source</label>
+          <select
+            value={leadSource}
+            onChange={(e) => setLeadSource(e.target.value as LeadSource | "")}
+            className={inputClass}
+          >
+            <option value="">Select...</option>
+            {LEAD_SOURCES.map((source) => (
+              <option key={source} value={source}>
+                {LEAD_SOURCE_LABELS[source]}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
           <label className="block text-xs text-gray-400 mb-1">State</label>
           <select
             value={clientState}
@@ -274,6 +296,8 @@ interface ClientInfoCardProps {
 }
 
 export function ClientInfoCard({ client }: ClientInfoCardProps) {
+  const leadSource = normalizeLeadSource(client.lead_source);
+
   return (
     <div className="bg-navy-light border border-navy-lighter rounded-xl p-5 md:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
@@ -318,6 +342,12 @@ export function ClientInfoCard({ client }: ClientInfoCardProps) {
         <div className="sm:col-span-2">
           <dt className="text-gray-500 mb-1">Address</dt>
           <dd className="text-white">{client.address || "—"}</dd>
+        </div>
+        <div>
+          <dt className="text-gray-500 mb-1">Lead Source</dt>
+          <dd className="text-white">
+            {leadSource ? LEAD_SOURCE_LABELS[leadSource] : "—"}
+          </dd>
         </div>
         <div>
           <dt className="text-gray-500 mb-1">Date of Birth</dt>

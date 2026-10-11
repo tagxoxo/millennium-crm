@@ -3,7 +3,7 @@ import { findDuplicateClients, syncPoliciesFromClient } from "@/lib/clients";
 import { resolveInitialPipelineStage } from "@/lib/retentionPipeline";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Carrier, Client, PolicyType, Stage, TermMonths } from "@/lib/types";
-import { CARRIERS, POLICY_TYPES, STAGES, TERM_MONTHS, normalizeClientState } from "@/lib/types";
+import { CARRIERS, POLICY_TYPES, STAGES, TERM_MONTHS, normalizeClientState, normalizeLeadSource } from "@/lib/types";
 
 async function createClientFromBody(body: Record<string, unknown>): Promise<Client | null> {
   const supabase = getSupabaseServer();
@@ -20,6 +20,7 @@ async function createClientFromBody(body: Record<string, unknown>): Promise<Clie
       address: (body.client_address as string)?.trim() || (body.address as string)?.trim() || null,
       is_spanish_speaker: Boolean(body.spanish_speaker),
       client_state: normalizeClientState(body.client_state),
+      lead_source: normalizeLeadSource(body.lead_source),
       notes: (body.notes as string)?.trim() || null,
     })
     .select("*")
@@ -65,6 +66,11 @@ export async function POST(request: NextRequest) {
     const policyType = (body.policy_type as PolicyType) || "personal_auto";
     if (!POLICY_TYPES.includes(policyType)) {
       return NextResponse.json({ error: "Invalid policy type." }, { status: 400 });
+    }
+
+    const rawLeadSource = String(body.lead_source ?? "").trim();
+    if (rawLeadSource && !normalizeLeadSource(rawLeadSource)) {
+      return NextResponse.json({ error: "Invalid lead source." }, { status: 400 });
     }
 
     const priorCarrier = body.prior_carrier?.trim() || null;

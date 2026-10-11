@@ -60,6 +60,63 @@ export type PolicyType =
 
 export type LeadStage = "new" | "quoted" | "luis_leads" | "win_back";
 
+export type LeadSource =
+  | "google"
+  | "right_choice_auto"
+  | "renegade_auto"
+  | "js_auto"
+  | "past_client"
+  | "referral"
+  | "other";
+
+export const LEAD_SOURCES: LeadSource[] = [
+  "google",
+  "right_choice_auto",
+  "renegade_auto",
+  "js_auto",
+  "past_client",
+  "referral",
+  "other",
+];
+
+export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
+  google: "Google",
+  right_choice_auto: "Right Choice Auto",
+  renegade_auto: "Renegade Auto",
+  js_auto: "J&S Auto",
+  past_client: "Past Client",
+  referral: "Referral",
+  other: "Other",
+};
+
+/** Empty means not set. Unknown text returns null. */
+export function normalizeLeadSource(value: unknown): LeadSource | null {
+  const raw = String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  if (!raw) return null;
+
+  const aliases: Record<string, LeadSource> = {
+    google: "google",
+    right_choice_auto: "right_choice_auto",
+    right_choice: "right_choice_auto",
+    renegade_auto: "renegade_auto",
+    renegade: "renegade_auto",
+    js_auto: "js_auto",
+    j_s_auto: "js_auto",
+    past_client: "past_client",
+    referral: "referral",
+    refferal: "referral",
+    other: "other",
+  };
+
+  return aliases[raw] ?? null;
+}
+
 export type ClientState = "TN" | "TX" | "MA" | "RI" | "KY";
 
 export const CLIENT_STATES: ClientState[] = ["TN", "TX", "MA", "RI", "KY"];
@@ -96,6 +153,7 @@ export interface Client {
   date_of_birth: string | null;
   is_spanish_speaker: boolean;
   client_state: ClientState;
+  lead_source: LeadSource | null;
   notes: string | null;
   created_at: string;
 }

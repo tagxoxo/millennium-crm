@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findDuplicateClients } from "@/lib/clients";
 import { getSupabaseServer } from "@/lib/supabase/server";
-import { normalizeClientState } from "@/lib/types";
+import { normalizeClientState, normalizeLeadSource } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
   const email = request.nextUrl.searchParams.get("email");
@@ -22,6 +22,10 @@ export async function POST(request: NextRequest) {
 
     const email = body.email?.trim() || null;
     const phone = body.phone?.trim() || null;
+    const rawLeadSource = String(body.lead_source ?? "").trim();
+    if (rawLeadSource && !normalizeLeadSource(rawLeadSource)) {
+      return NextResponse.json({ error: "Invalid lead source." }, { status: 400 });
+    }
 
     const duplicates = await findDuplicateClients(email, phone);
     if (duplicates.length > 0 && !body.force_create) {
@@ -42,6 +46,7 @@ export async function POST(request: NextRequest) {
         date_of_birth: body.date_of_birth?.trim() || null,
         is_spanish_speaker: Boolean(body.is_spanish_speaker),
         client_state: normalizeClientState(body.client_state),
+        lead_source: normalizeLeadSource(body.lead_source),
         notes: body.notes?.trim() || null,
       })
       .select("id")

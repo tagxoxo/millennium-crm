@@ -11,7 +11,7 @@ import { getR2Bucket, getR2Client } from "@/lib/r2";
 import { resolveInitialPipelineStage } from "@/lib/retentionPipeline";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Carrier } from "@/lib/types";
-import { CARRIERS, normalizeClientState } from "@/lib/types";
+import { CARRIERS, normalizeClientState, normalizeLeadSource } from "@/lib/types";
 import { sanitizeClientFolder, sanitizeFileName } from "@/lib/utils";
 
 export const runtime = "nodejs";
@@ -86,6 +86,11 @@ export async function POST(request: NextRequest) {
       readString(formData.get("policy_number")) || extracted?.policy_number || null;
     const isSpanishSpeaker = formData.get("is_spanish_speaker") === "true";
     const clientState = normalizeClientState(readString(formData.get("client_state")));
+    const leadSourceRaw = readString(formData.get("lead_source"));
+    const leadSource = leadSourceRaw ? normalizeLeadSource(leadSourceRaw) : null;
+    if (leadSourceRaw && !leadSource) {
+      return NextResponse.json({ error: "Invalid lead source." }, { status: 400 });
+    }
     const notes = readString(formData.get("notes")) || null;
     const premium =
       parseFloat(readString(formData.get("premium")) || "0") ||
@@ -144,6 +149,7 @@ export async function POST(request: NextRequest) {
           address,
           is_spanish_speaker: isSpanishSpeaker,
           client_state: clientState,
+          lead_source: leadSource,
           notes,
         })
         .select("id")

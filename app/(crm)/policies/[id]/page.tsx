@@ -11,6 +11,7 @@ import PolicyInfo, { BackLink } from "@/components/policy-detail/PolicyInfo";
 import RenewalReminderButton from "@/components/policy-detail/RenewalReminderButton";
 import StageDropdown from "@/components/policy-detail/StageDropdown";
 import WinBackListControl from "@/components/policy-detail/WinBackListControl";
+import { fetchClientById } from "@/lib/clients";
 import { fetchPolicyDocuments } from "@/lib/documentQueries";
 import { buildEnglishRenewalReminder45,
   buildSpanishRenewalReminder45,
@@ -63,8 +64,11 @@ export default async function PolicyDetailPage({
 
   const policy = await syncPolicyPipelineStage(rawPolicy);
 
-  const contacts = await getContactLogs(policy.id);
-  const documents = await fetchPolicyDocuments(policy.id);
+  const [client, contacts, documents] = await Promise.all([
+    policy.client_id ? fetchClientById(policy.client_id) : Promise.resolve(null),
+    getContactLogs(policy.id),
+    fetchPolicyDocuments(policy.id),
+  ]);
   const carrierLabel = CARRIER_LABELS[policy.carrier] ?? policy.carrier;
   const renewalPreview = policy.spanish_speaker
     ? buildSpanishRenewalReminder45(policy.client_name, carrierLabel)
@@ -79,7 +83,7 @@ export default async function PolicyDetailPage({
     <div className="space-y-6 max-w-3xl">
       <BackLink />
 
-      <PolicyInfo policy={policy} />
+      <PolicyInfo policy={policy} leadSource={client?.lead_source ?? null} />
 
       <div className="flex flex-col sm:flex-row flex-wrap gap-3">
         <EditClientInfoForm policy={policy} />

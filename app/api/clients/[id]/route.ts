@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { deleteClientById, fetchClientById, syncPoliciesFromClient } from "@/lib/clients";
 import { getSupabaseServer } from "@/lib/supabase/server";
 import type { Client } from "@/lib/types";
-import { normalizeClientState } from "@/lib/types";
+import { normalizeClientState, normalizeLeadSource } from "@/lib/types";
 
 export async function GET(
   _request: NextRequest,
@@ -36,6 +36,18 @@ export async function PATCH(
     }
     if (body.client_state !== undefined) {
       updates.client_state = normalizeClientState(body.client_state);
+    }
+    if (body.lead_source !== undefined) {
+      const raw = String(body.lead_source ?? "").trim();
+      if (!raw) {
+        updates.lead_source = null;
+      } else {
+        const leadSource = normalizeLeadSource(raw);
+        if (!leadSource) {
+          return NextResponse.json({ error: "Invalid lead source." }, { status: 400 });
+        }
+        updates.lead_source = leadSource;
+      }
     }
     if (body.notes !== undefined) updates.notes = body.notes?.trim() || null;
 
