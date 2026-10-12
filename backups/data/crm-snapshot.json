@@ -1,5 +1,5 @@
 {
-  "exported_at": "2026-10-11T18:47:06.624Z",
+  "exported_at": "2026-10-12T01:00:07.552Z",
   "counts": {
     "policies": 110,
     "contact_log": 4,
@@ -1363,7 +1363,7 @@
       "id": "ebb298c2-472b-44fc-b14b-addac88f9511",
       "client_name": "BATTS FAMILY TRUCKING",
       "carrier": "geico",
-      "premium": 34611,
+      "premium": 30054,
       "renewal_date": "2027-06-23",
       "stage": "active",
       "spanish_speaker": false,
@@ -1380,7 +1380,7 @@
       "client_id": "cdf65e73-55dd-4d36-84be-ffe760b05dc7",
       "policy_type": "commercial_auto",
       "is_historical": false,
-      "effective_date": null,
+      "effective_date": "2026-06-23",
       "client_state": "TN",
       "retained_at": null,
       "cancelled_on": null,
