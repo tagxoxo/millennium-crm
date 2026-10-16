@@ -44,7 +44,7 @@ export default function BookInsightsFilter({
       </div>
       {selectedMonth && (
         <p className="text-xs text-gray-500 sm:pb-3">
-          Production uses each policy&apos;s effective date (or date added if missing).
+          New business uses each policy&apos;s effective date. Trexis renewals are listed separately.
         </p>
       )}
     </div>

@@ -18,13 +18,15 @@ export default function ProductionPolicyTable({
   return (
     <section className="bg-navy-light border border-navy-lighter rounded-xl overflow-hidden">
       <div className="p-5 md:p-6 border-b border-navy-lighter">
-        <h2 className="text-lg font-semibold text-white">Policies Written</h2>
-        <p className="text-xs text-gray-500 mt-1">{monthLabel}</p>
+        <h2 className="text-lg font-semibold text-white">New Business Written</h2>
+        <p className="text-xs text-gray-500 mt-1">
+          {monthLabel} · does not include Trexis renewals
+        </p>
       </div>
 
       {sorted.length === 0 ? (
         <p className="text-sm text-gray-400 text-center py-10">
-          No production recorded for this month.
+          No new business recorded for this month.
         </p>
       ) : (
         <div className="overflow-x-auto">

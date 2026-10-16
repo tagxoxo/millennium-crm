@@ -7,6 +7,15 @@ export function formatCurrency(amount: number): string {
   }).format(amount);
 }
 
+export function formatCurrencyExact(amount: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+}
+
 /** Parse YYYY-MM-DD (or ISO date prefix) as local calendar date — avoids UTC off-by-one. */
 export function parseLocalDate(dateString: string): Date {
   const [y, m, d] = dateString.split("T")[0].split("-").map(Number);

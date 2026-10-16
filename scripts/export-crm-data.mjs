@@ -59,6 +59,7 @@ const contactLog = await fetchAll("contact_log");
 const policyDocuments = await fetchAll("policy_documents");
 const automations = await fetchAll("automations");
 const leads = await fetchAll("leads");
+const trexisBookRenewals = await fetchAll("trexis_book_renewals");
 
 let users = [];
 try {
@@ -78,6 +79,7 @@ const snapshot = {
     policy_documents: policyDocuments.length,
     automations: automations.length,
     leads: leads.length,
+    trexis_book_renewals: trexisBookRenewals.length,
     users: users.length,
   },
   policies,
@@ -85,6 +87,7 @@ const snapshot = {
   policy_documents: policyDocuments,
   automations,
   leads,
+  trexis_book_renewals: trexisBookRenewals,
   users,
 };
 

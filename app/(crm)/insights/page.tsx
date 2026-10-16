@@ -6,6 +6,7 @@ import PremiumByStateChart from "@/components/insights/PremiumByStateChart";
 import ProductionPolicyTable from "@/components/insights/ProductionPolicyTable";
 import ProductionSummary from "@/components/insights/ProductionSummary";
 import RetentionByStateChart from "@/components/insights/RetentionByStateChart";
+import TrexisRenewalsSection from "@/components/insights/TrexisRenewalsSection";
 import {
   computeBookInsightsSummary,
   computeExpiringPremium,
@@ -20,6 +21,11 @@ import {
 } from "@/lib/bookInsights";
 import { computePremiumByState } from "@/lib/dashboard";
 import { fetchAllPolicies } from "@/lib/policies";
+import {
+  fetchTrexisBookRenewals,
+  listTrexisRenewalMonths,
+  summarizeTrexisRenewals,
+} from "@/lib/trexisRenewals";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -33,8 +39,13 @@ export default async function BookInsightsPage({
 }: {
   searchParams: { month?: string };
 }) {
-  const { policies, error } = await fetchAllPolicies();
-  const availableMonths = listProductionMonths(policies);
+  const [{ policies, error }, { renewals, error: renewalError }] = await Promise.all([
+    fetchAllPolicies(),
+    fetchTrexisBookRenewals(),
+  ]);
+  const availableMonths = Array.from(
+    new Set([...listProductionMonths(policies), ...listTrexisRenewalMonths(renewals)])
+  ).sort((a, b) => b.localeCompare(a));
   const selectedMonth = isValidMonthKey(searchParams.month)
     ? searchParams.month
     : null;
@@ -47,6 +58,7 @@ export default async function BookInsightsPage({
     });
     const productionByState = computePremiumByState(productionPolicies, true);
     const monthLabel = formatProductionMonthLabel(selectedMonth);
+    const trexisMonth = summarizeTrexisRenewals(renewals, selectedMonth);
 
     return (
       <div className="space-y-6 md:space-y-8">
@@ -54,7 +66,7 @@ export default async function BookInsightsPage({
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-white">Book Insights</h1>
             <p className="text-gray-400 text-sm mt-1">
-              Monthly production and premium breakdowns across your book
+              Monthly production, with Trexis renewals kept separate from new business
             </p>
           </div>
           <BookInsightsFilter
@@ -70,16 +82,34 @@ export default async function BookInsightsPage({
           </div>
         )}
 
-        <ProductionSummary summary={productionSummary} />
+        {renewalError && (
+          <div className="bg-amber-500/10 border border-amber-500/40 rounded-xl p-4">
+            <p className="text-amber-200 font-medium">Could not load Trexis renewals</p>
+            <p className="text-amber-100/80 text-sm mt-1">{renewalError}</p>
+          </div>
+        )}
+
+        <ProductionSummary
+          summary={productionSummary}
+          trexis={trexisMonth}
+          trexisError={renewalError}
+        />
+
+        {renewalError ? null : (
+          <TrexisRenewalsSection monthLabel={monthLabel} summary={trexisMonth} />
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           <BreakdownChart
             title="Production by Carrier"
-            subtitle={`${monthLabel} · written premium`}
+            subtitle={`${monthLabel} · new business only`}
             slices={productionByCarrier}
-            emptyMessage="No production for this month yet."
+            emptyMessage="No new business for this month yet."
           />
-          <PremiumByStateChart slices={productionByState} />
+          <PremiumByStateChart
+            slices={productionByState}
+            subtitle={`${monthLabel} · new business only`}
+          />
         </div>
 
         <ProductionPolicyTable

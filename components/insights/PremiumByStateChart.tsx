@@ -80,9 +80,13 @@ function LineMixBar({
 
 interface PremiumByStateChartProps {
   slices: StatePremiumSlice[];
+  subtitle?: string;
 }
 
-export default function PremiumByStateChart({ slices }: PremiumByStateChartProps) {
+export default function PremiumByStateChart({
+  slices,
+  subtitle = "Active policies · written premium (6 & 12 mo mixed)",
+}: PremiumByStateChartProps) {
   const totalPremium = slices.reduce((sum, slice) => sum + slice.premium, 0);
   const totalPolicies = slices.reduce((sum, slice) => sum + slice.policyCount, 0);
   const personalPremium = slices.reduce((sum, slice) => sum + slice.personalPremium, 0);
@@ -106,9 +110,7 @@ export default function PremiumByStateChart({ slices }: PremiumByStateChartProps
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-4">
         <div>
           <h2 className="text-lg font-semibold text-white">Premium by State</h2>
-          <p className="text-xs text-gray-500 mt-1">
-            Active policies · written premium (6 & 12 mo mixed)
-          </p>
+          <p className="text-xs text-gray-500 mt-1">{subtitle}</p>
         </div>
         {totalPremium > 0 && (
           <div className="text-right">
