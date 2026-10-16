@@ -1,9 +1,9 @@
 {
-  "exported_at": "2026-10-16T17:11:59.409Z",
+  "exported_at": "2026-10-16T18:43:34.440Z",
   "counts": {
-    "policies": 118,
+    "policies": 119,
     "contact_log": 4,
-    "policy_documents": 113,
+    "policy_documents": 114,
     "automations": 5,
     "leads": 18,
     "trexis_book_renewals": 10,
@@ -2900,6 +2900,33 @@
       "win_back_closed_at": null
     },
     {
+      "id": "2e9eea78-253b-48e2-90ea-077982fef872",
+      "client_name": "LILIAN VELASQUEZ SALMERON",
+      "carrier": "trexis",
+      "premium": 1545,
+      "renewal_date": "2027-10-16",
+      "stage": "active",
+      "spanish_speaker": true,
+      "phone": "615-753-9048",
+      "email": null,
+      "policy_number": "11-41-062043502",
+      "notes": null,
+      "created_at": "2026-10-16T18:07:53.50861+00:00",
+      "commercial": false,
+      "term_months": 12,
+      "client_since": null,
+      "prior_carrier": null,
+      "client_address": "2871 N CHARLES AVE LOT 1, CLARKSVILLE, TN 37042",
+      "client_id": "cbce7e4e-4134-4d74-a199-bb677c70d2ac",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-10-16",
+      "client_state": "TN",
+      "retained_at": null,
+      "cancelled_on": null,
+      "win_back_closed_at": null
+    },
+    {
       "id": "889a9199-2bc9-4c2d-9f85-82e6490b1a9c",
       "client_name": "Bright Sky Energy LLC (michael Kechedzhi)",
       "carrier": "bruce_messier",
@@ -4251,6 +4278,15 @@
       "r2_key": "BELINDA_MONDRAGON/1792167767794-5cea07ee-72af-44a2-8b3a-7fda7cd6e982.pdf",
       "file_size": 139918,
       "uploaded_at": "2026-10-16T16:22:48.179979+00:00",
+      "notes": null
+    },
+    {
+      "id": "c28529c2-bca4-4ed0-ae8f-ed1a4c7e1589",
+      "policy_id": "2e9eea78-253b-48e2-90ea-077982fef872",
+      "file_name": "9288b6d2-606d-4573-94e7-aca6fbd6db4d.pdf",
+      "r2_key": "LILIAN_VELASQUEZ_SALMERON/1792174073536-9288b6d2-606d-4573-94e7-aca6fbd6db4d.pdf",
+      "file_size": 144926,
+      "uploaded_at": "2026-10-16T18:07:53.983261+00:00",
       "notes": null
     }
   ],

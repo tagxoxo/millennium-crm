@@ -16,6 +16,7 @@ ALTER TABLE clients
       'js_auto',
       'past_client',
       'referral',
+      'walk_in',
       'other'
     )
   );

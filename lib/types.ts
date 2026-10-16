@@ -67,6 +67,7 @@ export type LeadSource =
   | "js_auto"
   | "past_client"
   | "referral"
+  | "walk_in"
   | "other";
 
 export const LEAD_SOURCES: LeadSource[] = [
@@ -76,6 +77,7 @@ export const LEAD_SOURCES: LeadSource[] = [
   "js_auto",
   "past_client",
   "referral",
+  "walk_in",
   "other",
 ];
 
@@ -86,6 +88,7 @@ export const LEAD_SOURCE_LABELS: Record<LeadSource, string> = {
   js_auto: "J&S Auto",
   past_client: "Past Client",
   referral: "Referral",
+  walk_in: "Walk In",
   other: "Other",
 };
 
@@ -111,6 +114,8 @@ export function normalizeLeadSource(value: unknown): LeadSource | null {
     past_client: "past_client",
     referral: "referral",
     refferal: "referral",
+    walk_in: "walk_in",
+    walkin: "walk_in",
     other: "other",
   };
 
