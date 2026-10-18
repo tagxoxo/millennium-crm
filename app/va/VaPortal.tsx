@@ -173,7 +173,6 @@ export default function VaPortal({
   function handleQuoteAnswer(key: string, value: string) {
     setQuoteAnswers((current) => ({ ...current, [key]: value }));
     if (key === "full_name") setCallerName(value);
-    if (key === "phone_number") setPhoneNumber(value);
   }
 
   function buildIntake(): VaIntakeAnswer[] {

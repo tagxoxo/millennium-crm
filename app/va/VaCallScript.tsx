@@ -197,13 +197,32 @@ function AnswerList({
             <p className={`text-xs mt-0.5 leading-relaxed font-semibold ${on ? "text-green-200/90" : "text-white"}`}>
               &ldquo;{item.say}&rdquo;
             </p>
-            <textarea
-              value={value}
-              onChange={(e) => onAnswer(item.key, e.target.value)}
-              rows={2}
-              placeholder="Write their answer"
-              className={`${scriptInputClass} resize-y min-h-[52px]`}
-            />
+            {item.choices ? (
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                {item.choices.map((choice) => (
+                  <button
+                    key={choice}
+                    type="button"
+                    onClick={() => onAnswer(item.key, choice)}
+                    className={`py-2 rounded-md text-xs font-semibold border transition-colors ${
+                      value === choice
+                        ? "bg-accent text-white border-accent"
+                        : "bg-navy text-gray-200 border-navy-lighter hover:border-accent hover:text-white"
+                    }`}
+                  >
+                    {choice}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <textarea
+                value={value}
+                onChange={(e) => onAnswer(item.key, e.target.value)}
+                rows={2}
+                placeholder="Write their answer"
+                className={`${scriptInputClass} resize-y min-h-[52px]`}
+              />
+            )}
           </li>
         );
       })}

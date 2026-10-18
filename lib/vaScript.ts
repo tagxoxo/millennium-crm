@@ -9,6 +9,7 @@ export type VaScriptItem = {
   key: string;
   label: string;
   say: string;
+  choices?: string[];
 };
 
 export const VA_POLICY_SCRIPT_ITEMS: VaScriptItem[] = [
@@ -24,38 +25,45 @@ export const VA_POLICY_SCRIPT_ITEMS: VaScriptItem[] = [
   },
 ];
 
+const YES_NO = ["Yes", "No"];
+
 export const VA_QUOTE_SCRIPT_ITEMS: VaScriptItem[] = [
-  { key: "full_name", label: "Full name", say: "Can I start with your full name?" },
+  { key: "full_name", label: "Name", say: "Can I start with your name?" },
   { key: "address", label: "Address", say: "And your current address?" },
-  { key: "phone_number", label: "Phone number", say: "Best phone number to reach you?" },
-  { key: "date_of_birth", label: "Date of birth", say: "What's your date of birth?" },
+  { key: "date_of_birth", label: "DOB", say: "What's your date of birth?" },
+  { key: "gender", label: "Gender", say: "And your gender?" },
   {
     key: "drivers_license",
-    label: "Driver's license number",
-    say: "And your driver's license number?",
-  },
-  { key: "marital_status", label: "Marital status", say: "Are you single or married?" },
-  {
-    key: "additional_drivers",
-    label: "Additional drivers",
-    say: "Are there any additional drivers in the household? If so, I'll need their names and dates of birth.",
-  },
-  {
-    key: "excluded_drivers",
-    label: "Excluded drivers",
-    say: "Anyone in the household 15 or older who will NOT be driving? I'll need their names and dates of birth as well.",
+    label: "Drivers license #",
+    say: "What's your driver's license number?",
   },
   {
     key: "vehicle_vin",
-    label: "Vehicle VIN",
-    say: "Do you have the VIN number for the vehicle you'd like to insure?",
+    label: "VIN",
+    say: "What's the VIN for the vehicle you'd like to insure?",
   },
   {
     key: "prior_insurance",
-    label: "Prior insurance",
-    say: "Do you currently have or have you had auto insurance in the past?",
+    label: "Prior Insurance",
+    say: "Do you have prior insurance?",
+    choices: YES_NO,
   },
-  { key: "homeowner", label: "Homeowner", say: "Are you a homeowner or do you rent?" },
+  {
+    key: "homeowner",
+    label: "Homeowner",
+    say: "Are you a homeowner?",
+    choices: YES_NO,
+  },
+  {
+    key: "additional_drivers",
+    label: "Additional drivers",
+    say: "Are there any additional drivers? If so, I'll need their names and dates of birth.",
+  },
+  {
+    key: "excluded_drivers",
+    label: "Excluded Drivers",
+    say: "Anyone in the household who will be excluded from driving? I'll need their names and dates of birth.",
+  },
 ];
 
 export function emptyScriptAnswers(items: VaScriptItem[]): Record<string, string> {
