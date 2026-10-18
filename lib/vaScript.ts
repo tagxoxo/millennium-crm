@@ -43,6 +43,12 @@ export const VA_QUOTE_SCRIPT_ITEMS: VaScriptItem[] = [
     say: "What's the VIN for the vehicle you'd like to insure?",
   },
   {
+    key: "coverage_type",
+    label: "Liability or full coverage",
+    say: "Do you want liability or full coverage?",
+    choices: ["Liability", "Full coverage"],
+  },
+  {
     key: "prior_insurance",
     label: "Prior Insurance",
     say: "Do you have prior insurance?",
