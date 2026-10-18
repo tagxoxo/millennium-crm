@@ -36,7 +36,26 @@ function TicketCard({
 }) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sentToGrok, setSentToGrok] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  async function handleSendToGrok() {
+    setSending(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/tickets/${ticket.id}/send-to-grok`, {
+        method: "POST",
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Failed to send ticket to Grok.");
+      setSentToGrok(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to send ticket to Grok.");
+    } finally {
+      setSending(false);
+    }
+  }
 
   async function handleComplete() {
     setSaving(true);
@@ -133,14 +152,24 @@ function TicketCard({
       {error && <p className="text-red-400 text-sm">{error}</p>}
 
       {showComplete && (
-        <button
-          type="button"
-          onClick={handleComplete}
-          disabled={saving}
-          className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
-        >
-          {saving ? "Completing..." : "Mark complete"}
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={handleComplete}
+            disabled={saving || sending}
+            className="px-4 py-2 bg-accent hover:bg-accent-hover text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+          >
+            {saving ? "Completing..." : "Mark complete"}
+          </button>
+          <button
+            type="button"
+            onClick={handleSendToGrok}
+            disabled={saving || sending || sentToGrok}
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+          >
+            {sending ? "Sending..." : sentToGrok ? "Sent to grok" : "Send to grok"}
+          </button>
+        </div>
       )}
     </div>
   );
