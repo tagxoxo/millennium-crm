@@ -487,3 +487,63 @@ export function groupCancelRows(rows: CancelOutreach[]): {
 
   return { dueNow, rest, finished, reinstated, closed };
 }
+
+export type ReinstatementStats = {
+  total: number;
+  reinstated: number;
+  didnt: number;
+  stopped: number;
+  finishedWithout: number;
+  leftToCall: number;
+  dueNow: number;
+  waiting: number;
+  totalAmount: number;
+  reinstatedAmount: number;
+  didntAmount: number;
+  leftToCallAmount: number;
+  /** Reinstated ÷ everyone on the list. Null when the list is empty. */
+  overallRate: number | null;
+  /** Reinstated ÷ people no longer being called. Null when nobody is decided yet. */
+  decidedRate: number | null;
+};
+
+function sumAmountDue(rows: CancelOutreach[]): number {
+  return rows.reduce((total, row) => total + (Number(row.amount_due) || 0), 0);
+}
+
+/** Outcome counts for the Reinstatements page. */
+export function summarizeReinstatements(rows: CancelOutreach[]): ReinstatementStats {
+  const grouped = groupCancelRows(rows);
+  const reinstated = grouped.reinstated.length;
+  const stopped = grouped.closed.length;
+  const finishedWithout = grouped.finished.length;
+  const didnt = stopped + finishedWithout;
+  const dueNow = grouped.dueNow.length;
+  const waiting = grouped.rest.length;
+  const leftToCall = dueNow + waiting;
+  const decided = reinstated + didnt;
+  const didntRows = [...grouped.closed, ...grouped.finished];
+  const leftRows = [...grouped.dueNow, ...grouped.rest];
+
+  return {
+    total: rows.length,
+    reinstated,
+    didnt,
+    stopped,
+    finishedWithout,
+    leftToCall,
+    dueNow,
+    waiting,
+    totalAmount: sumAmountDue(rows),
+    reinstatedAmount: sumAmountDue(grouped.reinstated),
+    didntAmount: sumAmountDue(didntRows),
+    leftToCallAmount: sumAmountDue(leftRows),
+    overallRate: rows.length === 0 ? null : reinstated / rows.length,
+    decidedRate: decided === 0 ? null : reinstated / decided,
+  };
+}
+
+export function formatReinstatementRate(rate: number | null): string {
+  if (rate == null) return "—";
+  return `${Math.round(rate * 100)}%`;
+}

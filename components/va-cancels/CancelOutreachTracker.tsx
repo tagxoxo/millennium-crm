@@ -8,14 +8,17 @@ import {
   cadenceStartDate,
   dueStepProgress,
   formatAmountDue,
+  formatReinstatementRate,
   getTrackerState,
   groupCancelRows,
   stepDate,
   stepState,
+  summarizeReinstatements,
   telHref,
   yesterdayInAgencyTz,
   type CancelLogAction,
   type CancelOutreach,
+  type ReinstatementStats,
 } from "@/lib/vaCancelOutreach";
 
 const inputClass =
@@ -511,6 +514,141 @@ function AddCancelForm() {
   );
 }
 
+function StatCard({
+  value,
+  label,
+  detail,
+  amount,
+  tone,
+}: {
+  value: number;
+  label: string;
+  detail: string;
+  amount: string;
+  tone: string;
+}) {
+  return (
+    <div className={`rounded-xl border px-4 py-3 ${tone}`}>
+      <p className="text-2xl font-bold text-white">{value}</p>
+      <p className="text-sm font-medium text-white mt-0.5">{label}</p>
+      <p className="text-xs text-gray-400 mt-1">{detail}</p>
+      <p className="text-xs text-gray-300 mt-2">{amount}</p>
+    </div>
+  );
+}
+
+function ReinstatementStatsPanel({ rows }: { rows: CancelOutreach[] }) {
+  const stats: ReinstatementStats = useMemo(() => summarizeReinstatements(rows), [rows]);
+  const decided = stats.reinstated + stats.didnt;
+
+  return (
+    <section className="rounded-2xl border border-navy-lighter bg-navy-light p-5 space-y-5">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+        <div>
+          <p className="text-[11px] uppercase tracking-wide text-gray-500">
+            Reinstatement rate
+          </p>
+          <p className="text-4xl font-bold text-white mt-1">
+            {formatReinstatementRate(stats.overallRate)}
+          </p>
+          <p className="text-sm text-gray-400 mt-1">
+            {stats.total === 0
+              ? "No one on the list yet."
+              : `${stats.reinstated} of ${stats.total} people came back.`}
+          </p>
+        </div>
+        <div className="md:text-right">
+          <p className="text-2xl font-bold text-emerald-300">
+            {formatReinstatementRate(stats.decidedRate)}
+          </p>
+          <p className="text-sm text-gray-400 mt-1">
+            {decided === 0
+              ? "No finished outcomes yet."
+              : `${stats.reinstated} of ${decided} people we're done calling.`}
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            People still left to call are left out of this one.
+          </p>
+        </div>
+      </div>
+
+      <div>
+        <div className="flex h-2.5 rounded-full overflow-hidden bg-navy">
+          {stats.total > 0 && (
+            <>
+              <div
+                className="bg-emerald-400"
+                style={{ width: `${(stats.reinstated / stats.total) * 100}%` }}
+              />
+              <div
+                className="bg-rose-400"
+                style={{ width: `${(stats.didnt / stats.total) * 100}%` }}
+              />
+              <div
+                className="bg-sky-400"
+                style={{ width: `${(stats.leftToCall / stats.total) * 100}%` }}
+              />
+            </>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-[11px] text-gray-400">
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-emerald-400" />
+            Reinstated
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-rose-400" />
+            Didn&apos;t reinstate
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-sky-400" />
+            Still left to call
+          </span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
+        <StatCard
+          value={stats.reinstated}
+          label="Reinstated"
+          detail="Came back on the policy"
+          amount={`${formatAmountDue(stats.reinstatedAmount)} brought back`}
+          tone="border-emerald-500/30 bg-emerald-500/10"
+        />
+        <StatCard
+          value={stats.didnt}
+          label="Didn't reinstate"
+          detail={
+            stats.didnt === 0
+              ? "Nobody is finished without coming back"
+              : `${stats.finishedWithout} finished all calls · ${stats.stopped} taken off the list`
+          }
+          amount={`${formatAmountDue(stats.didntAmount)} not brought back`}
+          tone="border-rose-500/30 bg-rose-500/10"
+        />
+        <StatCard
+          value={stats.leftToCall}
+          label="Left to call"
+          detail={
+            stats.leftToCall === 0
+              ? "Nobody is still on the call list"
+              : `${stats.dueNow} need a call now · ${stats.waiting} waiting for the next day`
+          }
+          amount={`${formatAmountDue(stats.leftToCallAmount)} still in play`}
+          tone="border-sky-500/30 bg-sky-500/10"
+        />
+        <StatCard
+          value={stats.total}
+          label="On the list"
+          detail="Everyone entered so far"
+          amount={`${formatAmountDue(stats.totalAmount)} total amount due`}
+          tone="border-navy-lighter bg-navy"
+        />
+      </div>
+    </section>
+  );
+}
+
 function Section({
   title,
   count,
@@ -555,6 +693,13 @@ export default function CancelOutreachTracker({
 
   return (
     <div className="space-y-8">
+      {mode === "crm" && <ReinstatementStatsPanel rows={rows} />}
+
+      <div className="space-y-3">
+      {mode === "crm" && (
+        <h2 className="text-lg font-semibold text-white">Call list</h2>
+      )}
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="rounded-xl border border-accent/30 bg-accent/10 px-4 py-3">
           <p className="text-2xl font-bold text-white">{dueCount}</p>
@@ -572,6 +717,7 @@ export default function CancelOutreachTracker({
           <p className="text-2xl font-bold text-white">{grouped.closed.length}</p>
           <p className="text-xs text-gray-400 mt-0.5">Stopped</p>
         </div>
+      </div>
       </div>
 
       <div className="rounded-2xl border border-navy-lighter bg-navy-light px-4 py-3">
