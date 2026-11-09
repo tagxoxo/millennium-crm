@@ -1,9 +1,9 @@
 {
-  "exported_at": "2026-11-07T02:00:07.646Z",
+  "exported_at": "2026-11-09T02:00:08.527Z",
   "counts": {
-    "policies": 161,
+    "policies": 162,
     "contact_log": 7,
-    "policy_documents": 152,
+    "policy_documents": 153,
     "automations": 5,
     "leads": 21,
     "trexis_book_renewals": 10,
@@ -4356,6 +4356,33 @@
       "retained_at": null,
       "cancelled_on": null,
       "win_back_closed_at": null
+    },
+    {
+      "id": "4ee04d95-b80b-4c9b-a141-df4d170529b6",
+      "client_name": "DESIRAE COWELL",
+      "carrier": "progressive",
+      "premium": 1906.71,
+      "renewal_date": "2027-05-06",
+      "stage": "active",
+      "spanish_speaker": false,
+      "phone": null,
+      "email": null,
+      "policy_number": "882233740",
+      "notes": null,
+      "created_at": "2026-11-07T18:44:39.314318+00:00",
+      "commercial": false,
+      "term_months": 6,
+      "client_since": null,
+      "prior_carrier": null,
+      "client_address": "8048 ROCKY RIDGE RD, HOPKINSVILLE, KY 42240",
+      "client_id": "3c532cec-f5b8-4af8-9b18-d53291de3949",
+      "policy_type": "personal_auto",
+      "is_historical": false,
+      "effective_date": "2026-11-06",
+      "client_state": "TN",
+      "retained_at": null,
+      "cancelled_on": null,
+      "win_back_closed_at": null
     }
   ],
   "contact_log": [
@@ -5790,6 +5817,15 @@
       "r2_key": "ADRIAN_ELLISON/1793995434876-Adrian_.pdf",
       "file_size": 130030,
       "uploaded_at": "2026-11-06T20:03:55.354714+00:00",
+      "notes": null
+    },
+    {
+      "id": "e36fd019-60b8-4b37-a330-4add78efed4a",
+      "policy_id": "4ee04d95-b80b-4c9b-a141-df4d170529b6",
+      "file_name": "Declarations Page (4).pdf",
+      "r2_key": "DESIRAE_COWELL/1794077079345-Declarations_Page__4_.pdf",
+      "file_size": 66987,
+      "uploaded_at": "2026-11-07T18:44:39.936339+00:00",
       "notes": null
     }
   ],
