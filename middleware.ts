@@ -3,6 +3,7 @@ import {
   AUTH_COOKIE,
   TWO_FA_COOKIE,
   TWO_FA_REQUIRED_COOKIE,
+  getCookieOptions,
   isTwoFaSessionValid,
   isValidSession,
 } from "@/lib/auth";
@@ -12,6 +13,22 @@ import {
   isConfusableVaInsightsPath,
   isVaPortalPath,
 } from "@/lib/va";
+
+function isOwnerAuthPath(pathname: string): boolean {
+  return (
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/verify-2fa") ||
+    pathname.startsWith("/api/auth")
+  );
+}
+
+function clearVaSession(response: NextResponse): NextResponse {
+  response.cookies.set(VA_ACCESS_COOKIE, "", {
+    ...getCookieOptions(),
+    maxAge: 0,
+  });
+  return response;
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -46,6 +63,13 @@ export async function middleware(request: NextRequest) {
   const authed = await isValidSession(session, password);
   const vaToken = request.cookies.get(VA_ACCESS_COOKIE)?.value;
 
+  // Owner login must stay on /login even if this browser still has a VA session.
+  // Opening it also drops the VA cookie so the homepage stops jumping to the VA desk.
+  if (isOwnerAuthPath(pathname)) {
+    const response = NextResponse.next();
+    return vaToken ? clearVaSession(response) : response;
+  }
+
   if (vaToken && !authed) {
     if (isApiRoute) {
       return NextResponse.json(
@@ -54,14 +78,6 @@ export async function middleware(request: NextRequest) {
       );
     }
     return NextResponse.redirect(new URL("/va", request.url));
-  }
-
-  if (
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/verify-2fa") ||
-    pathname.startsWith("/api/auth")
-  ) {
-    return NextResponse.next();
   }
 
   if (!authed) {
